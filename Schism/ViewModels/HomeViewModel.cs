@@ -36,22 +36,28 @@ namespace Schism.ViewModels
         private int _length = 5;
         private int _startAddress = 0; // Don't worry about leading zeros, Radzio just interprets a value without leading zeros as having leading zeroes (i.e. output coil range). Don't worry aboout "Global Data" either, since again Radzio doesn't bother.
         private bool _asciiEnable = false;
-        private string[] _addressList = new string[6] {"0", "20", "40", "60", "80", "100"};
+        private string[] _addressList = new string[6] { "0", "20", "40", "60", "80", "100" };
         private Visibility[] _colsVis = new Visibility[6] { Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed };
+        private Visibility _aDisplayTypeDropDown = Visibility.Hidden;
 
-        // Make a variable for the length of each table. Either 21 or the length of the last, unfinished column, whichever is smaller. This will be used to determine how many rows to show in the UI for each column.
-
-        // Initialize collection at declaration to avoid CS8618
         private ObservableCollection<StringWrapper> _shiftColumn = new StringWrapperList();
         private ObservableCollection<DataPoint>[] _MODBUSDataPoints = new DataPointList[6];
 
-        // Make command fields nullable to avoid CS8618
+        // dropdowns
+        private ObservableCollection<string> _dataType = new ObservableCollection<string> { "Coil Status", "Input Status", "Holding Registers", "Input Registers" };
+        private ObservableCollection<string> _numericBase = new ObservableCollection<string> { "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" };
+        private ObservableCollection<string> _endian = new ObservableCollection<string> { "Big Endian", "Little Endian", "Big Endian (Swap Words)", "Big Endian (Swap Bytes)" };
+        private ObservableCollection<string> _aDisplayType = new ObservableCollection<string> { "1 Char/Reg", "2 Char/Reg", "2 Char/Reg SW." };
+
+        private string _selectedDataType;
+        private string _selectedNumericBase;
+        private string _selectedEndian;
+        private string _selectedADisplayType;
+
+        // commands
         private DelegateCommand? _saveClick;
         private DelegateCommand? _loadClick;
         private DelegateCommand? _exitClick;
-        private DelegateCommand? _cutClick;
-        private DelegateCommand? _copyClick;
-        private DelegateCommand? _pasteClick;
         private DelegateCommand? _connClick;
         private DelegateCommand? _discClick;
         private DelegateCommand? _settClick;
@@ -59,6 +65,8 @@ namespace Schism.ViewModels
         private DelegateCommand? _insErrClick;
         private DelegateCommand? _themesClick;
         private DelegateCommand? _aboutClick;
+
+        private SaveAndLoadService SNL = new SaveAndLoadService();
 
         // Public property getters and setters
         public string Title
@@ -112,11 +120,12 @@ namespace Schism.ViewModels
         public int DeviceID
         {
             get { return _deviceID; }
-            set {
+            set
+            {
                 // Min and Max boundaries on Device ID, according to MODBUS documentation
                 int clamped = Math.Clamp(value, 1, 247);
 
-                if(SetProperty(ref _deviceID, clamped))
+                if (SetProperty(ref _deviceID, clamped))
                 {
                     OnPropertyChanged();
                 }
@@ -224,7 +233,15 @@ namespace Schism.ViewModels
         public bool ASCIIEnable
         {
             get { return _asciiEnable; }
-            set { SetProperty(ref _asciiEnable, value); }
+            set
+            {
+                if (SetProperty(ref _asciiEnable, value))
+                {
+                    SetProperty(ref _aDisplayTypeDropDown, _asciiEnable ? Visibility.Visible : Visibility.Hidden);
+                    OnPropertyChanged(nameof(ADisplayTypeDropDown));
+                }
+                OnPropertyChanged();
+            }
         }
 
         public ObservableCollection<StringWrapper> ShiftColumn
@@ -237,6 +254,60 @@ namespace Schism.ViewModels
         {
             get { return _MODBUSDataPoints; }
             set { SetProperty(ref _MODBUSDataPoints, value); }
+        }
+
+        public ObservableCollection<string> DataType
+        {
+            get { return _dataType; }
+            set { SetProperty(ref _dataType, value); }
+        }
+
+        public ObservableCollection<string> NumericBase
+        {
+            get { return _numericBase; }
+            set { SetProperty(ref _numericBase, value); }
+        }
+
+        public ObservableCollection<string> Endian
+        {
+            get { return _endian; }
+            set { SetProperty(ref _endian, value); }
+        }
+
+        public ObservableCollection<string> ADisplayType
+        {
+            get { return _aDisplayType; }
+            set { SetProperty(ref _aDisplayType, value); }
+        }
+
+        public string SelectedDataType
+        {
+            get { return _selectedDataType; }
+            set { SetProperty(ref _selectedDataType, value); }
+        }
+
+        public string SelectedNumericBase
+        {
+            get { return _selectedNumericBase; }
+            set { SetProperty(ref _selectedNumericBase, value); }
+        }
+
+        public string SelectedEndian
+        {
+            get { return _selectedEndian; }
+            set { SetProperty(ref _selectedEndian, value); }
+        }
+
+        public string SelectedADisplayType
+        {
+            get { return _selectedADisplayType; }
+            set { SetProperty(ref _selectedADisplayType, value); }
+        }
+
+        public Visibility ADisplayTypeDropDown
+        {
+            get { return _aDisplayTypeDropDown; }
+            set { SetProperty(ref _aDisplayTypeDropDown, value); }
         }
 
         // View Model constructor
@@ -282,12 +353,12 @@ namespace Schism.ViewModels
             var reqCols = ((Length - 1) / 20) + 1; // Calculate how many columns we need based on the length (integer division rounding up)
             for (int i = 0; i < reqCols; i++)
             {
-                var reqRows = Math.Min((Length - 20*i), 20); // Calculate how many rows we need in the last column (or 20 if length is greater than 20)
+                var reqRows = Math.Min((Length - 20 * i), 20); // Calculate how many rows we need in the last column (or 20 if length is greater than 20)
                 for (int j = 0; j < reqRows; j++)
                 {
                     string alias = "";
                     // UPDATE THIS WITH ACTUAL MODBUS DATA!
-                    string data = ((i+1) * j * 20).ToString();
+                    string data = ((i + 1) * j * 20).ToString();
                     MODBUSDataPoints[i].Add(new DataPoint(alias, data));
                 }
             }
@@ -299,7 +370,19 @@ namespace Schism.ViewModels
 
         void Execute_save_Click()
         {
-            // TODO: Implement new file logic
+            // Create a SaveData object with the current state of the ViewModel
+            SaveData sD = new SaveData
+            {
+                SaveDeviceID = this.DeviceID,
+                SaveStartAddress = this.StartAddress,
+                SaveLength = this.Length,
+                SaveDataType = this.SelectedDataType,
+                SaveNumericBase = this.SelectedNumericBase,
+                SaveEndian = this.SelectedEndian,
+                SaveASCIIEnable = this.ASCIIEnable,
+                SaveADisplayType = this.SelectedADisplayType
+            };
+            SNL.Save(sD);
         }
 
         public DelegateCommand Load_Click =>
@@ -307,7 +390,28 @@ namespace Schism.ViewModels
 
         void Execute_Load_Click()
         {
-            // TODO: Implement file open logic
+            SaveData lD = SNL.Load();
+
+            // Update ViewModel properties with loaded data
+            SetProperty(ref _deviceID, lD.SaveDeviceID);
+            SetProperty(ref _startAddress, lD.SaveStartAddress);
+            SetProperty(ref _length, lD.SaveLength);
+            SetProperty(ref _selectedDataType, lD.SaveDataType);
+            SetProperty(ref _selectedNumericBase, lD.SaveNumericBase);
+            SetProperty(ref _selectedEndian, lD.SaveEndian);
+            SetProperty(ref _asciiEnable, lD.SaveASCIIEnable);
+            SetProperty(ref _selectedADisplayType, lD.SaveADisplayType);
+
+            // Update UI as needed
+            UpdateColsVisAndNotify();
+            OnPropertyChanged(nameof(DeviceID));
+            OnPropertyChanged(nameof(StartAddress));
+            OnPropertyChanged(nameof(Length));
+            OnPropertyChanged(nameof(SelectedDataType));
+            OnPropertyChanged(nameof(SelectedNumericBase));
+            OnPropertyChanged(nameof(SelectedEndian));
+            OnPropertyChanged(nameof(ASCIIEnable));
+            OnPropertyChanged(nameof(SelectedADisplayType));
         }
 
         public DelegateCommand Exit_Click =>

@@ -158,12 +158,7 @@
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="1">
                                 <TextBlock Text="Data Type" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="DataType" Margin="80,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="25" FontSize="14">
-                                    <ComboBoxItem Content="Coil Status"></ComboBoxItem>
-                                    <ComboBoxItem Content="Input Status"></ComboBoxItem>
-                                    <ComboBoxItem Content="Holding Registers"></ComboBoxItem>
-                                    <ComboBoxItem Content="Input Registers"></ComboBoxItem>
-                                </ComboBox>
+                                <ComboBox Name="DataType" ItemsSource="{Binding DataType}" SelectedValue="{Binding SelectedDataType, Mode=TwoWay}" Margin="80,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="25" FontSize="14"/>
                             </Grid>
                         </Grid>
                     </StackPanel>
@@ -186,37 +181,19 @@
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Row="0" Grid.Column="0">
                                 <TextBlock Text="Numeric Base" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="BaseSystem" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14">
-                                    <ComboBoxItem Content="Decimal"></ComboBoxItem>
-                                    <ComboBoxItem Content="Integer"></ComboBoxItem>
-                                    <ComboBoxItem Content="Hexadecimal"></ComboBoxItem>
-                                    <ComboBoxItem Content="Binary"></ComboBoxItem>
-                                    <ComboBoxItem Content="32 Bit Float"></ComboBoxItem>
-                                    <ComboBoxItem Content="32 Bit SW. Float"></ComboBoxItem>
-                                    <ComboBoxItem Content="64 Bit Float"></ComboBoxItem>
-                                    <ComboBoxItem Content="64 Bit SW. Float"></ComboBoxItem>
-                                </ComboBox>
+                                <ComboBox Name="BaseSystem" ItemsSource="{Binding NumericBase}" SelectedValue="{Binding SelectedNumericBase, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14"/>
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="0">
                                 <TextBlock Text="Endian" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="Endian" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14">
-                                    <ComboBoxItem Content="Big Endian"></ComboBoxItem>
-                                    <ComboBoxItem Content="Little Endian"></ComboBoxItem>
-                                    <ComboBoxItem Content="Big Endian (Swap Words)"></ComboBoxItem>
-                                    <ComboBoxItem Content="Big Endian (Swap Bytes)"></ComboBoxItem>
-                                </ComboBox>
+                                <ComboBox Name="Endian" ItemsSource="{Binding Endian}" SelectedValue="{Binding SelectedEndian, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14"/>
                             </Grid>
                             <Grid Grid.Row="0" Grid.Column="1">
                                 <TextBlock Text="ASCII Display" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <CheckBox IsEnabled="{Binding ASCIIEnable}" Content="Enable" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                <CheckBox IsChecked="{Binding ASCIIEnable}" Content="Enable" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="1">
-                                <TextBlock Text="Display Type" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="ASCIIType" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="130" Height="25" FontSize="14">
-                                    <ComboBoxItem Content="1 Char/Reg"></ComboBoxItem>
-                                    <ComboBoxItem Content="2 Char/Reg"></ComboBoxItem>
-                                    <ComboBoxItem Content="2 Char/Reg SW."></ComboBoxItem>
-                                </ComboBox>
+                                <TextBlock Text="Display Type" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                <ComboBox Name="ASCIIType" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding ADisplayType}" SelectedValue="{Binding SelectedADisplayType, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="130" Height="25" FontSize="14"/>
                             </Grid>
                         </Grid>
                     </StackPanel>
