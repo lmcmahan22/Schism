@@ -15,6 +15,7 @@
     <None Remove="Images\Disconnect.png" />
     <None Remove="Images\Load.png" />
     <None Remove="Images\Paste.png" />
+    <None Remove="Images\PVALogo.png" />
     <None Remove="Images\Save.png" />
     <None Remove="Images\Settings.png" />
   </ItemGroup>
@@ -39,6 +40,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\Paste.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\PVALogo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\Save.png">

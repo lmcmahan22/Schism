@@ -32,11 +32,11 @@ namespace Schism.ViewModels
         private int _numRX = 0;
         private int _numRequests = 0;
         private int _numResponses = 0;
-        private int _deviceID = 0;
+        private int _deviceID = 1;
         private int _length = 5;
-        private int _startAddress = 0;
+        private int _startAddress = 0; // Don't worry about leading zeros, Radzio just interprets a value without leading zeros as having leading zeroes (i.e. output coil range). Don't worry aboout "Global Data" either, since again Radzio doesn't bother.
         private bool _asciiEnable = false;
-        private string _address1 = "0";
+        private string[] _addressList = new string[6] {"0", "20", "40", "60", "80", "100"};
         private Visibility[] _colsVis = new Visibility[6] { Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed };
 
         // Make a variable for the length of each table. Either 21 or the length of the last, unfinished column, whichever is smaller. This will be used to determine how many rows to show in the UI for each column.
@@ -112,7 +112,32 @@ namespace Schism.ViewModels
         public int DeviceID
         {
             get { return _deviceID; }
-            set { SetProperty(ref _deviceID, value); }
+            set {
+                // Min and Max boundaries on Device ID, according to MODBUS documentation
+                int clamped = Math.Clamp(value, 1, 247);
+
+                if(SetProperty(ref _deviceID, clamped))
+                {
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private void UpdateColsVisAndNotify()
+        {
+            for (int i = 0; i < MODBUSDataPoints.Length; i++)
+            {
+                _colsVis[i] = _length > (i * 20) ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            // Notify the UI that the ColsVis contents changed
+            OnPropertyChanged(nameof(ColsVis));
+        }
+
+        private int GetMaxLengthForStartAddress()
+        {
+            int cap = (65535 - _startAddress) + 1; // inclusive cap
+            return Math.Min(120, cap);
         }
 
         public int StartAddress
@@ -120,20 +145,41 @@ namespace Schism.ViewModels
             get { return _startAddress; }
             set
             {
-                if (SetProperty(ref _startAddress, value))
-                {
-                    // update the textual address representation
-                    Address1 = StartAddress.ToString();
+                // Min and Max boundaries on Starting Address, according to MODBUS documentation
+                int clampedStart = Math.Clamp(value, 0, 65535);
 
+                if (SetProperty(ref _startAddress, clampedStart))
+                {
+                    // When start address changes, ensure the current length does not exceed the new allowable range.
+                    int maxLen = GetMaxLengthForStartAddress();
+                    int clampedLength = Math.Clamp(_length, 1, maxLen);
+
+                    if (SetProperty(ref _length, clampedLength))
+                    {
+                        // Notify the UI that the AddressList contents changed
+                        OnPropertyChanged(nameof(Length));
+
+                        // Rebuild the collection to reflect new length
+                        BuildModbusDataPoints();
+
+                        // Update column visibility based on the (possibly changed) length
+                        UpdateColsVisAndNotify();
+                    }
+
+                    // update the textual address representation
+                    for (int i = 0; i < AddressList.Length; i++)
+                    {
+                        AddressList[i] = (_startAddress + (i * 20)).ToString();
+                    }
+
+                    // Notify the UI that the AddressList contents changed
+                    OnPropertyChanged(nameof(AddressList));
+
+                    // Notify StartAddress changed (caller/member name handled by OnPropertyChanged call above in SetProperty,
+                    // but keeping parity with original behavior)
                     OnPropertyChanged();
                 }
             }
-        }
-
-        public string Address1
-        {
-            get { return _address1; }
-            set { SetProperty(ref _address1, value); }
         }
 
         public int Length
@@ -141,24 +187,29 @@ namespace Schism.ViewModels
             get { return _length; }
             set
             {
+                // Min and Max boundaries on Value relative to current StartAddress
+                int maxLen = GetMaxLengthForStartAddress();
+                int clamped = Math.Clamp(value, 1, maxLen);
 
-                // Min and Max boundaries on Value
-                value = Math.Min(value, 120);
-                value = Math.Max(value, -1);
-
-                // Rebuild the collection to reflect new length
-                BuildModbusDataPoints();
-                for (int i = 0; i < MODBUSDataPoints.Length; i++)
+                // Update the backing field first; only proceed if it actually changed
+                if (SetProperty(ref _length, clamped))
                 {
-                    _colsVis[i] = value > (i * 20) ? Visibility.Visible : Visibility.Collapsed;
+                    // Rebuild the collection to reflect new length (uses Length getter now)
+                    BuildModbusDataPoints();
+
+                    // Update column visibility and notify UI
+                    UpdateColsVisAndNotify();
+
+                    // Keep parity with original pattern
+                    OnPropertyChanged();
                 }
-
-                // Notify the UI that the ColsVis contents changed. Updating this from the array's setter won't work since the array reference doesn't change, so we need to raise this manually.
-                OnPropertyChanged(nameof(ColsVis));
-
-                // Also notify length changed (CallerMemberName will be "Length")
-                OnPropertyChanged();
             }
+        }
+
+        public string[] AddressList
+        {
+            get { return _addressList; }
+            set { SetProperty(ref _addressList, value); }
         }
 
         public Visibility[] ColsVis
@@ -236,7 +287,7 @@ namespace Schism.ViewModels
                 {
                     string alias = "";
                     // UPDATE THIS WITH ACTUAL MODBUS DATA!
-                    string data = (j * 25).ToString();
+                    string data = ((i+1) * j * 20).ToString();
                     MODBUSDataPoints[i].Add(new DataPoint(alias, data));
                 }
             }
@@ -267,29 +318,6 @@ namespace Schism.ViewModels
             //  TODO: Implement application exit logic
         }
 
-        public DelegateCommand Cut_Click =>
-            _cutClick ??= new DelegateCommand(Execute_Cut_Click);
-
-        void Execute_Cut_Click()
-        {
-            //  TODO: Implement cut logic
-        }
-
-        public DelegateCommand Copy_Click =>
-            _copyClick ??= new DelegateCommand(Execute_Copy_Click);
-
-        void Execute_Copy_Click()
-        {
-            // TODO: Implement copy logic
-        }
-
-        public DelegateCommand Paste_Click =>
-            _pasteClick ??= new DelegateCommand(Execute_Paste_Click);
-
-        void Execute_Paste_Click()
-        {
-            // TODO: Implement paste logic
-        }
         public DelegateCommand Conn_Click =>
             _connClick ??= new DelegateCommand(Execute_Conn_Click);
 

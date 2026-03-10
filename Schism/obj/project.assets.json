@@ -556,11 +556,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\lmcmahan\\OneDrive - Precision Valve and Automation\\Desktop\\Visual Studio Projects\\Projects\\Schism\\Schism.csproj",
+      "projectUniqueName": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Schism.csproj",
       "projectName": "Schism",
-      "projectPath": "C:\\Users\\lmcmahan\\OneDrive - Precision Valve and Automation\\Desktop\\Visual Studio Projects\\Projects\\Schism\\Schism.csproj",
+      "projectPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Schism.csproj",
       "packagesPath": "C:\\Users\\lmcmahan\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\lmcmahan\\OneDrive - Precision Valve and Automation\\Desktop\\Visual Studio Projects\\Projects\\Schism\\obj\\",
+      "outputPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

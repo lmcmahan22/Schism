@@ -15,6 +15,7 @@
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/disconnect.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/load.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/paste.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/pvalogo.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/save.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/settings.png")]
 

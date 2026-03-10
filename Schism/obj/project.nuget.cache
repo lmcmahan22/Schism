@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "QJCGSaAMHXI=",
+  "dgSpecHash": "Y61tH8OfdWE=",
   "success": true,
-  "projectFilePath": "C:\\Users\\lmcmahan\\OneDrive - Precision Valve and Automation\\Desktop\\Visual Studio Projects\\Projects\\Schism\\Schism.csproj",
+  "projectFilePath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Schism.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.1\\microsoft.extensions.dependencyinjection.abstractions.8.0.1.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.xaml.behaviors.wpf\\1.1.122\\microsoft.xaml.behaviors.wpf.1.1.122.nupkg.sha512",
