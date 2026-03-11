@@ -88,3 +88,5 @@ C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Schism.pdb
 C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Schism.genruntimeconfig.cache
 C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\ref\Schism.dll
 C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Images\PVALogo.png
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\About.g.cs
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\About.baml

@@ -1,4 +1,5 @@
-﻿using Schism.Views;
+﻿using Schism.ViewModels;
+using Schism.Views;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
@@ -21,7 +22,7 @@ namespace Schism
         // Registers types with the dependency injection container. This method is called during application initialization.
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-
+            containerRegistry.RegisterDialog<About, AboutViewModel>();
         }
 
         // Configures the module catalog, which is responsible for managing the modules in the application. This method is called during application initialization.

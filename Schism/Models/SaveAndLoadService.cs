@@ -72,7 +72,8 @@ namespace Schism.Models
         }
         public SaveData Load()
         {
-            SaveData sD = new SaveData();
+
+            SaveData? lD = new SaveData();
 
             var openFileDialog = new OpenFileDialog();
 
@@ -85,32 +86,30 @@ namespace Schism.Models
             // Show open file dialog box
             bool? result = openFileDialog.ShowDialog();
 
+            
+
             // Process open file dialog box results
             if (result == true)
             {
                 string json = File.ReadAllText(openFileDialog.FileName);
-                var data = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-                if (data != null)
+                var options = new JsonSerializerOptions
                 {
-                    sD.SaveLength = Convert.ToInt32(data["SaveLength"]);
-                    sD.SaveStartAddress = Convert.ToInt32(data["SaveStartAddress"]);
-                    sD.SaveDeviceID = Convert.ToInt32(data["SaveDeviceID"]);
-                    sD.SaveASCIIEnable = Convert.ToBoolean(data["SaveASCIIEnable"]);
-                    sD.SaveDataType = data.TryGetValue("SaveDataType", out var saveDataType) && saveDataType != null
-                        ? Convert.ToString(saveDataType)!
-                        : string.Empty;
-                    sD.SaveNumericBase = data.TryGetValue("SaveNumericBase", out var saveNumericBase) && saveNumericBase != null
-                        ? Convert.ToString(saveNumericBase)!
-                        : string.Empty;
-                    sD.SaveEndian = data.TryGetValue("SaveEndian", out var saveEndian) && saveEndian != null
-                        ? Convert.ToString(saveEndian)!
-                        : string.Empty;
-                    sD.SaveADisplayType = data.TryGetValue("SaveADisplayType", out var saveADisplayType) && saveADisplayType != null
-                        ? Convert.ToString(saveADisplayType)!
-                        : string.Empty;
+                    UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow
+                };
+
+                try {
+                    lD = JsonSerializer.Deserialize<SaveData>(json, options);
+                }
+                catch
+                {
+                    MessageBox.Show("Failed to load the file. The file may be corrupted or not in the correct format.");
                 }
             }
-            return sD;
+
+            if(lD != null)
+                return lD;
+            else
+                return new SaveData();
         }
     }
 }

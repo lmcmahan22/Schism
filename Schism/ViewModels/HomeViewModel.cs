@@ -1,16 +1,10 @@
-﻿using Schism.Models;
-using System;
-using System.Collections.Generic;
+﻿using Prism.Ioc;
+using Prism.Navigation.Regions;
+using Schism.Models;
+using Schism.Views;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Xml.Linq;
 
 namespace Schism.ViewModels
 {
@@ -393,25 +387,19 @@ namespace Schism.ViewModels
             SaveData lD = SNL.Load();
 
             // Update ViewModel properties with loaded data
-            SetProperty(ref _deviceID, lD.SaveDeviceID);
-            SetProperty(ref _startAddress, lD.SaveStartAddress);
-            SetProperty(ref _length, lD.SaveLength);
-            SetProperty(ref _selectedDataType, lD.SaveDataType);
-            SetProperty(ref _selectedNumericBase, lD.SaveNumericBase);
-            SetProperty(ref _selectedEndian, lD.SaveEndian);
-            SetProperty(ref _asciiEnable, lD.SaveASCIIEnable);
-            SetProperty(ref _selectedADisplayType, lD.SaveADisplayType);
+            // NOTE: Setting the public instances of variables runs the logic in the setters implicitly! ;)
+            this.DeviceID = lD.SaveDeviceID;
+            this.Length = lD.SaveLength;
+            this.StartAddress = lD.SaveStartAddress;
+            this.SelectedDataType = lD.SaveDataType;
+            this.SelectedNumericBase = lD.SaveNumericBase;
+            this.SelectedEndian = lD.SaveEndian;
+            this.ASCIIEnable = lD.SaveASCIIEnable;
+            this.ADisplayTypeDropDown = lD.SaveASCIIEnable ? Visibility.Visible : Visibility.Hidden; // Ensure the ADisplayType dropdown visibility is consistent with the loaded ASCIIEnable value
+            this.SelectedADisplayType = lD.SaveADisplayType;
 
             // Update UI as needed
             UpdateColsVisAndNotify();
-            OnPropertyChanged(nameof(DeviceID));
-            OnPropertyChanged(nameof(StartAddress));
-            OnPropertyChanged(nameof(Length));
-            OnPropertyChanged(nameof(SelectedDataType));
-            OnPropertyChanged(nameof(SelectedNumericBase));
-            OnPropertyChanged(nameof(SelectedEndian));
-            OnPropertyChanged(nameof(ASCIIEnable));
-            OnPropertyChanged(nameof(SelectedADisplayType));
         }
 
         public DelegateCommand Exit_Click =>
@@ -476,6 +464,8 @@ namespace Schism.ViewModels
         void Execute_About_Click()
         {
             // TODO: Implement About dialog
+            ContainerRegistry.RegisterForNavigation<TargetView>("About");
+            region.RegisterViewWithRegion("ContentRegion", typeof(Home));
         }
     }
 }
