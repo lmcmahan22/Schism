@@ -13,8 +13,8 @@ namespace Schism.ViewModels
         private string _version;
         private string _appName;
         private string _buildDate;
-        private string _appCopyright;
-        private string _appAuthor;
+        private string _copyright;
+        private string _author;
 
         public string Version
         {
@@ -28,16 +28,16 @@ namespace Schism.ViewModels
             set => SetProperty(ref _appName, value);
         }
 
-        public string AppCopyright
+        public string Copyright
         {
-            get => _appCopyright;
-            set => SetProperty(ref _appCopyright, value);
+            get => _copyright;
+            set => SetProperty(ref _copyright, value);
         }
 
-        public string AppAuthor
+        public string Author
         {
-            get => _appAuthor;
-            set => SetProperty(ref _appAuthor, value);
+            get => _author;
+            set => SetProperty(ref _author, value);
         }
 
         public string BuildDate
@@ -53,9 +53,9 @@ namespace Schism.ViewModels
             // Initialize properties with default values
             _version = "Version: 1.0.0";
             _buildDate = "Build Date: 04/01/2026";
-            _appName = "PVA MODBUS TCP Client Simulator";
-            _appCopyright = "©2026 Precision Valve & Automation, Inc.";
-            _appAuthor = "Author: Liam McMahan (Product Development)";
+            _appName = "MODBUS TCP Client Simulator";
+            _copyright = "©2026 Precision Valve & Automation, Inc.";
+            _author = "Author: Liam McMahan (Product Development)";
         }
 
         private DelegateCommand<Window> _closeButtonClick;

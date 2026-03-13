@@ -304,11 +304,16 @@ namespace Schism.ViewModels
             set { SetProperty(ref _aDisplayTypeDropDown, value); }
         }
 
+        private IDialogService _dialogService;
+
         // View Model constructor
-        public HomeViewModel()
+        public HomeViewModel(IDialogService dialogService)
         {
             // Ensure collection is populated with a header + Length rows
             BuildModbusDataPoints();
+
+            _dialogService = dialogService;
+            //NavigateCommand = new DelegateCommand(OnNavigate);
         }
 
         // Rebuilds the observable collection items so the UI sees the expected rows
@@ -464,8 +469,10 @@ namespace Schism.ViewModels
         void Execute_About_Click()
         {
             // TODO: Implement About dialog
-            ContainerRegistry.RegisterForNavigation<TargetView>("About");
-            region.RegisterViewWithRegion("ContentRegion", typeof(Home));
+            _dialogService.ShowDialog("MyDialog", new DialogParameters($"message=Hello"), result =>
+            {
+                var resultValue = result.Result;
+            });
         }
     }
 }

@@ -1,11 +1,15 @@
-﻿using Prism.Modularity;
+﻿using Prism.Ioc;
+using Prism.Modularity;
+using Prism.Navigation.Regions;
 using Prism.Unity;
+using Schism.ViewModels;
+using Schism.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Schism.Views;
+using System.Windows.Controls;
 
 namespace Schism
 {
@@ -15,14 +19,14 @@ namespace Schism
         // This method is called when the module is initialized. It is responsible for registering views with regions and performing any necessary setup for the module, all within a "Container" object.
         public void OnInitialized(IContainerProvider containerProvider)
         {
-            var region = containerProvider.Resolve<IRegionManager>();
-            region.RegisterViewWithRegion("ContentRegion", typeof(Home));
+            var regionManager = containerProvider.Resolve<IRegionManager>();
+            regionManager.RegisterViewWithRegion("ContentRegion", typeof(Home));
         }
 
         // This method is called to register types with the container. It is responsible for registering any services, view models, or other types that the module provides.
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            
+            containerRegistry.RegisterDialog<About, AboutViewModel>();
         }
     }
 }

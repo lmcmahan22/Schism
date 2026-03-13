@@ -5,7 +5,8 @@
              xmlns:prism="http://prismlibrary.com/"   
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewmodels="clr-namespace:Schism.ViewModels"
-             prism:ViewModelLocator.AutoWireViewModel="True">
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             Background="DarkGray" BorderBrush="Black" BorderThickness="10">
     <UserControl.Resources>
     </UserControl.Resources>
     <Grid>
@@ -23,24 +24,24 @@
             <Image Source="/Images/PVALogo.png" Width="150" Height="100" Margin="10" HorizontalAlignment="Left"/>
         </Grid>
         <Grid Grid.Row="0" Grid.Column="1">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="280">
-                <TextBlock Text="{Binding AppName}" FontSize="30" FontWeight="Bold" />
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Height="100">
+                <TextBlock Text="{Binding AppName}" FontSize="30" FontWeight="Bold" TextWrapping="Wrap"/>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="0" Grid.Column="2">
             <Button Content="X" 
-                HorizontalAlignment="Right" 
-                VerticalAlignment="Top"
-                Margin="10"
-                    Width="30" Height="30"
-                Command="{Binding CloseButtonClick}" CommandParameter="{Binding ElementName=About}"/>
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Top"
+                    Margin="20,10,0,0"
+                        Width="30" Height="30"
+                    Command="{Binding CloseButtonClick}" CommandParameter="{Binding ElementName=About}"/>
         </Grid>
         <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock Text="{Binding Version}" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Width="400" Margin="10,0,0,0">
+                <TextBlock Text="{Binding Version}" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
                 <TextBlock Text="{Binding BuildDate}" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
-                <TextBlock Text="{Binding Author}" FontStyle="Italic" />
-                <TextBlock Text="{Binding Copyright}" TextWrapping="Wrap" Width="400" Margin="0,0,0,10" />
+                <TextBlock Text="{Binding Author}" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
+                <TextBlock Text="{Binding Copyright}" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
             </StackPanel>
         </Grid>
     </Grid>
