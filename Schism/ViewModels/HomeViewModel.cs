@@ -436,7 +436,15 @@ namespace Schism.ViewModels
 
         void Execute_Sett_Click()
         {
-            // TODO: Implement settings dialog
+            // Create the Connection Settings window
+            Window connSettings = new Window
+            {
+                // Open the window
+                Content = new ConnSettings(),
+                SizeToContent = SizeToContent.WidthAndHeight,
+                Topmost = true
+            };
+            connSettings.ShowDialog();
         }
 
         public DelegateCommand ScanRt_Click =>
@@ -468,15 +476,14 @@ namespace Schism.ViewModels
 
         void Execute_About_Click()
         {
-            // TODO: Implement About window call
-
-            // Create the window
-            Window about = new Window();
-
-            // Open the window
-            about.Content = new About();
-            about.SizeToContent = SizeToContent.WidthAndHeight;
-            about.Topmost = true;
+            // Create the About window
+            Window about = new Window
+            {
+                // Open the window
+                Content = new About(),
+                SizeToContent = SizeToContent.WidthAndHeight,
+                Topmost = true
+            };
             about.ShowDialog();
         }
     }

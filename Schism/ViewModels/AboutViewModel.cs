@@ -10,11 +10,18 @@ namespace Schism.ViewModels
 {
     public class AboutViewModel:BindableBase, IDialogAware
     {
+        private string _title = "About";
         private string _version;
         private string _appName;
         private string _buildDate;
         private string _copyright;
         private string _author;
+
+        public string Title
+        {
+            get { return _title; }
+            set { SetProperty(ref _title, value); }
+        }
 
         public string Version
         {

@@ -27,6 +27,7 @@ namespace Schism
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterDialog<About, AboutViewModel>();
+            containerRegistry.RegisterDialog<ConnSettings, ConnSettingsViewModel>();
         }
     }
 }
