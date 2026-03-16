@@ -468,11 +468,16 @@ namespace Schism.ViewModels
 
         void Execute_About_Click()
         {
-            // TODO: Implement About dialog
-            _dialogService.ShowDialog("MyDialog", new DialogParameters($"message=Hello"), result =>
-            {
-                var resultValue = result.Result;
-            });
+            // TODO: Implement About window call
+
+            // Create the window
+            Window about = new Window();
+
+            // Open the window
+            about.Content = new About();
+            about.SizeToContent = SizeToContent.WidthAndHeight;
+            about.Topmost = true;
+            about.ShowDialog();
         }
     }
 }

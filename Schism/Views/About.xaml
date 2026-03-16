@@ -6,7 +6,7 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewmodels="clr-namespace:Schism.ViewModels"
              prism:ViewModelLocator.AutoWireViewModel="True"
-             Background="DarkGray" BorderBrush="Black" BorderThickness="10">
+             Background="DarkGray">
     <UserControl.Resources>
     </UserControl.Resources>
     <Grid>
@@ -15,7 +15,6 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -27,14 +26,6 @@
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Height="100">
                 <TextBlock Text="{Binding AppName}" FontSize="30" FontWeight="Bold" TextWrapping="Wrap"/>
             </StackPanel>
-        </Grid>
-        <Grid Grid.Row="0" Grid.Column="2">
-            <Button Content="X" 
-                    HorizontalAlignment="Left" 
-                    VerticalAlignment="Top"
-                    Margin="20,10,0,0"
-                        Width="30" Height="30"
-                    Command="{Binding CloseButtonClick}" CommandParameter="{Binding ElementName=About}"/>
         </Grid>
         <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
             <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Width="400" Margin="10,0,0,0">

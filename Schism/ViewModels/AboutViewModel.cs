@@ -58,30 +58,21 @@ namespace Schism.ViewModels
             _author = "Author: Liam McMahan (Product Development)";
         }
 
-        private DelegateCommand<Window> _closeButtonClick;
-        public DelegateCommand<Window> CloseButtonClick =>
-            _closeButtonClick ?? (_closeButtonClick = new DelegateCommand<Window>(ExecuteCloseButtonClick));
-
         public DialogCloseListener RequestClose => throw new NotImplementedException();
-
-        private void ExecuteCloseButtonClick(Window? w)
-        {
-            w.Close();
-        }
 
         public bool CanCloseDialog()
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public void OnDialogClosed()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }
