@@ -92,3 +92,6 @@ C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\About.g.cs
 C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\About.baml
 C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\ConnSettings.g.cs
 C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\ConnSettings.baml
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\Themes.g.cs
+C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\NModbus.dll
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\Themes.baml

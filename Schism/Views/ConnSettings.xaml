@@ -1,12 +1,13 @@
 ﻿<UserControl x:Class="Schism.Views.ConnSettings"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Schism.Views"
-             mc:Ignorable="d" 
+             xmlns:prism="http://prismlibrary.com/"   
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:viewmodels="clr-namespace:Schism.ViewModels"
+             prism:ViewModelLocator.AutoWireViewModel="True"
              Width="500" Height="270"
              Background="DarkGray">
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>

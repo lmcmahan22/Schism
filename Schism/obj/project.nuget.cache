@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "E87GEHB5lf8=",
+  "dgSpecHash": "Nm01gctcFrk=",
   "success": true,
   "projectFilePath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Schism.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.1\\microsoft.extensions.dependencyinjection.abstractions.8.0.1.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.xaml.behaviors.wpf\\1.1.122\\microsoft.xaml.behaviors.wpf.1.1.122.nupkg.sha512",
+    "C:\\Users\\lmcmahan\\.nuget\\packages\\nmodbus\\3.0.81\\nmodbus.3.0.81.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\prism.container.abstractions\\9.0.106\\prism.container.abstractions.9.0.106.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\prism.container.unity\\9.0.106\\prism.container.unity.9.0.106.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\prism.core\\9.0.537\\prism.core.9.0.537.nupkg.sha512",

@@ -55,11 +55,11 @@ namespace Schism.ViewModels
         private DelegateCommand? _connClick;
         private DelegateCommand? _discClick;
         private DelegateCommand? _settClick;
-        private DelegateCommand? _scanRtClick;
         private DelegateCommand? _insErrClick;
         private DelegateCommand? _themesClick;
         private DelegateCommand? _aboutClick;
 
+        // Make into a singleton, along with the Themes Service???
         private SaveAndLoadService SNL = new SaveAndLoadService();
 
         // Public property getters and setters
@@ -447,14 +447,6 @@ namespace Schism.ViewModels
             connSettings.ShowDialog();
         }
 
-        public DelegateCommand ScanRt_Click =>
-            _scanRtClick ??= new DelegateCommand(Execute_ScanRt_Click);
-
-        void Execute_ScanRt_Click()
-        {
-            // TODO: Implement scan rate dialog
-        }
-
         public DelegateCommand InsErr_Click =>
             _insErrClick ??= new DelegateCommand(Execute_InsErr_Click);
 
@@ -468,7 +460,15 @@ namespace Schism.ViewModels
 
         void Execute_Themes_Click()
         {
-            // TODO: Implement theme selection dialog
+            // Create the About window
+            Window themes = new Window
+            {
+                // Open the window
+                Content = new Themes(),
+                SizeToContent = SizeToContent.WidthAndHeight,
+                Topmost = true
+            };
+            themes.ShowDialog();
         }
 
         public DelegateCommand About_Click =>

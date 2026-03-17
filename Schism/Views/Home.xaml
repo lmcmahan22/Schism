@@ -4,7 +4,8 @@
              xmlns:prism="http://prismlibrary.com/"   
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewmodels="clr-namespace:Schism.ViewModels"
-             prism:ViewModelLocator.AutoWireViewModel="True">
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             Background="{Binding X}">
     <UserControl.Resources>
         <!-- Existing resources -->
         <CollectionViewSource x:Key="ShiftColumnView" Source="{Binding ShiftColumn}" />
@@ -100,7 +101,7 @@
                     <MenuItem Header="_Insert Error" Command="{Binding InsErr_Click}"/>
                 </MenuItem>
                 <MenuItem Header="_Customize">
-                    <MenuItem Header="_Themes (Pending)" Command="{Binding Themes_Click}"/>
+                    <MenuItem Header="_Themes" Command="{Binding Themes_Click}"/>
                 </MenuItem>
                 <MenuItem Header="_Help">
                     <MenuItem Header="_About" Command="{Binding About_Click}"/>
