@@ -13,6 +13,9 @@ namespace Schism.Models
         private bool _isDarkMode;
         private Brush _main;
         private Brush _accent;
+        private Brush _accent2;
+        private Brush _accent3;
+        private Brush _Text;
 
         public bool IsDarkMode
         {
@@ -34,6 +37,20 @@ namespace Schism.Models
             get { return _accent; }
         }
 
+        public Brush Accent2 
+        {
+            get { return _accent2; }
+        }
+
+        public Brush Accent3 
+        {
+            get { return _accent3; }
+        }
+        public Brush Text 
+        {
+            get { return _Text; }
+        }
+
         public ThemeService() {
 
             _isDarkMode = true; // Default to dark mode
@@ -45,13 +62,19 @@ namespace Schism.Models
         {
             if(_isDarkMode)
             {
-                _main = new SolidColorBrush(Color.FromArgb(255, 30, 30, 30));
-                _accent = new SolidColorBrush(Color.FromArgb(255, 45, 45, 45));
+                _main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
+                _accent = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
+                _accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
+                _accent3 = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180));
+                _Text = new SolidColorBrush(Color.FromArgb(255, 220, 220, 220));
             }
             else
             {
                 _main = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
                 _accent = new SolidColorBrush(Color.FromArgb(255, 220, 220, 220));
+                _accent2 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+                _accent3 = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180));
+                _Text = new SolidColorBrush(Color.FromArgb(255, 30, 30, 30));
             }
         }
     }

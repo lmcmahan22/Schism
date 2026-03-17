@@ -5,6 +5,7 @@ using Schism.Views;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Media;
 
 namespace Schism.ViewModels
 {
@@ -59,8 +60,10 @@ namespace Schism.ViewModels
         private DelegateCommand? _themesClick;
         private DelegateCommand? _aboutClick;
 
-        // Make into a singleton, along with the Themes Service???
-        private SaveAndLoadService SNL = new SaveAndLoadService();
+        // Service Singletons (see App.xml)
+        private readonly SaveAndLoadService SNL = new SaveAndLoadService();
+        private readonly ThemeService TS = new ThemeService();
+        private readonly MODBUSService MS = new MODBUSService();
 
         // Public property getters and setters
         public string Title
@@ -124,6 +127,30 @@ namespace Schism.ViewModels
                     OnPropertyChanged();
                 }
             }
+        }
+
+        public Brush MainColor
+        {
+            get { return TS.Main; }
+        }
+        public Brush AccentOne
+        {
+            get { return TS.Accent; }
+        }
+
+        public Brush AccentTwo
+        {
+            get { return TS.Accent2; }
+        }
+
+        public Brush AccentThree
+        {
+            get { return TS.Accent3; }
+        }
+
+        public Brush TextColor
+        {
+            get { return TS.Text; }
         }
 
         private void UpdateColsVisAndNotify()

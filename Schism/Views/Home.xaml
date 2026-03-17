@@ -5,7 +5,7 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewmodels="clr-namespace:Schism.ViewModels"
              prism:ViewModelLocator.AutoWireViewModel="True"
-             Background="{Binding X}">
+             Background="{Binding MainColor}">
     <UserControl.Resources>
         <!-- Existing resources -->
         <CollectionViewSource x:Key="ShiftColumnView" Source="{Binding ShiftColumn}" />
@@ -25,17 +25,17 @@
                 </Grid.RowDefinitions>
 
                 <!-- Header row: Alias + dynamic column header bound to the hosting ContentControl.Tag -->
-                <Border BorderBrush="Black" BorderThickness="0,0,1,1" Background="#FFFF" Grid.Row="0">
+                <Border BorderBrush="{Binding AccentThree}" BorderThickness="0,0,1,1" Background="{Binding AccentTwo}" Grid.Row="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="100" />
                             <ColumnDefinition Width="100" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Padding="4,0" BorderBrush="Black" BorderThickness="0,0,1,0">
+                        <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding AccentThree}" BorderThickness="0,0,1,0" >
                             <TextBlock Text="Alias" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"/>
                         </Border>
-                        <Border Grid.Column="1" Padding="4,0" BorderBrush="Black" BorderThickness="0,0,1,0">
+                        <Border Grid.Column="1" Padding="4,0" BorderBrush="{Binding AccentThree}" BorderThickness="0,0,1,0">
                             <!-- Bind to the hosting ContentControl.Tag so each instance can supply its own address -->
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"
                                        Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}"/>
@@ -45,7 +45,7 @@
 
                 <!-- ItemsControl with alias + data columns.
                      The DataTemplate's DataContext is the collection passed as Content. -->
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False">
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" Background="{Binding AccentOne}">
                     <ItemsControl ItemsSource="{Binding}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -55,10 +55,10 @@
                                         <ColumnDefinition Width="98" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Padding="4,0" BorderBrush="Black" BorderThickness="0,0,1,1">
-                                        <TextBox Text="{Binding Alias, Mode=TwoWay}" VerticalAlignment="Center" BorderBrush="Transparent"/>
+                                    <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding AccentThree}" BorderThickness="0,0,1,1">
+                                        <TextBox Text="{Binding Alias, Mode=TwoWay}" VerticalAlignment="Center" Background="White"/>
                                     </Border>
-                                    <Border Grid.Column="1" Padding="4,0" BorderBrush="Black" BorderThickness="0,0,1,1">
+                                    <Border Grid.Column="1" Padding="4,0" BorderBrush="{Binding AccentThree}" BorderThickness="0,0,1,1">
                                         <TextBlock Text="{Binding Data}" VerticalAlignment="Center" />
                                     </Border>
                                 </Grid>
@@ -88,13 +88,13 @@
                 <MenuItem Header="_File">
                     <MenuItem Header="_Save Config" Command="{Binding Save_Click}"/>
                     <MenuItem Header="_Load Config" Command="{Binding Load_Click}"/>
-                    <Separator />
+                    <Separator Background="{Binding AccentThree}"/>
                     <MenuItem Header="_Exit App" Command="{Binding Exit_Click}"/>
                 </MenuItem>
                 <MenuItem Header="_Connection">
                     <MenuItem Header="_Connect" Command="{Binding Conn_Click}"/>
                     <MenuItem Header="_Disconnect" Command="{Binding Disc_Click}"/>
-                    <Separator />
+                    <Separator Background="{Binding AccentThree}"/>
                     <MenuItem Header="_Settings" Command="{Binding Sett_Click}"/>
                 </MenuItem>
                 <MenuItem Header="_Simulation">
@@ -115,7 +115,7 @@
             <Button Name="Load" ToolTip="Load Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="55,5,0,0" Command="{Binding Load_Click}">
                 <Image Source="/Images/Load.png" />
             </Button>
-            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="100,5,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="2" Height="25" Background="Black"/>
+            <Separator Background="{Binding AccentThree}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="100,5,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="2" Height="25"/>
             <Button Name="Connect" ToolTip="Connect" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="107,5,0,0" Command="{Binding Conn_Click}">
                 <Image Source="/Images/Connect.png" />
             </Button>
@@ -131,7 +131,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
-                <Border BorderBrush="Black" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5">
+                <Border BorderBrush="{Binding AccentThree}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5">
                     <StackPanel>
                         <TextBlock Text="Device Settings" FontSize="16" FontWeight="Bold" />
                         <Grid>
@@ -165,7 +165,7 @@
                 </Border>
             </Grid>
             <Grid Grid.Column="1">
-                <Border BorderBrush="Black" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5">
+                <Border BorderBrush="{Binding AccentThree}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5">
                     <StackPanel>
                         <TextBlock Text="Display Options" FontSize="16" FontWeight="Bold" />
                         <Grid Margin="5,0,0,0">
@@ -204,7 +204,7 @@
             </Grid>
         </Grid>
         <Grid Grid.Row="3">
-            <Border BorderBrush="Black" BorderThickness="1" Margin="10,5,40,5" CornerRadius="1">
+            <Border BorderBrush="{Binding AccentThree}" BorderThickness="1" Margin="10,5,40,5" CornerRadius="1">
                 <StackPanel>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -248,7 +248,7 @@
                             </Grid.RowDefinitions>
 
                             <!-- Header -->
-                            <Border BorderBrush="Black" BorderThickness="0,0,1,1" Background="#FFF" Grid.Row="0">
+                            <Border BorderBrush="{Binding AccentThree}" BorderThickness="0,0,1,1" Background="{Binding AccentTwo}" Grid.Row="0">
                                 <TextBlock Text="Shift" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
                             </Border>
 
@@ -265,8 +265,8 @@
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="21"/>
                                                 </Grid.RowDefinitions>
-                                                <Border BorderBrush="Black" BorderThickness="0,0,1,1" Background="#FFF" Grid.Row="0">
-                                                    <TextBlock Text="{Binding Value}" VerticalAlignment="Center"/>
+                                                <Border BorderBrush="{Binding AccentThree}" BorderThickness="0,0,1,1" Grid.Row="0">
+                                                    <TextBlock Text="{Binding Value}" VerticalAlignment="Center" Background="{Binding AccentOne}"/>
                                                 </Border>
                                             </Grid>
                                         </DataTemplate>
@@ -317,7 +317,7 @@
             </Border>
         </Grid>
         <Grid Grid.Row="4">
-            <Border BorderBrush="Black" BorderThickness="1" Margin="10,5,40,5" CornerRadius="1">
+            <Border BorderBrush="{Binding AccentThree}" BorderThickness="1" Margin="10,5,40,5" CornerRadius="1">
                 <StackPanel>
                     <Grid>
                         <Grid.RowDefinitions>
