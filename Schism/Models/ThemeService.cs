@@ -54,8 +54,11 @@ namespace Schism.Models
         public ThemeService() {
 
             _isDarkMode = true; // Default to dark mode
-            UpdateTheme();
-
+            _main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
+            _accent = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
+            _accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
+            _accent3 = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180));
+            _Text = new SolidColorBrush(Color.FromArgb(255, 220, 220, 220));
         }
 
         private void UpdateTheme()

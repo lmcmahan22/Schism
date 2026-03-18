@@ -5,6 +5,7 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewmodels="clr-namespace:Schism.ViewModels"
              prism:ViewModelLocator.AutoWireViewModel="True"
+             Height="720" Width="1280"
              Background="{Binding MainColor}">
     <UserControl.Resources>
         <!-- Existing resources -->
@@ -25,17 +26,19 @@
                 </Grid.RowDefinitions>
 
                 <!-- Header row: Alias + dynamic column header bound to the hosting ContentControl.Tag -->
-                <Border BorderBrush="{Binding AccentThree}" BorderThickness="0,0,1,1" Background="{Binding AccentTwo}" Grid.Row="0">
+                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThree}" BorderThickness="0,0,1,1" Grid.Row="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="100" />
                             <ColumnDefinition Width="100" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding AccentThree}" BorderThickness="0,0,1,0" >
+                        <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThree}" 
+                                BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentTwo}" >
                             <TextBlock Text="Alias" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"/>
                         </Border>
-                        <Border Grid.Column="1" Padding="4,0" BorderBrush="{Binding AccentThree}" BorderThickness="0,0,1,0">
+                        <Border Grid.Column="1" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThree}"
+                                BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentTwo}">
                             <!-- Bind to the hosting ContentControl.Tag so each instance can supply its own address -->
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"
                                        Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}"/>
@@ -45,20 +48,22 @@
 
                 <!-- ItemsControl with alias + data columns.
                      The DataTemplate's DataContext is the collection passed as Content. -->
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" Background="{Binding AccentOne}">
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False">
                     <ItemsControl ItemsSource="{Binding}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid Height="21">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="100" />
-                                        <ColumnDefinition Width="98" />
+                                        <ColumnDefinition Width="100" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding AccentThree}" BorderThickness="0,0,1,1">
+                                    <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThree}"
+                                            Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentOne}" BorderThickness="0,0,1,1">
                                         <TextBox Text="{Binding Alias, Mode=TwoWay}" VerticalAlignment="Center" Background="White"/>
                                     </Border>
-                                    <Border Grid.Column="1" Padding="4,0" BorderBrush="{Binding AccentThree}" BorderThickness="0,0,1,1">
+                                    <Border Grid.Column="1" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThree}"
+                                            Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentOne}" BorderThickness="0,0,1,1">
                                         <TextBlock Text="{Binding Data}" VerticalAlignment="Center" />
                                     </Border>
                                 </Grid>
@@ -127,13 +132,13 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
-                <Border BorderBrush="{Binding AccentThree}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5">
+                <Border BorderBrush="{Binding AccentThree}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding AccentOne}">
                     <StackPanel>
-                        <TextBlock Text="Device Settings" FontSize="16" FontWeight="Bold" />
+                        <TextBlock Text="Device Settings" FontSize="16" FontWeight="Bold"/>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30" />
@@ -146,7 +151,7 @@
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Row="0" Grid.Column="0">
                                 <TextBlock Text="Device ID" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <TextBox Text="{Binding DeviceID, UpdateSourceTrigger=LostFocus}" Margin="70,0,0,2" Width="60" Height="26" MaxLength="3" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14" TextChanged="TextBox_TextChanged"/>
+                                <TextBox Text="{Binding DeviceID, UpdateSourceTrigger=LostFocus}" Margin="70,0,0,2" Width="60" Height="26" MaxLength="3" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14"/>
                             </Grid>
                             <Grid Grid.Row="0" Grid.Column="1">
                                 <TextBlock Text="Length" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
@@ -165,9 +170,9 @@
                 </Border>
             </Grid>
             <Grid Grid.Column="1">
-                <Border BorderBrush="{Binding AccentThree}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5">
+                <Border BorderBrush="{Binding AccentThree}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding AccentOne}">
                     <StackPanel>
-                        <TextBlock Text="Display Options" FontSize="16" FontWeight="Bold" />
+                        <TextBlock Text="Display Options" FontSize="16" FontWeight="Bold"/>
                         <Grid Margin="5,0,0,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30"/>
@@ -200,11 +205,11 @@
                 </Border>
             </Grid>
             <Grid Grid.Column="2">
-                <Image Source="/Images/PVALogo.png" HorizontalAlignment="Right"/>
+                <Image Source="/Images/PVALogo.png" HorizontalAlignment="Center" Margin="70,0,0,0"/>
             </Grid>
         </Grid>
         <Grid Grid.Row="3">
-            <Border BorderBrush="{Binding AccentThree}" BorderThickness="1" Margin="10,5,40,5" CornerRadius="1">
+            <Border BorderBrush="{Binding AccentThree}" BorderThickness="1" Margin="10,5,20,5" CornerRadius="1">
                 <StackPanel>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -253,7 +258,7 @@
                             </Border>
 
                             <!-- ItemsControl wrapped in ScrollViewer to mimic DataGrid scrolling -->
-                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" HorizontalAlignment="Center">
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Disabled" CanContentScroll="False" HorizontalAlignment="Center">
                                 <ItemsControl ItemsSource="{Binding Source={StaticResource ShiftColumnView}}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
@@ -265,8 +270,9 @@
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="21"/>
                                                 </Grid.RowDefinitions>
-                                                <Border BorderBrush="{Binding AccentThree}" BorderThickness="0,0,1,1" Grid.Row="0">
-                                                    <TextBlock Text="{Binding Value}" VerticalAlignment="Center" Background="{Binding AccentOne}"/>
+                                                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThree}"
+                                                        Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentOne}" BorderThickness="0,0,1,1">
+                                                    <TextBlock Text="{Binding Value}" VerticalAlignment="Center" />
                                                 </Border>
                                             </Grid>
                                         </DataTemplate>
@@ -277,37 +283,37 @@
 
                         <!-- Replace repeated MODBUS column blocks with ContentControls using the template.
                              Each ContentControl sets Tag to a distinct Address property so the template can read it. -->
-                        <ContentControl Grid.Row="0" Grid.Column="1" Grid.RowSpan="21" Margin="0,0,2,0"
+                        <ContentControl Grid.Row="0" Grid.Column="1" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[0]}"
                                         Content="{Binding MODBUSDataPoints[0]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[0], RelativeSource={RelativeSource AncestorType=UserControl}}" />
 
-                        <ContentControl Grid.Row="0" Grid.Column="2" Grid.RowSpan="21" Margin="0,0,2,0"
+                        <ContentControl Grid.Row="0" Grid.Column="2" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[1]}"
                                         Content="{Binding MODBUSDataPoints[1]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[1], RelativeSource={RelativeSource AncestorType=UserControl}}" />
 
-                        <ContentControl Grid.Row="0" Grid.Column="3" Grid.RowSpan="21" Margin="0,0,2,0"
+                        <ContentControl Grid.Row="0" Grid.Column="3" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[2]}"
                                         Content="{Binding MODBUSDataPoints[2]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[2], RelativeSource={RelativeSource AncestorType=UserControl}}" />
 
-                        <ContentControl Grid.Row="0" Grid.Column="4" Grid.RowSpan="21" Margin="0,0,2,0"
+                        <ContentControl Grid.Row="0" Grid.Column="4" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[3]}"
                                         Content="{Binding MODBUSDataPoints[3]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[3], RelativeSource={RelativeSource AncestorType=UserControl}}" />
 
-                        <ContentControl Grid.Row="0" Grid.Column="5" Grid.RowSpan="21" Margin="0,0,2,0"
+                        <ContentControl Grid.Row="0" Grid.Column="5" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[4]}"
                                         Content="{Binding MODBUSDataPoints[4]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[4], RelativeSource={RelativeSource AncestorType=UserControl}}" />
 
-                        <ContentControl Grid.Row="0" Grid.Column="6" Grid.RowSpan="21" Margin="0,0,2,0"
+                        <ContentControl Grid.Row="0" Grid.Column="6" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[5]}"
                                         Content="{Binding MODBUSDataPoints[5]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
@@ -317,7 +323,7 @@
             </Border>
         </Grid>
         <Grid Grid.Row="4">
-            <Border BorderBrush="{Binding AccentThree}" BorderThickness="1" Margin="10,5,40,5" CornerRadius="1">
+            <Border BorderBrush="{Binding AccentThree}" BorderThickness="1" Margin="10,5,20,5" CornerRadius="1" Background="{Binding AccentOne}">
                 <StackPanel>
                     <Grid>
                         <Grid.RowDefinitions>
