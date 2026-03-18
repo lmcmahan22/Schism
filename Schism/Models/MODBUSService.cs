@@ -8,6 +8,15 @@ namespace Schism.Models
 {
     public class MODBUSService
     {
-        public MODBUSService() { }
+
+        // Singleton instance
+        private static readonly Lazy<MODBUSService> _instance = new(() => new MODBUSService());
+        public static MODBUSService Instance => _instance.Value;
+
+        // Constructor
+        public MODBUSService()
+        { 
+        
+        }
     }
 }

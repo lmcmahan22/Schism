@@ -14,7 +14,11 @@ namespace Schism.Models
 {
     public class SaveAndLoadService
     {
-        
+
+        // Singleton instance
+        private static readonly Lazy<SaveAndLoadService> _instance = new(() => new SaveAndLoadService());
+        public static SaveAndLoadService Instance => _instance.Value;
+
         public SaveAndLoadService()
         {
             // Constructor logic here

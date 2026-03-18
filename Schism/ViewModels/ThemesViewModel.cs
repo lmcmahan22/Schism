@@ -1,17 +1,28 @@
-﻿using System;
+﻿using Schism.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Schism.ViewModels
 {
-    public class ThemesViewModel : BindableBase, IDialogAware
+    public class ThemesViewModel : BindableBase
     {
+        // 
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            base.RaisePropertyChanged(propertyName);
+        }
+
+        private readonly ThemeService _TS = ThemeService.Instance; // ThemeService is a singleton, so we access the instance directly
+
         private string _title = "Themes";
         private ObservableCollection<string> _availableThemes;
-        private string _selectedTheme;
 
         public string Title
         {
@@ -27,8 +38,14 @@ namespace Schism.ViewModels
 
         public string SelectedTheme
         {
-            get { return _selectedTheme; }
-            set { SetProperty(ref _selectedTheme, value); }
+            get { return _TS.SelectedTheme; }
+            set             {
+                if (_TS.SelectedTheme != value)
+                {
+                    _TS.SelectedTheme = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public ThemesViewModel()
@@ -40,10 +57,7 @@ namespace Schism.ViewModels
                 "Dark",
                 "Light"
             };
-            _selectedTheme = _availableThemes.FirstOrDefault();
         }
-
-        public DialogCloseListener RequestClose => throw new NotImplementedException();
 
         public bool CanCloseDialog()
         {

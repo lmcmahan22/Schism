@@ -3,6 +3,7 @@ using Prism.Navigation.Regions;
 using Schism.Models;
 using Schism.Views;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
@@ -61,9 +62,9 @@ namespace Schism.ViewModels
         private DelegateCommand? _aboutClick;
 
         // Service Singletons (see App.xml)
-        private readonly SaveAndLoadService SNL = new SaveAndLoadService();
-        private readonly ThemeService TS = new ThemeService();
-        private readonly MODBUSService MS = new MODBUSService();
+        private readonly SaveAndLoadService _SNL = SaveAndLoadService.Instance; // SaveAndLoadService is a singleton, so we access the instance directly
+        private readonly ThemeService _TS = ThemeService.Instance; // ThemeService is a singleton, so we access the instance directly
+        private readonly MODBUSService _MS = MODBUSService.Instance; // MODBUSService is a singleton, so we access the instance directly
 
         // Public property getters and setters
         public string Title
@@ -131,43 +132,26 @@ namespace Schism.ViewModels
 
         public Brush MainColor
         {
-            get { return TS.Main; }
+            get { return _TS.Main; }
         }
-        public Brush AccentOne
+        public Brush AccentOneColor
         {
-            get { return TS.Accent; }
-        }
-
-        public Brush AccentTwo
-        {
-            get { return TS.Accent2; }
+            get { return _TS.Accent1; }
         }
 
-        public Brush AccentThree
+        public Brush AccentTwoColor
         {
-            get { return TS.Accent3; }
+            get { return _TS.Accent2; }
+        }
+
+        public Brush AccentThreeColor
+        {
+            get { return _TS.Accent3; }
         }
 
         public Brush TextColor
         {
-            get { return TS.Text; }
-        }
-
-        private void UpdateColsVisAndNotify()
-        {
-            for (int i = 0; i < MODBUSDataPoints.Length; i++)
-            {
-                _colsVis[i] = _length > (i * 20) ? Visibility.Visible : Visibility.Collapsed;
-            }
-
-            // Notify the UI that the ColsVis contents changed
-            OnPropertyChanged(nameof(ColsVis));
-        }
-
-        private int GetMaxLengthForStartAddress()
-        {
-            int cap = (65535 - _startAddress) + 1; // inclusive cap
-            return Math.Min(120, cap);
+            get { return _TS.Text; }
         }
 
         public int StartAddress
@@ -331,16 +315,54 @@ namespace Schism.ViewModels
             set { SetProperty(ref _aDisplayTypeDropDown, value); }
         }
 
-        private IDialogService _dialogService;
-
-        // View Model constructor
+        // ViewModel constructor
         public HomeViewModel(IDialogService dialogService)
         {
+            _TS.PropertyChanged += Themes_PropertyChanged; // Subscribe to the PropertyChanged event of the ThemeService singleton to react to theme changes
+
             // Ensure collection is populated with a header + Length rows
             BuildModbusDataPoints();
+        }
 
-            _dialogService = dialogService;
-            //NavigateCommand = new DelegateCommand(OnNavigate);
+        private void Themes_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(_TS.Main))
+            {
+                OnPropertyChanged(nameof(MainColor));
+            }
+            if (e.PropertyName == nameof(_TS.Accent1))
+            {
+                OnPropertyChanged(nameof(AccentOneColor));
+            }
+            if (e.PropertyName == nameof(_TS.Accent2))
+            {
+                OnPropertyChanged(nameof(AccentTwoColor));
+            }
+            if (e.PropertyName == nameof(_TS.Accent3))
+            {
+                OnPropertyChanged(nameof(AccentThreeColor));
+            }
+            if (e.PropertyName == nameof(_TS.Text))
+            {
+                OnPropertyChanged(nameof(TextColor));
+            }
+        }
+
+        private void UpdateColsVisAndNotify()
+        {
+            for (int i = 0; i < MODBUSDataPoints.Length; i++)
+            {
+                _colsVis[i] = _length > (i * 20) ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            // Notify the UI that the ColsVis contents changed
+            OnPropertyChanged(nameof(ColsVis));
+        }
+
+        private int GetMaxLengthForStartAddress()
+        {
+            int cap = (65535 - _startAddress) + 1; // inclusive cap
+            return Math.Min(120, cap);
         }
 
         // Rebuilds the observable collection items so the UI sees the expected rows
@@ -408,7 +430,7 @@ namespace Schism.ViewModels
                 SaveASCIIEnable = this.ASCIIEnable,
                 SaveADisplayType = this.SelectedADisplayType
             };
-            SNL.Save(sD);
+            _SNL.Save(sD);
         }
 
         public DelegateCommand Load_Click =>
@@ -416,7 +438,7 @@ namespace Schism.ViewModels
 
         void Execute_Load_Click()
         {
-            SaveData lD = SNL.Load();
+            SaveData lD = _SNL.Load();
 
             // Update ViewModel properties with loaded data
             // NOTE: Setting the public instances of variables runs the logic in the setters implicitly! ;)
