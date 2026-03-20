@@ -1,9 +1,13 @@
 ﻿using NModbus;
 using NModbus.Extensions.Enron;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
-using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Schism.Models
 {
@@ -14,8 +18,15 @@ namespace Schism.Models
     // - The below methods allow for different times of data polling. Connect these methods to the UI and allow users to select which one they want to use.
     // - Implement error injection, if not already here
 
-    public class MODBUSService
+    public class MODBUSService : INotifyPropertyChanged
     {
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         // Singleton instance
         private static readonly Lazy<MODBUSService> _instance = new(() => new MODBUSService());
@@ -38,6 +49,7 @@ namespace Schism.Models
         private ushort _length;
         private ushort _startAddress; // Don't worry about leading zeros, Radzio just interprets a value without leading zeros as having leading zeroes (i.e. output coil range). Don't worry aboout "Global Data" either, since again Radzio doesn't bother.
         private bool _asciiEnable;
+        private bool _isConnected;
         private string _selectedDataType;
         private string _selectedNumericBase;
         private string _selectedEndian;
@@ -146,6 +158,12 @@ namespace Schism.Models
             set => _asciiEnable = value;
         }
 
+        public bool IsConnected
+        {
+            get => _isConnected;
+            set => _isConnected = value;
+        }
+
         public ObservableCollection<string> DataType => _dataType;
         public ObservableCollection<string> NumericBase => _numericBase;
         public ObservableCollection<string> Endian => _endian;
@@ -176,7 +194,18 @@ namespace Schism.Models
         }
 
         // Results Collection
-        public ObservableCollection<string> results = new ObservableCollection<string>();
+        private ObservableCollection<StringWrapper>[] _results = new ObservableCollection<StringWrapper>[6];
+
+        public ObservableCollection<StringWrapper>[] Results
+        {
+            get => _results;
+            set
+            {
+                _results = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         // Consutrctor
         private MODBUSService()
@@ -204,11 +233,11 @@ namespace Schism.Models
             SelectedADisplayType = ADisplayType.First();
         }
 
-        public async Task<int> Connection(){
+        public void Connection(){
 
             try
             {
-                await Task.Run(() => { });
+                Task.Run(() => { });
 
                 //ModbusTcpMasterReadHoldingRegisters32();
 
@@ -238,13 +267,8 @@ namespace Schism.Models
 
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                MessageBox.Show($"Application MODBUS Failure: \n" +  e.Message);
             }
-
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
-
-            return 0;
         }
 
         private void ReadCoils()
@@ -254,44 +278,40 @@ namespace Schism.Models
 
         private void ReadInputs()
         {
-            IPAddress address = new IPAddress(Encoding.UTF8.GetBytes(IpAddress));
-
-            // create and start the TCP slave
-            TcpListener slaveTcpListener = new TcpListener(address, TCPPort);
-            slaveTcpListener.Start();
-
-            // Create the MODBUS factory, which handles MODBUS operations
-            var factory = new ModbusFactory();
-            var network = factory.CreateSlaveNetwork(slaveTcpListener);
-            
-            // Initialize MODBUS slave object
-            IModbusSlave slave = factory.CreateSlave(DeviceID);
-            network.AddSlave(slave);
-            network.ListenAsync();
-
-            // create the master
-            TcpClient masterTcpClient = new TcpClient(address.ToString(), TCPPort);
-            IModbusMaster master = factory.CreateMaster(masterTcpClient);
-
-            // read five register values
-            ushort[] inputs = master.ReadInputRegisters(0, StartAddress, Length);
-
-            // TODO: Convert this into a list of data, dynamically sized.
-            // This will be carried up into the UI.
-
-            // Clear collection
-            results.Clear();
-
-            for (int i = 0; i < Length; i++)
+            IPAddress address = IPAddress.Parse(IpAddress);
+            using (TcpClient masterTcpClient = new TcpClient(address.ToString(), TCPPort))
             {
-                results.Add(inputs[i].ToString());
+
+                // Create the MODBUS factory, which handles MODBUS operations
+                var factory = new ModbusFactory();
+                IModbusMaster master = factory.CreateMaster(masterTcpClient);
+                this.IsConnected = true;
+
+                // read five register values
+                bool[] inputs = master.ReadInputs(0, StartAddress, Length);
+                int[] inputsConv = inputs.Select(Convert.ToInt32).ToArray(); // converts booleans to 1s and 0s
+
+                // Clear the collection
+                for (int i = 0; i < Results.Length; i++)
+                {
+                    if (Results[i] == null)
+                    {
+                        Results[i] = new ObservableCollection<StringWrapper>();
+                    }
+                    Results[i].Clear();
+                }
+
+                // Update the collection
+                for (int i = 0; i < Length; i++)
+                {
+                    Results[i / 20].Add(new StringWrapper(inputsConv[i].ToString()));
+                }
+
+                // Does closing the app also close and stop these?
+                masterTcpClient.Close();
+                this.IsConnected = false;
+
             }
-
-            // TODO: Instead of closing, poll repeatedly with respect to the polling period abvoe.
-            // Does closing the app also close and stop these?
-            masterTcpClient.Close();
-            slaveTcpListener.Stop();
-
         }
 
         private void ReadHoldingRegs()

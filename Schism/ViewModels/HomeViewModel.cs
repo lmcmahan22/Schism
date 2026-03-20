@@ -24,7 +24,6 @@ namespace Schism.ViewModels
         private string[] _addressList = new string[6] { "0", "20", "40", "60", "80", "100" };
         private ObservableCollection<StringWrapper> _shiftColumn = new ObservableCollection<StringWrapper>();
         private ObservableCollection<StringWrapper>[] _names = new ObservableCollection<StringWrapper>[6];
-        private ObservableCollection<StringWrapper>[] _results = new ObservableCollection<StringWrapper>[6];
 
         // Commands
         private DelegateCommand? _saveClick;
@@ -266,8 +265,15 @@ namespace Schism.ViewModels
 
         public ObservableCollection<StringWrapper>[] Results
         {
-            get { return _results; }
-            set { SetProperty(ref _results, value); }
+            get { return _MS.Results; }
+            set
+            {
+                if (_MS.Results != value)
+                {
+                    _MS.Results = value;
+                    OnPropertyChanged(nameof(Results));
+                }
+            }
         }
 
         public ObservableCollection<string> DataType
@@ -530,7 +536,7 @@ namespace Schism.ViewModels
         void Execute_Conn_Click()
         {
             // TODO: Implement connection logic
-            _ = _MS.Connection();
+            _MS.Connection();
         }
 
         public DelegateCommand Disc_Click =>

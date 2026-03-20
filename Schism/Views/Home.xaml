@@ -8,7 +8,6 @@
              Height="720" Width="1280"
              Background="{Binding MainColor, UpdateSourceTrigger=PropertyChanged}">
     <UserControl.Resources>
-        <!-- Existing resources -->
         <CollectionViewSource x:Key="ShiftColumnView" Source="{Binding ShiftColumn}" />
         <CollectionViewSource x:Key="MODBUS_N1" Source="{Binding Names[0]}" />
         <CollectionViewSource x:Key="MODBUS_R1" Source="{Binding Results[0]}" />
@@ -163,7 +162,24 @@
             </Button>
             <Separator Background="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="100,5,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="2" Height="25"/>
             <Button Name="Connect" ToolTip="Connect" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="107,5,0,0" Command="{Binding Conn_Click}">
-                <Image Source="/Images/Connect.png" />
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Content">
+                            <Setter.Value>
+                                <Image x:Name="BtnImg" Source="/Images/Connect.png"/>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <Image x:Name="BtnImgConn" Source="/Images/Connected.png"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
             </Button>
             <Button Name="Settings" ToolTip="Settings" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="152,5,0,0" Command="{Binding Sett_Click}">
                 <Image Source="/Images/Settings.png" />
