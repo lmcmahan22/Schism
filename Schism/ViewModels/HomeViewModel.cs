@@ -1,6 +1,4 @@
-﻿using Prism.Ioc;
-using Prism.Navigation.Regions;
-using Schism.Models;
+﻿using Schism.Models;
 using Schism.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -25,8 +23,8 @@ namespace Schism.ViewModels
         private Visibility _aDisplayTypeDropDown = Visibility.Hidden;
         private string[] _addressList = new string[6] { "0", "20", "40", "60", "80", "100" };
         private ObservableCollection<StringWrapper> _shiftColumn = new ObservableCollection<StringWrapper>();
-        private ObservableCollection<StringWrapper> _names = new ObservableCollection<StringWrapper>();
-        private ObservableCollection<StringWrapper> _results = new ObservableCollection<StringWrapper>();
+        private ObservableCollection<StringWrapper>[] _names = new ObservableCollection<StringWrapper>[6];
+        private ObservableCollection<StringWrapper>[] _results = new ObservableCollection<StringWrapper>[6];
 
         // Commands
         private DelegateCommand? _saveClick;
@@ -260,13 +258,13 @@ namespace Schism.ViewModels
             set { SetProperty(ref _shiftColumn, value); }
         }
 
-        public ObservableCollection<StringWrapper> Names
+        public ObservableCollection<StringWrapper>[] Names
         {
             get { return _names; }
             set { SetProperty(ref _names, value); }
         }
 
-        public ObservableCollection<StringWrapper> Results
+        public ObservableCollection<StringWrapper>[] Results
         {
             get { return _results; }
             set { SetProperty(ref _results, value); }
@@ -431,18 +429,26 @@ namespace Schism.ViewModels
             {
                 ShiftColumn = new ObservableCollection<StringWrapper>();
             }
-            if (Names == null)
-            {
-                Names = new ObservableCollection<StringWrapper>();
-            }
-            if (Results == null)
-            {
-                Results = new ObservableCollection<StringWrapper>();
-            }
 
             ShiftColumn.Clear();
-            Names.Clear();
-            Results.Clear();
+
+            for (int i = 0; i < Names.Length; i++)
+            {
+                if (Names[i] == null)
+                {
+                    Names[i] = new ObservableCollection<StringWrapper>();
+                }
+                Names[i].Clear();
+            }
+
+            for (int i = 0; i < Results.Length; i++)
+            {
+                if (Results[i] == null)
+                {
+                    Results[i] = new ObservableCollection<StringWrapper>();
+                }
+                Results[i].Clear();
+            }
 
             // Generate header shifts (always 20 rows with 1 header cell)
             for (int i = 0; i < 20; i++)
@@ -460,8 +466,8 @@ namespace Schism.ViewModels
                 {
                     string name = "";
                     string data = "0";
-                    Names.Add(new StringWrapper(name));
-                    Results.Add(new StringWrapper(data));
+                    Names[i].Add(new StringWrapper(name));
+                    Results[i].Add(new StringWrapper(data));
                 }
             }
         }

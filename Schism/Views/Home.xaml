@@ -83,7 +83,7 @@
                             <ColumnDefinition Width="100" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="1" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
+                        <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
                             BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentTwoColor, UpdateSourceTrigger=PropertyChanged}">
                             <!-- Bind to the hosting ContentControl.Tag so each instance can supply its own address -->
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"
@@ -103,7 +103,7 @@
                                         <ColumnDefinition Width="100" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="1" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
+                                    <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
                                         Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
                                         <TextBlock Text="{Binding Value}" VerticalAlignment="Center" />
                                     </Border>
