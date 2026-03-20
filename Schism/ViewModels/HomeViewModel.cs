@@ -240,7 +240,6 @@ namespace Schism.ViewModels
             get { return _MS.AsciiEnable; }
             set
             {
-
                 if (_MS.AsciiEnable != value)
                 {
                     _MS.AsciiEnable = value;
@@ -248,6 +247,19 @@ namespace Schism.ViewModels
                     OnPropertyChanged(nameof(ADisplayTypeDropDown));
                 }
                 OnPropertyChanged();
+            }
+        }
+
+        public bool IsConnected
+        {
+            get { return _MS.IsConnected; }
+            set
+            {
+                if (_MS.IsConnected != value)
+                {
+                    _MS.IsConnected = value;
+                    OnPropertyChanged();
+                }
             }
         }
 

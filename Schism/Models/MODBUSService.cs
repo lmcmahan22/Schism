@@ -3,6 +3,7 @@ using NModbus.Extensions.Enron;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.DirectoryServices.ActiveDirectory;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
@@ -161,7 +162,11 @@ namespace Schism.Models
         public bool IsConnected
         {
             get => _isConnected;
-            set => _isConnected = value;
+            set
+            {
+                _isConnected = value;
+                OnPropertyChanged();
+            }
         }
 
         public ObservableCollection<string> DataType => _dataType;
@@ -233,17 +238,17 @@ namespace Schism.Models
             SelectedADisplayType = ADisplayType.First();
         }
 
-        public void Connection(){
+        public async void Connection(){
 
+            await Task.Run(() => MODBUSComms());
+        }
+
+        private void MODBUSComms()
+        {
             try
             {
-                Task.Run(() => { });
-
-                //ModbusTcpMasterReadHoldingRegisters32();
-
                 switch (SelectedDataType)
                 {
-
                     //{ "Coil Status", "Input Status", "Holding Registers", "Input Registers" }
                     case "Coil Status":
                         ReadCoils();
@@ -261,13 +266,11 @@ namespace Schism.Models
                         // This will never occur...
                         break;
                 }
-                
-                //StartModbusTcpSlave();
             }
 
             catch (Exception e)
             {
-                MessageBox.Show($"Application MODBUS Failure: \n" +  e.Message);
+                MessageBox.Show($"Application MODBUS Failure: \n" + e.Message);
             }
         }
 
@@ -281,36 +284,42 @@ namespace Schism.Models
             IPAddress address = IPAddress.Parse(IpAddress);
             using (TcpClient masterTcpClient = new TcpClient(address.ToString(), TCPPort))
             {
-
                 // Create the MODBUS factory, which handles MODBUS operations
                 var factory = new ModbusFactory();
                 IModbusMaster master = factory.CreateMaster(masterTcpClient);
                 this.IsConnected = true;
 
-                // read five register values
-                bool[] inputs = master.ReadInputs(0, StartAddress, Length);
-                int[] inputsConv = inputs.Select(Convert.ToInt32).ToArray(); // converts booleans to 1s and 0s
-
-                // Clear the collection
-                for (int i = 0; i < Results.Length; i++)
+                while (IsConnected)
                 {
-                    if (Results[i] == null)
+                    bool[] inputs = master.ReadInputs(0, StartAddress, Length);
+                    int[] inputsConv = inputs.Select(Convert.ToInt32).ToArray();
+
+                    var newData = new List<List<StringWrapper>>();
+
+                    for (int i = 0; i < 6; i++)
+                        newData.Add(new List<StringWrapper>());
+
+                    for (int i = 0; i < Length; i++)
                     {
-                        Results[i] = new ObservableCollection<StringWrapper>();
+                        newData[i / 20].Add(new StringWrapper(inputsConv[i].ToString()));
                     }
-                    Results[i].Clear();
-                }
 
-                // Update the collection
-                for (int i = 0; i < Length; i++)
-                {
-                    Results[i / 20].Add(new StringWrapper(inputsConv[i].ToString()));
-                }
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        for (int i = 0; i < Results.Length; i++)
+                        {
+                            Results[i].Clear();
 
+                            foreach (var item in newData[i])
+                                Results[i].Add(item);
+                        }
+                    });
+
+                    Thread.Sleep(ScanRate);
+                }
                 // Does closing the app also close and stop these?
                 masterTcpClient.Close();
                 this.IsConnected = false;
-
             }
         }
 

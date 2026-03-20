@@ -170,7 +170,7 @@
                             </Setter.Value>
                         </Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                            <DataTrigger Binding="{Binding IsConnected, UpdateSourceTrigger=PropertyChanged, PresentationTraceSources.TraceLevel=High}" Value="True">
                                 <Setter Property="Content">
                                     <Setter.Value>
                                         <Image x:Name="BtnImgConn" Source="/Images/Connected.png"/>
