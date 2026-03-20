@@ -9,9 +9,9 @@ namespace Schism.Models
 {
     public class SaveData
     {
-        private int _saveLength = 0;
-        private int _saveStartAddress = 0;
-        private int _saveDeviceID = 0;
+        private ushort _saveLength = 0;
+        private ushort _saveStartAddress = 0;
+        private byte _saveDeviceID = 0;
         private string _saveDataType = "";
         private string _saveNumericBase = "";
         private string _saveEndian = "";
@@ -23,7 +23,7 @@ namespace Schism.Models
             // Default constructor
         }
 
-        public SaveData(int _sL, int _sSA, int _sDID, string _sDT,
+        public SaveData(ushort _sL, ushort _sSA, byte _sDID, string _sDT,
             string _sNB, string _sE, bool _sAE,
             string _sADT)
         {
@@ -39,9 +39,9 @@ namespace Schism.Models
 
         // Getters and setters for each variable
 
-        public int SaveLength { get => _saveLength; set => _saveLength = value; }
-        public int SaveStartAddress { get => _saveStartAddress; set => _saveStartAddress = value; }
-        public int SaveDeviceID { get => _saveDeviceID; set => _saveDeviceID = value; }
+        public ushort SaveLength { get => _saveLength; set => _saveLength = value; }
+        public ushort SaveStartAddress { get => _saveStartAddress; set => _saveStartAddress = value; }
+        public byte SaveDeviceID { get => _saveDeviceID; set => _saveDeviceID = value; }
         public string SaveDataType { get => _saveDataType; set => _saveDataType = value; }
         public string SaveNumericBase { get => _saveNumericBase; set => _saveNumericBase = value; }
         public string SaveEndian { get => _saveEndian; set => _saveEndian = value; }

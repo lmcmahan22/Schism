@@ -26,8 +26,6 @@ namespace Schism
         // This method is called to register types with the container. It is responsible for registering any services, view models, or other types that the module provides.
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.RegisterDialog<About, AboutViewModel>();
-            containerRegistry.RegisterDialog<ConnSettings, ConnSettingsViewModel>();
         }
     }
 }

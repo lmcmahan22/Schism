@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Schism.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace Schism.ViewModels
     public class ConnSettingsViewModel : BindableBase, IDialogAware
     {
 
+        private readonly MODBUSService _MS = MODBUSService.Instance; // MODBUSService is a singleton, so we access the instance directly
+
         // The helper method to raise the event
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -18,11 +21,7 @@ namespace Schism.ViewModels
         }
 
         private string _title = "Connection Settings";
-        private string _ipAddress = "127.0.0.1";
-        private string _tcpPort = "502";
-        private int _scanRate = 1000;
-        private int _timeout = 1000;
-        private int _pollDelay = 10;
+        
         private ObservableCollection<string> _addressConvention = new ObservableCollection<string>
             {
                 "Register Address (starting from 0)",
@@ -32,38 +31,73 @@ namespace Schism.ViewModels
 
         public string Title
         {
-            get { return _title; }
-            set { SetProperty(ref _title, value); }
+            get => _title;
+            set => SetProperty(ref _title, value);
         }
 
-        public string IpAddress
+        public string IPAddress
         {
-            get => _ipAddress;
-            set { SetProperty(ref _ipAddress, value); }
+            get => _MS.IpAddress;
+            set
+            {
+                if (_MS.IpAddress != value)
+                {
+                    _MS.IpAddress = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
-        public string TCPPort
+        public int TCPPort
         {
-            get => _tcpPort;
-            set { SetProperty(ref _tcpPort, value); }
-}
+            get => _MS.TCPPort;
+            set
+            {
+                if (_MS.TCPPort != value)
+                {
+                    _MS.TCPPort = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public int ScanRate
         {
-            get => _scanRate;
-            set { SetProperty(ref _scanRate, value); }
+            get => _MS.ScanRate;
+            set
+            {
+                if (_MS.ScanRate != value)
+                {
+                    _MS.ScanRate = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int Timeout
         {
-            get => _timeout;
-            set { SetProperty(ref _timeout, value); }
+            get => _MS.Timeout;
+            set
+            {
+                if (_MS.Timeout != value)
+                {
+                    _MS.Timeout = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int PollDelay
         {
-            get => _pollDelay;
-            set { SetProperty(ref _pollDelay, value); }
+            get => _MS.PollDelay;
+            set
+            {
+                if (_MS.PollDelay != value)
+                {
+                    _MS.PollDelay = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public ObservableCollection<string> AddressConvention

@@ -10,44 +10,42 @@
     <UserControl.Resources>
         <!-- Existing resources -->
         <CollectionViewSource x:Key="ShiftColumnView" Source="{Binding ShiftColumn}" />
-        <CollectionViewSource x:Key="MODBUS_S1" Source="{Binding MODBUSDataPoints[0]}" />
-        <CollectionViewSource x:Key="MODBUS_S2" Source="{Binding MODBUSDataPoints[1]}" />
-        <CollectionViewSource x:Key="MODBUS_S3" Source="{Binding MODBUSDataPoints[2]}" />
-        <CollectionViewSource x:Key="MODBUS_S4" Source="{Binding MODBUSDataPoints[3]}" />
-        <CollectionViewSource x:Key="MODBUS_S5" Source="{Binding MODBUSDataPoints[4]}" />
-        <CollectionViewSource x:Key="MODBUS_S6" Source="{Binding MODBUSDataPoints[5]}" />
+        <CollectionViewSource x:Key="MODBUS_N1" Source="{Binding Names[0]}" />
+        <CollectionViewSource x:Key="MODBUS_R1" Source="{Binding Results[0]}" />
+        <CollectionViewSource x:Key="MODBUS_N2" Source="{Binding Names[1]}" />
+        <CollectionViewSource x:Key="MODBUS_R2" Source="{Binding Results[1]}" />
+        <CollectionViewSource x:Key="MODBUS_N3" Source="{Binding Names[2]}" />
+        <CollectionViewSource x:Key="MODBUS_R3" Source="{Binding Results[2]}" />
+        <CollectionViewSource x:Key="MODBUS_N4" Source="{Binding Names[3]}" />
+        <CollectionViewSource x:Key="MODBUS_R4" Source="{Binding Results[3]}" />
+        <CollectionViewSource x:Key="MODBUS_N5" Source="{Binding Names[4]}" />
+        <CollectionViewSource x:Key="MODBUS_R5" Source="{Binding Results[4]}" />
+        <CollectionViewSource x:Key="MODBUS_N6" Source="{Binding Names[5]}" />
+        <CollectionViewSource x:Key="MODBUS_R6" Source="{Binding Results[5]}" />
 
-        <!-- Reusable template for a MODBUS column to remove duplication -->
-        <DataTemplate x:Key="ModbusColumnTemplate">
+        <!-- Reusable template for MODBUS Columns to remove duplication -->
+        <DataTemplate x:Key="NamesColumnTemplate">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <!-- Header row: Alias + dynamic column header bound to the hosting ContentControl.Tag -->
+                <!-- Header row: Name -->
                 <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100" />
                             <ColumnDefinition Width="100" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" 
                                 BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentTwoColor, UpdateSourceTrigger=PropertyChanged}" >
-                            <TextBlock Text="Alias" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"/>
-                        </Border>
-                        <Border Grid.Column="1" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
-                                BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentTwoColor, UpdateSourceTrigger=PropertyChanged}">
-                            <!-- Bind to the hosting ContentControl.Tag so each instance can supply its own address -->
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"
-                                       Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}"/>
+                            <TextBlock Text="Name" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"/>
                         </Border>
                     </Grid>
                 </Border>
 
-                <!-- ItemsControl with alias + data columns.
-                     The DataTemplate's DataContext is the collection passed as Content. -->
+                <!-- ItemsControl with Name Columns -->
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False">
                     <ItemsControl ItemsSource="{Binding}">
                         <ItemsControl.ItemTemplate>
@@ -55,18 +53,59 @@
                                 <Grid Height="21">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="100" />
-                                        <ColumnDefinition Width="100" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
                                             Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
-                                        <TextBox Text="{Binding Alias, Mode=TwoWay}" VerticalAlignment="Center" BorderBrush="Transparent"
+                                        <TextBox Text="{Binding Value, Mode=TwoWay}" VerticalAlignment="Center" BorderBrush="Transparent"
                                                  Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" 
                                                  CaretBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TextColor, UpdateSourceTrigger=PropertyChanged}"/>
                                     </Border>
-                                    <Border Grid.Column="1" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
-                                            Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
-                                        <TextBlock Text="{Binding Data}" VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ResultsColumnTemplate">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Header row: Name + dynamic column header bound to the hosting ContentControl.Tag -->
+                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
+                            BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentTwoColor, UpdateSourceTrigger=PropertyChanged}">
+                            <!-- Bind to the hosting ContentControl.Tag so each instance can supply its own address -->
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"
+                                   Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- ItemsControl with alias + data columns.
+                 The DataTemplate's DataContext is the collection passed as Content. -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False">
+                    <ItemsControl ItemsSource="{Binding}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Height="21">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
+                                        Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
+                                        <TextBlock Text="{Binding Value}" VerticalAlignment="Center" />
                                     </Border>
                                 </Grid>
                             </DataTemplate>
@@ -240,12 +279,18 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
                         </Grid.ColumnDefinitions>
                         <!-- Shift column header + items -->
                         <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="21">
@@ -287,38 +332,57 @@
                              Each ContentControl sets Tag to a distinct Address property so the template can read it. -->
                         <ContentControl Grid.Row="0" Grid.Column="1" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[0]}"
-                                        Content="{Binding MODBUSDataPoints[0]}"
-                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
-                                        Tag="{Binding DataContext.AddressList[0], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-
+                                        Content="{Binding Names[0]}"
+                                        ContentTemplate="{StaticResource NamesColumnTemplate}" />
                         <ContentControl Grid.Row="0" Grid.Column="2" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[1]}"
-                                        Content="{Binding MODBUSDataPoints[1]}"
-                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
-                                        Tag="{Binding DataContext.AddressList[1], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-
+                                        Visibility="{Binding ColsVis[0]}"
+                                        Content="{Binding Results[0]}"
+                                        ContentTemplate="{StaticResource ResultsColumnTemplate}"
+                                        Tag="{Binding DataContext.AddressList[0], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         <ContentControl Grid.Row="0" Grid.Column="3" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[2]}"
-                                        Content="{Binding MODBUSDataPoints[2]}"
-                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
-                                        Tag="{Binding DataContext.AddressList[2], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-
+                                        Visibility="{Binding ColsVis[1]}"
+                                        Content="{Binding Names[1]}"
+                                        ContentTemplate="{StaticResource NamesColumnTemplate}" />
                         <ContentControl Grid.Row="0" Grid.Column="4" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[3]}"
-                                        Content="{Binding MODBUSDataPoints[3]}"
-                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
-                                        Tag="{Binding DataContext.AddressList[3], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-
+                                        Visibility="{Binding ColsVis[1]}"
+                                        Content="{Binding Results[1]}"
+                                        ContentTemplate="{StaticResource ResultsColumnTemplate}"
+                                        Tag="{Binding DataContext.AddressList[1], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         <ContentControl Grid.Row="0" Grid.Column="5" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[4]}"
-                                        Content="{Binding MODBUSDataPoints[4]}"
-                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
-                                        Tag="{Binding DataContext.AddressList[4], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-
+                                        Visibility="{Binding ColsVis[2]}"
+                                        Content="{Binding Names[2]}"
+                                        ContentTemplate="{StaticResource NamesColumnTemplate}" />
                         <ContentControl Grid.Row="0" Grid.Column="6" Grid.RowSpan="21"
+                                        Visibility="{Binding ColsVis[2]}"
+                                        Content="{Binding Results[2]}"
+                                        ContentTemplate="{StaticResource ResultsColumnTemplate}"
+                                        Tag="{Binding DataContext.AddressList[2], RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        <ContentControl Grid.Row="0" Grid.Column="7" Grid.RowSpan="21"
+                                        Visibility="{Binding ColsVis[3]}"
+                                        Content="{Binding Names[3]}"
+                                        ContentTemplate="{StaticResource NamesColumnTemplate}" />
+                        <ContentControl Grid.Row="0" Grid.Column="8" Grid.RowSpan="21"
+                                        Visibility="{Binding ColsVis[3]}"
+                                        Content="{Binding Results[3]}"
+                                        ContentTemplate="{StaticResource ResultsColumnTemplate}"
+                                        Tag="{Binding DataContext.AddressList[3], RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        <ContentControl Grid.Row="0" Grid.Column="9" Grid.RowSpan="21"
+                                        Visibility="{Binding ColsVis[4]}"
+                                        Content="{Binding Names[4]}"
+                                        ContentTemplate="{StaticResource NamesColumnTemplate}" />
+                        <ContentControl Grid.Row="0" Grid.Column="10" Grid.RowSpan="21"
+                                        Visibility="{Binding ColsVis[4]}"
+                                        Content="{Binding Results[4]}"
+                                        ContentTemplate="{StaticResource ResultsColumnTemplate}"
+                                        Tag="{Binding DataContext.AddressList[4], RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        <ContentControl Grid.Row="0" Grid.Column="11" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[5]}"
-                                        Content="{Binding MODBUSDataPoints[5]}"
-                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
+                                        Content="{Binding Names[5]}"
+                                        ContentTemplate="{StaticResource NamesColumnTemplate}" />
+                        <ContentControl Grid.Row="0" Grid.Column="12" Grid.RowSpan="21"
+                                        Visibility="{Binding ColsVis[5]}"
+                                        Content="{Binding Results[5]}"
+                                        ContentTemplate="{StaticResource ResultsColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[5], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     </Grid>
                 </StackPanel>
