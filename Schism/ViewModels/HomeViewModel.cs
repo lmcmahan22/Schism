@@ -28,13 +28,18 @@ namespace Schism.ViewModels
         private string[] _addressList = new string[6] { "0", "20", "40", "60", "80", "100" };
         private ObservableCollection<StringWrapper> _shiftColumn = new ObservableCollection<StringWrapper>();
         private ObservableCollection<StringWrapper>[] _names = new ObservableCollection<StringWrapper>[6];
+        private ObservableCollection<string> _addressConvention = new ObservableCollection<string>
+            {
+                "Register Address (starting from 0)",
+                "Register Number (starting from 1)"
+            };
+        private string _selectedAddressConvention = "";
 
         // Commands
         private DelegateCommand? _saveClick;
         private DelegateCommand? _loadClick;
         private DelegateCommand? _exitClick;
         private DelegateCommand? _connClick;
-        private DelegateCommand? _discClick;
         private DelegateCommand? _settClick;
         private DelegateCommand? _insErrClick;
         private DelegateCommand? _themesClick;
@@ -253,6 +258,25 @@ namespace Schism.ViewModels
             }
         }
 
+        public ObservableCollection<string> AddressConvention
+        {
+            get => _addressConvention;
+            set => SetProperty(ref _addressConvention, value);
+        }
+        public string SelectedAddressConvention
+        {
+            get => _selectedAddressConvention;
+            set
+            {
+                SetProperty(ref _selectedAddressConvention, value);
+
+                // Rebuild the collection to reflect new shift counting
+                BuildModbusData();
+
+                OnPropertyChanged();
+            }
+        }
+
         public bool ConnectStatus
         {
             get { return _MS.IsConnected; }
@@ -399,6 +423,8 @@ namespace Schism.ViewModels
 
             _MS.PropertyChanged += MODBUS_PropertyChanged; // Subscribe to the PropertyChanged event of the ThemeService singleton to react to connection status change
 
+            SelectedAddressConvention = AddressConvention.First();
+
             // Ensure collection is populated with a header + Length rows
             BuildModbusData();
         }
@@ -505,7 +531,8 @@ namespace Schism.ViewModels
             // Generate header shifts (always 20 rows with 1 header cell)
             for (int i = 0; i < 20; i++)
             {
-                string content = "+" + (i).ToString();
+                // This will print each index as i if counting from 0, or i+1 if counting from 1
+                string content = $"+{(SelectedAddressConvention == "Register Address (starting from 0)" ? i : i + 1)}";
                 ShiftColumn.Add(new StringWrapper(content));
             }
 
@@ -543,7 +570,8 @@ namespace Schism.ViewModels
                 sD.SaveNumericBase,
                 sD.SaveEndian,
                 sD.SaveASCIIEnable,
-                sD.SaveADisplayType
+                sD.SaveADisplayType,
+                sD.SaveAddressConv
             });
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -631,7 +659,8 @@ namespace Schism.ViewModels
                 SaveNumericBase = this.SelectedNumericBase,
                 SaveEndian = this.SelectedEndian,
                 SaveASCIIEnable = this.ASCIIEnable,
-                SaveADisplayType = this.SelectedADisplayType
+                SaveADisplayType = this.SelectedADisplayType,
+                SaveAddressConv = this.SelectedAddressConvention
             };
             Save(sD);
         }
@@ -654,6 +683,7 @@ namespace Schism.ViewModels
             this.ASCIIEnable = lD.SaveASCIIEnable;
             this.ADisplayTypeDropDown = lD.SaveASCIIEnable ? Visibility.Visible : Visibility.Hidden; // Ensure the ADisplayType dropdown visibility is consistent with the loaded ASCIIEnable value
             this.SelectedADisplayType = lD.SaveADisplayType;
+            this.SelectedAddressConvention = lD.SaveAddressConv;
 
             // Update UI as needed
             UpdateColsVisAndNotify();
@@ -682,14 +712,6 @@ namespace Schism.ViewModels
                 // setting this to false will trigger the disconnect on the parallel thread's while loop!
                 ConnectStatus = false;
             }
-        }
-
-        public DelegateCommand Disc_Click =>
-            _discClick ??= new DelegateCommand(Execute_Disc_Click);
-
-        void Execute_Disc_Click()
-        {
-            // TODO: Implement disconnect logic
         }
 
         public DelegateCommand Sett_Click =>

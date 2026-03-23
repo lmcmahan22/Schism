@@ -17,6 +17,7 @@ namespace Schism.Models
         private string _saveEndian = "";
         private bool _saveASCIIEnable;
         private string _saveADisplayType = "";
+        private string _saveAddressConv = "";
 
         public SaveData()
         {
@@ -25,7 +26,7 @@ namespace Schism.Models
 
         public SaveData(ushort _sL, ushort _sSA, byte _sDID, string _sDT,
             string _sNB, string _sE, bool _sAE,
-            string _sADT)
+            string _sADT, string _sAC)
         {
             _saveLength = _sL;
             _saveStartAddress = _sSA;
@@ -35,6 +36,7 @@ namespace Schism.Models
             _saveEndian = _sE;
             _saveASCIIEnable = _sAE;
             _saveADisplayType = _sADT;
+            _saveAddressConv = _sAC;
         }
 
         // Getters and setters for each variable
@@ -47,5 +49,6 @@ namespace Schism.Models
         public string SaveEndian { get => _saveEndian; set => _saveEndian = value; }
         public bool SaveASCIIEnable { get => _saveASCIIEnable; set => _saveASCIIEnable = value; }
         public string SaveADisplayType { get => _saveADisplayType; set => _saveADisplayType = value; }
+        public string SaveAddressConv { get => _saveAddressConv; set => _saveAddressConv = value; }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.DirectoryServices.ActiveDirectory;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
@@ -219,7 +220,7 @@ namespace Schism.Models
             IpAddress = "165.165.165.11";
             TCPPort = 502;
             ScanRate = 1000;
-            Timeout = 1000;
+            Timeout = 5000;
             PollDelay = 10;
             NumPolls = 0;
             NumOK = 0;
@@ -252,6 +253,12 @@ namespace Schism.Models
                 // Create the MODBUS factory, which handles MODBUS operations
                 var factory = new ModbusFactory();
                 IModbusMaster modbusMaster = factory.CreateMaster(masterTcpClient);
+
+                // Apply configurable timeout value from the connections window
+                modbusMaster.Transport.ReadTimeout = Timeout;
+                modbusMaster.Transport.WriteTimeout = Timeout;
+                modbusMaster.Transport.Retries = 3;
+
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     this.IsConnected = true;
@@ -278,9 +285,22 @@ namespace Schism.Models
                 }
             }
 
+            catch (Exception toe) when (toe is IOException or TimeoutException)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    this.IsConnected = false;
+                });
+                MessageBox.Show($"Application MODBUS Timeout Failure: \n Timeout period reached during all 3 connection attempts. \n");
+            }
+
             catch (Exception e)
             {
-                MessageBox.Show($"Application MODBUS Failure: \n" + e.Message);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    this.IsConnected = false;
+                });
+                MessageBox.Show($"Unknown Application/MODBUS Failure: \n" + e.Message);
             }
         }
 

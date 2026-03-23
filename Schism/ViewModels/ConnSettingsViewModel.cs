@@ -22,12 +22,6 @@ namespace Schism.ViewModels
 
         private string _title = "Connection Settings";
         
-        private ObservableCollection<string> _addressConvention = new ObservableCollection<string>
-            {
-                "Register Address (starting from 0)",
-                "Modbus RTU over TCP (starting from 1)"
-            };
-        private string _selectedAddressConvention = "";
 
         public string Title
         {
@@ -100,21 +94,10 @@ namespace Schism.ViewModels
             }
         }
 
-        public ObservableCollection<string> AddressConvention
-        {
-            get => _addressConvention;
-            set => SetProperty(ref _addressConvention, value);
-        }
-        public string SelectedAddressConvention
-        {
-            get => _selectedAddressConvention;
-            set { SetProperty(ref _selectedAddressConvention, value); }
-        }
-
         // Constructor
         public ConnSettingsViewModel()
         {
-            _selectedAddressConvention = _addressConvention.FirstOrDefault();
+            // Blank
         }
 
         public DialogCloseListener RequestClose => throw new NotImplementedException();

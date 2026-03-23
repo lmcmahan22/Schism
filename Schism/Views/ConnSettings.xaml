@@ -5,13 +5,12 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewmodels="clr-namespace:Schism.ViewModels"
              prism:ViewModelLocator.AutoWireViewModel="True"
-             Width="500" Height="270"
+             Width="500" Height="170"
              Background="DarkGray">
     
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
-            <RowDefinition Height="110"/>
             <RowDefinition Height="80"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -71,38 +70,9 @@
                             <TextBlock Text="Timeout (ms):" Margin="17,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                             <TextBox Text="{Binding Timeout, UpdateSourceTrigger=PropertyChanged}" Margin="110,5,5,0" Width="120" Height="25" MaxLength="5" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                         </Grid>
-                        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-                            <TextBlock Text="Delay Between Polls (ms):" Margin="170,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                            <TextBox Text="{Binding PollDelay, UpdateSourceTrigger=PropertyChanged}" Margin="335,5,0,0" Width="120" Height="25" MaxLength="4" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" Grid.ColumnSpan="2"/>
-                        </Grid>
                     </Grid>
                 </StackPanel>
             </Border>
-        </Grid>
-        <Grid Grid.Row="2">
-            <Border BorderBrush="Black" BorderThickness="1" Padding="5" CornerRadius="1" Margin="10,5,5,5" Grid.RowSpan="2" Grid.ColumnSpan="2">
-                <StackPanel>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid Grid.Row="0">
-                            <TextBlock Text= "Addressing" FontSize="16" FontWeight="Bold" />
-                        </Grid>
-                        <Grid Grid.Row="1">
-                            <TextBlock Text="Address Convention:" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                            <ComboBox Name="AddressConv" ItemsSource="{Binding AddressConvention, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedAddressConvention, Mode=TwoWay}" Margin="135,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="320" Height="25" FontSize="14"/>
-                        </Grid>
-                    </Grid>
-                </StackPanel>
-            </Border>
-
         </Grid>
     </Grid>
 </UserControl>

@@ -114,12 +114,10 @@
             </Grid>
         </DataTemplate>
     </UserControl.Resources>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="100" />
+            <RowDefinition Height="130" />
             <RowDefinition Height="462" />
             <RowDefinition Height="60" />
             <RowDefinition Height="*" />
@@ -137,8 +135,7 @@
                     <MenuItem Header="_Exit App" Command="{Binding Exit_Click}"/>
                 </MenuItem>
                 <MenuItem Header="_Connection">
-                    <MenuItem Header="_Connect" Command="{Binding Conn_Click}"/>
-                    <MenuItem Header="_Disconnect" Command="{Binding Disc_Click}"/>
+                    <MenuItem Header="_Toggle" Command="{Binding Conn_Click}"/>
                     <Separator Background="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"/>
                     <MenuItem Header="_Settings" Command="{Binding Sett_Click}"/>
                 </MenuItem>
@@ -154,32 +151,6 @@
             </Menu>
         </Grid>
         <Grid Grid.Row="1">
-            <Button Name="Save" ToolTip="Save Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="10,5,0,0" Command="{Binding Save_Click}">
-                <Image Source="/Images/Save.png" />
-            </Button>
-            <Button Name="Load" ToolTip="Load Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="55,5,0,0" Command="{Binding Load_Click}">
-                <Image Source="/Images/Load.png" />
-            </Button>
-            <Separator Background="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="100,5,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="2" Height="25"/>
-            <Button ToolTip="Connect" HorizontalAlignment="Left" Width="40" Margin="107,5,0,0" Command="{Binding Conn_Click}">
-                <Image>
-                    <Image.Style>
-                        <Style TargetType="Image">
-                            <Setter Property="Source" Value="/Images/Disconnect.png"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ConnectStatus}" Value="True">
-                                    <Setter Property="Source" Value="/Images/Connected.png"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Image.Style>
-                </Image>
-            </Button>
-            <Button Name="Settings" ToolTip="Settings" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="152,5,0,0" Command="{Binding Sett_Click}">
-                <Image Source="/Images/Settings.png" />
-            </Button>
-        </Grid>
-        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -187,38 +158,77 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
-                <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
-                    <StackPanel>
-                        <TextBlock Text="Device Settings" FontSize="16" FontWeight="Bold"/>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Grid Grid.Row="0" Grid.Column="0">
-                                <TextBlock Text="Device ID" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <TextBox Text="{Binding DeviceID, UpdateSourceTrigger=LostFocus}" Margin="70,0,0,2" Width="60" Height="26" MaxLength="3" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14"/>
-                            </Grid>
-                            <Grid Grid.Row="0" Grid.Column="1">
-                                <TextBlock Text="Length" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <TextBox Text="{Binding Length, UpdateSourceTrigger=LostFocus}" Margin="80,0,5,0" Width="65" Height="25" MaxLength="3" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                            </Grid>
-                            <Grid Grid.Row="1" Grid.Column="0">
-                                <TextBlock Text="Address" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <TextBox Text="{Binding StartAddress, UpdateSourceTrigger=LostFocus}" Margin="70,0,5,0" Width="60" Height="25" MaxLength="5" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                            </Grid>
-                            <Grid Grid.Row="1" Grid.Column="1">
-                                <TextBlock Text="Data Type" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="DataType" ItemsSource="{Binding DataType, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedDataType, Mode=TwoWay}" Margin="80,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="25" FontSize="14"/>
-                            </Grid>
-                        </Grid>
-                    </StackPanel>
-                </Border>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="95"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Row="0">
+                        <Button Name="Save" ToolTip="Save Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="10,5,0,5" Command="{Binding Save_Click}">
+                            <Image Source="/Images/Save.png" />
+                        </Button>
+                        <Button Name="Load" ToolTip="Load Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="55,5,0,5" Command="{Binding Load_Click}">
+                            <Image Source="/Images/Load.png" />
+                        </Button>
+                        <Separator Background="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="100,5,0,5" VerticalAlignment="Center" HorizontalAlignment="Left" Width="2" Height="25"/>
+                        <Button ToolTip="Connect" HorizontalAlignment="Left" Width="40" Margin="107,5,0,5" Command="{Binding Conn_Click}">
+                            <Image>
+                                <Image.Style>
+                                    <Style TargetType="Image">
+                                        <Setter Property="Source" Value="/Images/Disconnect.png"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ConnectStatus}" Value="True">
+                                                <Setter Property="Source" Value="/Images/Connected.png"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                        </Button>
+                        <Button Name="Settings" ToolTip="Settings" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="152,5,0,5" Command="{Binding Sett_Click}">
+                            <Image Source="/Images/Settings.png" />
+                        </Button>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,0,5,5" Background="{Binding AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
+                            <StackPanel>
+                                <TextBlock Text="Device Settings" FontSize="16" FontWeight="Bold"/>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30" />
+                                        <RowDefinition Height="30" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Row="0" Grid.Column="0">
+                                        <TextBlock Text="Device ID" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                        <TextBox Text="{Binding DeviceID, UpdateSourceTrigger=LostFocus}" Margin="70,0,0,2" Width="60" Height="26" MaxLength="3" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14"/>
+                                    </Grid>
+                                    <Grid Grid.Row="0" Grid.Column="1">
+                                        <TextBlock Text="Length" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                        <TextBox Text="{Binding Length, UpdateSourceTrigger=LostFocus}" Margin="80,0,5,0" Width="65" Height="25" MaxLength="3" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                    </Grid>
+                                    <Grid Grid.Row="1" Grid.Column="0">
+                                        <TextBlock Text="Address" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                        <TextBox Text="{Binding StartAddress, UpdateSourceTrigger=LostFocus}" Margin="70,0,5,0" Width="60" Height="25" MaxLength="5" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                    </Grid>
+                                    <Grid Grid.Row="1" Grid.Column="1">
+                                        <TextBlock Text="Data Type" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                        <ComboBox Name="DataType" ItemsSource="{Binding DataType, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedDataType, Mode=TwoWay}" Margin="80,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="25" FontSize="14"/>
+                                    </Grid>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
             </Grid>
             <Grid Grid.Column="1">
                 <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
@@ -228,6 +238,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30"/>
                                 <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
@@ -235,19 +246,23 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Grid Grid.Row="0" Grid.Column="0">
-                                <TextBlock Text="Numeric Base" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="BaseSystem" ItemsSource="{Binding NumericBase, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedNumericBase, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14"/>
+                            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+                                <TextBlock Text="Address Convention" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                <ComboBox Name="AddressConv" ItemsSource="{Binding AddressConvention, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedAddressConvention, Mode=TwoWay}" Margin="135,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="425" Height="25" FontSize="14"/>
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="0">
-                                <TextBlock Text="Endian" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="Endian" ItemsSource="{Binding Endian, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedEndian, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14"/>
+                                <TextBlock Text="Numeric Base" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                <ComboBox Name="BaseSystem" ItemsSource="{Binding NumericBase, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedNumericBase, Mode=TwoWay}" Margin="135,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14" SelectionChanged="BaseSystem_SelectionChanged"/>
                             </Grid>
-                            <Grid Grid.Row="0" Grid.Column="1">
+                            <Grid Grid.Row="2" Grid.Column="0">
+                                <TextBlock Text="Endian" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                <ComboBox Name="Endian" ItemsSource="{Binding Endian, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedEndian, Mode=TwoWay}" Margin="135,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14"/>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="1">
                                 <TextBlock Text="ASCII Display" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                                 <CheckBox IsChecked="{Binding ASCIIEnable, UpdateSourceTrigger=PropertyChanged}" Content="Enable" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                             </Grid>
-                            <Grid Grid.Row="1" Grid.Column="1">
+                            <Grid Grid.Row="2" Grid.Column="1">
                                 <TextBlock Text="Display Type" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                                 <ComboBox Name="ASCIIType" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding ADisplayType}" SelectedValue="{Binding SelectedADisplayType, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="130" Height="25" FontSize="14"/>
                             </Grid>
@@ -256,10 +271,10 @@
                 </Border>
             </Grid>
             <Grid Grid.Column="2">
-                <Image Source="/Images/PVALogo.png" HorizontalAlignment="Center" Margin="70,0,0,0"/>
+                <Image Source="/Images/PVALogo.png" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="15,0,0,0" Width="250"/>
             </Grid>
         </Grid>
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="2">
             <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,5,20,5" CornerRadius="1">
                 <StackPanel>
                     <Grid>
@@ -398,7 +413,7 @@
                 </StackPanel>
             </Border>
         </Grid>
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="3">
             <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,5,20,5" CornerRadius="1" Background="{Binding AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
                 <StackPanel>
                     <Grid>
