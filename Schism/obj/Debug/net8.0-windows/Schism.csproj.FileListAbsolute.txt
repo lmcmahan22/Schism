@@ -43,7 +43,6 @@ C:\Users\lmcmahan\OneDrive - Precision Valve and Automation\Desktop\Visual Studi
 C:\Users\lmcmahan\OneDrive - Precision Valve and Automation\Desktop\Visual Studio Projects\Projects\Schism\obj\Debug\net8.0-windows\Schism.genruntimeconfig.cache
 C:\Users\lmcmahan\OneDrive - Precision Valve and Automation\Desktop\Visual Studio Projects\Projects\Schism\obj\Debug\net8.0-windows\ref\Schism.dll
 C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Images\Connected.png
-C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Images\Connect.png
 C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Images\Copy.png
 C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Images\Cut.png
 C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Images\Disconnect.png

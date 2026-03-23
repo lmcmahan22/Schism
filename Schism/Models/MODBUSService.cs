@@ -247,20 +247,30 @@ namespace Schism.Models
         {
             try
             {
+                IPAddress address = IPAddress.Parse(IpAddress);
+                TcpClient masterTcpClient = new TcpClient(address.ToString(), TCPPort);
+                // Create the MODBUS factory, which handles MODBUS operations
+                var factory = new ModbusFactory();
+                IModbusMaster modbusMaster = factory.CreateMaster(masterTcpClient);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    this.IsConnected = true;
+                });
+
                 switch (SelectedDataType)
                 {
                     //{ "Coil Status", "Input Status", "Holding Registers", "Input Registers" }
                     case "Coil Status":
-                        ReadCoils();
+                        ReadCoils(masterTcpClient, modbusMaster);
                         break;
                     case "Input Status":
-                        ReadInputs();
+                        ReadInputs(masterTcpClient,modbusMaster);
                         break;
                     case "Holding Registers":
-                        ReadHoldingRegs();
+                        ReadHoldingRegs(masterTcpClient, modbusMaster);
                         break;
                     case "Input Registers":
-                        ReadInputRegs();
+                        ReadInputRegs(masterTcpClient, modbusMaster);
                         break;
                     default:
                         // This will never occur...
@@ -274,25 +284,51 @@ namespace Schism.Models
             }
         }
 
-        private void ReadCoils()
+        private void ReadCoils(TcpClient mtc, IModbusMaster mM)
         {
-            // TODO: Implement once you get Read Inputs working!
+            using (mtc)
+            {
+                while (IsConnected)
+                {
+                    bool[] coils = mM.ReadCoils(0, StartAddress, Length);
+                    ushort[] coilsConv = coils.Select(Convert.ToUInt16).ToArray();
+
+                    var newData = new List<List<StringWrapper>>();
+
+                    for (int i = 0; i < 6; i++)
+                        newData.Add(new List<StringWrapper>());
+
+                    for (int i = 0; i < Length; i++)
+                    {
+                        newData[i / 20].Add(new StringWrapper(coilsConv[i].ToString()));
+                    }
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        for (int i = 0; i < Results.Length; i++)
+                        {
+                            Results[i].Clear();
+
+                            foreach (var item in newData[i])
+                                Results[i].Add(item);
+                        }
+                    });
+
+                    Thread.Sleep(ScanRate);
+                }
+                // Does closing the app also close and stop these?
+                mtc.Close();
+            }
         }
 
-        private void ReadInputs()
+        private void ReadInputs(TcpClient mtc, IModbusMaster mM)
         {
-            IPAddress address = IPAddress.Parse(IpAddress);
-            using (TcpClient masterTcpClient = new TcpClient(address.ToString(), TCPPort))
-            {
-                // Create the MODBUS factory, which handles MODBUS operations
-                var factory = new ModbusFactory();
-                IModbusMaster master = factory.CreateMaster(masterTcpClient);
-                this.IsConnected = true;
+            using (mtc) {
 
                 while (IsConnected)
                 {
-                    bool[] inputs = master.ReadInputs(0, StartAddress, Length);
-                    int[] inputsConv = inputs.Select(Convert.ToInt32).ToArray();
+                    bool[] inputs = mM.ReadInputs(0, StartAddress, Length);
+                    ushort[] inputsConv = inputs.Select(Convert.ToUInt16).ToArray();
 
                     var newData = new List<List<StringWrapper>>();
 
@@ -318,19 +354,80 @@ namespace Schism.Models
                     Thread.Sleep(ScanRate);
                 }
                 // Does closing the app also close and stop these?
-                masterTcpClient.Close();
-                this.IsConnected = false;
+                mtc.Close();
             }
         }
 
-        private void ReadHoldingRegs()
+        private void ReadHoldingRegs(TcpClient mtc, IModbusMaster mM)
         {
-            // TODO: Implement once you get Read Inputs working!
+            using (mtc)
+            {
+                while (IsConnected)
+                {
+                    ushort[] holdingRegs = mM.ReadHoldingRegisters(0, StartAddress, Length);
+
+                    var newData = new List<List<StringWrapper>>();
+
+                    for (int i = 0; i < 6; i++)
+                        newData.Add(new List<StringWrapper>());
+
+                    for (int i = 0; i < Length; i++)
+                    {
+                        newData[i / 20].Add(new StringWrapper(holdingRegs[i].ToString()));
+                    }
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        for (int i = 0; i < Results.Length; i++)
+                        {
+                            Results[i].Clear();
+
+                            foreach (var item in newData[i])
+                                Results[i].Add(item);
+                        }
+                    });
+
+                    Thread.Sleep(ScanRate);
+                }
+                // Does closing the app also close and stop these?
+                mtc.Close();
+            }
         }
 
-        private void ReadInputRegs()
+        private void ReadInputRegs(TcpClient mtc, IModbusMaster mM)
         {
-            // TODO: Implement once you get Read Inputs working!
+            using (mtc)
+            {
+                while (IsConnected)
+                {
+                    ushort[] inputRegs = mM.ReadInputRegisters(0, StartAddress, Length);
+
+                    var newData = new List<List<StringWrapper>>();
+
+                    for (int i = 0; i < 6; i++)
+                        newData.Add(new List<StringWrapper>());
+
+                    for (int i = 0; i < Length; i++)
+                    {
+                        newData[i / 20].Add(new StringWrapper(inputRegs[i].ToString()));
+                    }
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        for (int i = 0; i < Results.Length; i++)
+                        {
+                            Results[i].Clear();
+
+                            foreach (var item in newData[i])
+                                Results[i].Add(item);
+                        }
+                    });
+
+                    Thread.Sleep(ScanRate);
+                }
+                // Does closing the app also close and stop these?
+                mtc.Close();
+            }
         }
     }
 }

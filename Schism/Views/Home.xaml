@@ -161,25 +161,19 @@
                 <Image Source="/Images/Load.png" />
             </Button>
             <Separator Background="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="100,5,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="2" Height="25"/>
-            <Button Name="Connect" ToolTip="Connect" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="107,5,0,0" Command="{Binding Conn_Click}">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Content">
-                            <Setter.Value>
-                                <Image x:Name="BtnImg" Source="/Images/Connect.png"/>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsConnected, UpdateSourceTrigger=PropertyChanged, PresentationTraceSources.TraceLevel=High}" Value="True">
-                                <Setter Property="Content">
-                                    <Setter.Value>
-                                        <Image x:Name="BtnImgConn" Source="/Images/Connected.png"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
+            <Button ToolTip="Connect" HorizontalAlignment="Left" Width="40" Margin="107,5,0,0" Command="{Binding Conn_Click}">
+                <Image>
+                    <Image.Style>
+                        <Style TargetType="Image">
+                            <Setter Property="Source" Value="/Images/Disconnect.png"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ConnectStatus}" Value="True">
+                                    <Setter Property="Source" Value="/Images/Connected.png"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
             </Button>
             <Button Name="Settings" ToolTip="Settings" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="152,5,0,0" Command="{Binding Sett_Click}">
                 <Image Source="/Images/Settings.png" />

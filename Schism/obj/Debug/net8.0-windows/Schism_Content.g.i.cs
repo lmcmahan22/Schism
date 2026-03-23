@@ -9,7 +9,6 @@
 //------------------------------------------------------------------------------
 
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/connected.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/connect.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/copy.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/cut.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/disconnect.png")]

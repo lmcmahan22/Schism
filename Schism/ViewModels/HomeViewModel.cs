@@ -253,7 +253,7 @@ namespace Schism.ViewModels
             }
         }
 
-        public bool IsConnected
+        public bool ConnectStatus
         {
             get { return _MS.IsConnected; }
             set
@@ -397,6 +397,8 @@ namespace Schism.ViewModels
         {
             _TS.PropertyChanged += Themes_PropertyChanged; // Subscribe to the PropertyChanged event of the ThemeService singleton to react to theme changes
 
+            _MS.PropertyChanged += MODBUS_PropertyChanged; // Subscribe to the PropertyChanged event of the ThemeService singleton to react to connection status change
+
             // Ensure collection is populated with a header + Length rows
             BuildModbusData();
         }
@@ -422,6 +424,14 @@ namespace Schism.ViewModels
             if (e.PropertyName == nameof(_TS.Text))
             {
                 OnPropertyChanged(nameof(TextColor));
+            }
+        }
+
+        private void MODBUS_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(_MS.IsConnected))
+            {
+                OnPropertyChanged(nameof(ConnectStatus));
             }
         }
 
@@ -663,7 +673,15 @@ namespace Schism.ViewModels
         void Execute_Conn_Click()
         {
             // TODO: Implement connection logic
-            _MS.Connection();
+            if(ConnectStatus == false)
+            {
+                _MS.Connection();
+            }
+            else
+            {
+                // setting this to false will trigger the disconnect on the parallel thread's while loop!
+                ConnectStatus = false;
+            }
         }
 
         public DelegateCommand Disc_Click =>
