@@ -1,8 +1,12 @@
-﻿using Schism.Models;
+﻿using Microsoft.Win32;
+using Schism.Models;
 using Schism.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Media;
 
@@ -37,7 +41,6 @@ namespace Schism.ViewModels
         private DelegateCommand? _aboutClick;
 
         // Service Singletons (see App.xml)
-        private readonly SaveAndLoadService _SNL = SaveAndLoadService.Instance; // SaveAndLoadService is a singleton, so we access the instance directly
         private readonly ThemeService _TS = ThemeService.Instance; // ThemeService is a singleton, so we access the instance directly
         private readonly MODBUSService _MS = MODBUSService.Instance; // MODBUSService is a singleton, so we access the instance directly
 
@@ -300,7 +303,7 @@ namespace Schism.ViewModels
 
         public ObservableCollection<string> Endian
         {
-            get {  return _MS.Endian; }
+            get { return _MS.Endian; }
         }
 
         public ObservableCollection<string> ADisplayType
@@ -338,7 +341,7 @@ namespace Schism.ViewModels
             get { return _MS.SelectedEndian; }
             set
             {
-                if ( _MS.SelectedEndian != value)
+                if (_MS.SelectedEndian != value)
                 {
                     _MS.SelectedEndian = value;
                     OnPropertyChanged();
@@ -351,7 +354,7 @@ namespace Schism.ViewModels
             get { return _MS.SelectedADisplayType; }
             set
             {
-                if( _MS.SelectedADisplayType != value)
+                if (_MS.SelectedADisplayType != value)
                 {
                     _MS.SelectedADisplayType = value;
                     OnPropertyChanged();
@@ -450,11 +453,32 @@ namespace Schism.ViewModels
 
             ShiftColumn.Clear();
 
+            string[] namesCache = new string[Length];
             for (int i = 0; i < Names.Length; i++)
             {
                 if (Names[i] == null)
                 {
                     Names[i] = new ObservableCollection<StringWrapper>();
+                }
+                else
+                {
+                    for(int j = 0; j < Names[i].Count; j++)
+                    {
+                        // Only save this name for the new display if we know that we'll see it in the new length.
+                        // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
+                        if (((i * 20) + j) < Length)
+                        {
+                            string? temp = Names[i][j].Value;
+                            if (temp == null)
+                            {
+                                namesCache[(i * 20) + j] = "";
+                            }
+                            else
+                            {
+                                namesCache[(i * 20) + j] = temp;
+                            }
+                        }
+                    }
                 }
                 Names[i].Clear();
             }
@@ -482,12 +506,103 @@ namespace Schism.ViewModels
                 var reqRows = Math.Min((Length - 20 * i), 20); // Calculate how many rows we need in the last column (or 20 if length is greater than 20)
                 for (int j = 0; j < reqRows; j++)
                 {
-                    string name = "";
-                    string data = "0";
+                    string name = namesCache[(i * 20) + j];
+                    string data = "";
                     Names[i].Add(new StringWrapper(name));
                     Results[i].Add(new StringWrapper(data));
                 }
             }
+        }
+
+
+        private void Save(SaveData sD)
+        {
+            // Logic to save data
+            string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Schism");
+            if (!Directory.Exists(appDataFolder))
+            {
+                Directory.CreateDirectory(appDataFolder);
+            }
+
+            string json = JsonSerializer.Serialize(new
+            {
+                sD.SaveDeviceID,
+                sD.SaveStartAddress,
+                sD.SaveLength,
+                sD.SaveDataType,
+                sD.SaveNumericBase,
+                sD.SaveEndian,
+                sD.SaveASCIIEnable,
+                sD.SaveADisplayType
+            });
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.FileName = "userData"; // Default file name
+            saveFileDialog.DefaultExt = ".sav"; // Default file extension
+                                                // Filter files by extension. The format is "Description|Pattern"
+            saveFileDialog.Filter = "Schism Save File (.sav)|*.sav|All files (*.*)|*.*";
+            saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            // Show save file dialog box
+            bool? result = saveFileDialog.ShowDialog();
+
+            // Process save file dialog box results
+            if (result == true)
+            {
+                // Save document
+                string filename = saveFileDialog.FileName;
+
+                // Example of saving text from a TextBox named 'txtEditor'
+                try
+                {
+                    File.WriteAllText(filename, json);
+                    MessageBox.Show("File saved successfully!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error saving file: {ex.Message}");
+                }
+            }
+        }
+        private SaveData Load()
+        {
+
+            SaveData? lD = new SaveData();
+
+            var openFileDialog = new OpenFileDialog();
+
+            // Optional: Configure the dialog box
+            openFileDialog.FileName = "userData"; // Default file name
+            openFileDialog.DefaultExt = ".sav"; // Default file extension
+            openFileDialog.Filter = "Schism Save File (.sav)|*.sav|All files (*.*)|*.*";
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); // Initial Directory
+
+            // Show open file dialog box
+            bool? result = openFileDialog.ShowDialog();
+
+            // Process open file dialog box results
+            if (result == true)
+            {
+                string json = File.ReadAllText(openFileDialog.FileName);
+                var options = new JsonSerializerOptions
+                {
+                    UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow
+                };
+
+                try
+                {
+                    lD = JsonSerializer.Deserialize<SaveData>(json, options);
+                }
+                catch
+                {
+                    MessageBox.Show("Failed to load the file. The file may be corrupted or not in the correct format.");
+                }
+            }
+
+            if (lD != null)
+                return lD;
+            else
+                return new SaveData();
         }
 
         // Public Command properties
@@ -508,7 +623,7 @@ namespace Schism.ViewModels
                 SaveASCIIEnable = this.ASCIIEnable,
                 SaveADisplayType = this.SelectedADisplayType
             };
-            _SNL.Save(sD);
+            Save(sD);
         }
 
         public DelegateCommand Load_Click =>
@@ -516,7 +631,7 @@ namespace Schism.ViewModels
 
         void Execute_Load_Click()
         {
-            SaveData lD = _SNL.Load();
+            SaveData lD = Load();
 
             // Update ViewModel properties with loaded data
             // NOTE: Setting the public instances of variables runs the logic in the setters implicitly! ;)

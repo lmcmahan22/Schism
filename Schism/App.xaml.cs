@@ -23,7 +23,6 @@ namespace Schism
         // Registers types with the dependency injection container. This method is called during application initialization.
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.RegisterSingleton<SaveAndLoadService>();
             containerRegistry.RegisterSingleton<MODBUSService>();
             containerRegistry.RegisterSingleton<ThemeService>();
         }
