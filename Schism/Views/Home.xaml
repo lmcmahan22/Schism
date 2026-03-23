@@ -7,7 +7,30 @@
              prism:ViewModelLocator.AutoWireViewModel="True"
              Height="720" Width="1280"
              Background="{Binding MainColor, UpdateSourceTrigger=PropertyChanged}">
+
     <UserControl.Resources>
+        <Style TargetType="ComboBox">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.3" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.3" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.3" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <CollectionViewSource x:Key="ShiftColumnView" Source="{Binding ShiftColumn}" />
         <CollectionViewSource x:Key="MODBUS_N1" Source="{Binding Names[0]}" />
         <CollectionViewSource x:Key="MODBUS_R1" Source="{Binding Results[0]}" />
@@ -34,7 +57,7 @@
                 <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="70" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" 
@@ -51,7 +74,7 @@
                             <DataTemplate>
                                 <Grid Height="21">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="70" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
@@ -79,7 +102,7 @@
                 <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="130" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
@@ -99,7 +122,7 @@
                             <DataTemplate>
                                 <Grid Height="21">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="130" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
@@ -118,8 +141,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="25" />
             <RowDefinition Height="130" />
-            <RowDefinition Height="462" />
-            <RowDefinition Height="60" />
+            <RowDefinition Height="460" />
+            <RowDefinition Height="70" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -251,20 +274,20 @@
                                 <ComboBox Name="AddressConv" ItemsSource="{Binding AddressConvention, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedAddressConvention, Mode=TwoWay}" Margin="135,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="425" Height="25" FontSize="14"/>
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="0">
-                                <TextBlock Text="Numeric Base" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="BaseSystem" ItemsSource="{Binding NumericBase, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedNumericBase, Mode=TwoWay}" Margin="135,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14" SelectionChanged="BaseSystem_SelectionChanged"/>
+                                <TextBlock Text="Numeric Base" Margin="2,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding NonBoolData}" HorizontalAlignment="Left" FontSize="14"/>
+                                <ComboBox Name="BaseSystem" ItemsSource="{Binding NumericBase, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedNumericBase, Mode=TwoWay}" IsEnabled="{Binding NonBoolData}" Margin="135,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14" SelectionChanged="BaseSystem_SelectionChanged"/>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="0">
-                                <TextBlock Text="Endian" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="Endian" ItemsSource="{Binding Endian, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedEndian, Mode=TwoWay}" Margin="135,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14"/>
+                                <TextBlock Text="Endian" Margin="2,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding NonBoolData}" HorizontalAlignment="Left" FontSize="14"/>
+                                <ComboBox Name="Endian" ItemsSource="{Binding Endian, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedEndian, Mode=TwoWay}" IsEnabled="{Binding NonBoolData}" Margin="135,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14"/>
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="1">
-                                <TextBlock Text="ASCII Display" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <CheckBox IsChecked="{Binding ASCIIEnable, UpdateSourceTrigger=PropertyChanged}" Content="Enable" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                <TextBlock Text="ASCII Display" Margin="10,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding NonBoolData}" HorizontalAlignment="Left" FontSize="14"/>
+                                <CheckBox IsChecked="{Binding ASCIIEnable, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding NonBoolData}" Content="Enable" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="1">
-                                <TextBlock Text="Display Type" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="ASCIIType" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding ADisplayType}" SelectedValue="{Binding SelectedADisplayType, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="130" Height="25" FontSize="14"/>
+                                <TextBlock Text="Display Type" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding NonBoolData}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                <ComboBox Name="ASCIIType" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding ADisplayType}" IsEnabled="{Binding NonBoolData}" SelectedValue="{Binding SelectedADisplayType, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="130" Height="25" FontSize="14"/>
                             </Grid>
                         </Grid>
                     </StackPanel>
@@ -275,47 +298,47 @@
             </Grid>
         </Grid>
         <Grid Grid.Row="2">
-            <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,5,20,5" CornerRadius="1">
+            <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1">
                 <StackPanel>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="22"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
+                            <RowDefinition Height="21"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="130"/>
                         </Grid.ColumnDefinitions>
                         <!-- Shift column header + items -->
                         <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="21">
@@ -414,7 +437,7 @@
             </Border>
         </Grid>
         <Grid Grid.Row="3">
-            <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,5,20,5" CornerRadius="1" Background="{Binding AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
+            <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,10" CornerRadius="1" Background="{Binding AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
                 <StackPanel>
                     <Grid>
                         <Grid.RowDefinitions>

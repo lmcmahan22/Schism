@@ -34,6 +34,7 @@ namespace Schism.ViewModels
                 "Register Number (starting from 1)"
             };
         private string _selectedAddressConvention = "";
+        private bool _nonBoolData = false;
 
         // Commands
         private DelegateCommand? _saveClick;
@@ -290,6 +291,12 @@ namespace Schism.ViewModels
             }
         }
 
+        public bool NonBoolData
+        {
+            get { return _nonBoolData; }
+            set { SetProperty(ref _nonBoolData, value); OnPropertyChanged(); }
+        }
+
         public ObservableCollection<StringWrapper> ShiftColumn
         {
             get { return _shiftColumn; }
@@ -342,7 +349,12 @@ namespace Schism.ViewModels
             {
                 if (_MS.SelectedDataType != value)
                 {
-                    _MS.SelectedDataType = value; OnPropertyChanged();
+                    _MS.SelectedDataType = value;
+
+                    // set NonBoolData to true in order to disable UI elements when we don't need them!
+                    NonBoolData = _MS.SelectedDataType is "Holding Registers" or "Input Registers";
+
+                    OnPropertyChanged();
                 }
             }
         }

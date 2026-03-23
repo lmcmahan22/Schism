@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace Schism.Models
@@ -59,7 +60,7 @@ namespace Schism.Models
 
         // dropdowns
         private ObservableCollection<string> _dataType = new ObservableCollection<string> { "Coil Status", "Input Status", "Holding Registers", "Input Registers" };
-        private ObservableCollection<string> _numericBase = new ObservableCollection<string> { "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" };
+        private ObservableCollection<string> _numericBase = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" };
         private ObservableCollection<string> _endian = new ObservableCollection<string> { "Big Endian", "Little Endian", "Big Endian (Swap Words)", "Big Endian (Swap Bytes)" };
         private ObservableCollection<string> _aDisplayType = new ObservableCollection<string> { "1 Char/Reg", "2 Char/Reg", "2 Char/Reg SW." };
 
@@ -422,14 +423,52 @@ namespace Schism.Models
                 {
                     ushort[] inputRegs = mM.ReadInputRegisters(0, StartAddress, Length);
 
+                    // empty 2D collection of data that will get populated
                     var newData = new List<List<StringWrapper>>();
-
                     for (int i = 0; i < 6; i++)
                         newData.Add(new List<StringWrapper>());
 
-                    for (int i = 0; i < Length; i++)
+                    //NOTE: This is where you'll implement the numeric base and endian control!
+                    // Possibly even the ASCII control as well.
+                    // You'll need to convert the received data based on that UI selection.
+                    // Each piece of data will then be converted into a string to be displayed in the UI
+
+                    // { "Decimal", "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" }
+
+                    switch (SelectedNumericBase)
                     {
-                        newData[i / 20].Add(new StringWrapper(inputRegs[i].ToString()));
+                        case "Integer":
+                            short[] holdingRegsSigned = new short[inputRegs.Length];
+                            for (int i = 0; i < Length; i++)
+                            {
+                                holdingRegsSigned[i] = (short)inputRegs[i];
+                                newData[i / 20].Add(new StringWrapper(holdingRegsSigned[i].ToString()));
+                            }
+                            break;
+                        case "Hexadecimal":
+                            for (int i = 0; i < Length; i++)
+                            {
+                                // the added "X" in the ToString parentheses does the conversion for us, since hex can't be parsed as a new numeric variable type
+                                newData[i / 20].Add(new StringWrapper("0x"+inputRegs[i].ToString("X")));
+                            }
+                            break;
+                        case "Binary":
+                            string[] holdingRegsConv = new string[inputRegs.Length];
+                            for (int i = 0; i < Length; i++)
+                            {
+                                string temp = Convert.ToString(inputRegs[i], 2); // 2 parameter converts value to a binary string
+                                string paddedTemp = temp.PadLeft(16, '0');
+                                string formattedTemp = Regex.Replace(paddedTemp, ".{4}", "$0 ").Trim();
+                                newData[i / 20].Add(new StringWrapper(formattedTemp));
+                            }
+                            break;
+                        // decimal
+                        default:
+                            for (int i = 0; i < Length; i++)
+                            {
+                                newData[i / 20].Add(new StringWrapper(inputRegs[i].ToString()));
+                            }
+                            break;
                     }
 
                     Application.Current.Dispatcher.Invoke(() =>
