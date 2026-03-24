@@ -14,18 +14,12 @@ using System.Windows;
 
 namespace Schism.Models
 {
-    
-    // Functionality yoinked and trimmed from NMODBUS Github sample project :D
-
-    //TODO:
-    // - The below methods allow for different times of data polling. Connect these methods to the UI and allow users to select which one they want to use.
-    // - Implement error injection, if not already here
 
     public class MODBUSService : INotifyPropertyChanged
     {
 
+        // INotifyPropertyChanged interface for Models
         public event PropertyChangedEventHandler? PropertyChanged;
-
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -139,26 +133,77 @@ namespace Schism.Models
 
         public byte DeviceID
         {
-            get => _deviceID;
-            set => _deviceID = value;
+            get { return _deviceID; }
+            set
+            {
+                // Min and Max boundaries on Device ID, according to MODBUS documentation
+                byte clamped = Math.Clamp(value, (byte)1, (byte)247);
+                if (_deviceID != clamped)
+                {
+                    _deviceID = clamped;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public ushort Length
         {
-            get => _length;
-            set => _length = value;
+            get { return _length; }
+            set
+            {
+                // Min and Max boundaries on Value relative to current StartAddress
+                ushort maxLen = GetMaxLengthForStartAddress();
+                ushort clampedLength = Math.Clamp(value, (ushort)1, maxLen);
+
+                if (_length != clampedLength)
+                {
+                    _length = clampedLength;
+
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public ushort StartAddress
         {
-            get => _startAddress;
-            set => _startAddress = value;
+            get { return _startAddress; }
+            set
+            {
+                // Min and Max boundaries on Starting Address, according to MODBUS documentation
+                ushort clampedStart = Math.Clamp(value, (ushort)0, (ushort)65535);
+
+                if (_startAddress != clampedStart)
+                {
+                    _startAddress = clampedStart;
+                    // When start address changes, ensure the current length does not exceed the new allowable range.
+                    ushort maxLen = GetMaxLengthForStartAddress();
+                    ushort clampedLength = Math.Clamp(_length, (ushort)1, maxLen);
+
+                    if (_length != clampedLength)
+                    {
+                        _length = clampedLength;
+                        // Notify the UI that the AddressList contents changed
+                        OnPropertyChanged(nameof(Length));
+                    }
+
+                    // Notify StartAddress changed (caller/member name handled by OnPropertyChanged call above in SetProperty,
+                    // but keeping parity with original behavior)
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public bool AsciiEnable
         {
-            get => _asciiEnable;
-            set => _asciiEnable = value;
+            get { return _asciiEnable; }
+            set
+            {
+                if (_asciiEnable != value)
+                {
+                    _asciiEnable = value;
+                }
+                OnPropertyChanged();
+            }
         }
 
         public bool IsConnected
@@ -179,7 +224,15 @@ namespace Schism.Models
         public string SelectedDataType
         {
             get => _selectedDataType;
-            set => _selectedDataType = value;
+            set
+            {
+                if (_selectedDataType != value)
+                {
+                    _selectedDataType = value;
+
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public string SelectedNumericBase
@@ -200,24 +253,29 @@ namespace Schism.Models
             set => _selectedADisplayType = value;
         }
 
-        // Results Collection
-        private ObservableCollection<StringWrapper>[] _results = new ObservableCollection<StringWrapper>[6];
+        // ModbusData Collection
+        private ObservableCollection<StringWrapper> _modbusData = new ObservableCollection<StringWrapper>();
 
-        public ObservableCollection<StringWrapper>[] Results
+        public ObservableCollection<StringWrapper> ModbusData
         {
-            get => _results;
+            get => _modbusData;
             set
             {
-                _results = value;
+                _modbusData = value;
                 OnPropertyChanged();
             }
         }
 
+        // Cleaner MVVM
+        private ushort GetMaxLengthForStartAddress()
+        {
+            ushort cap = (ushort)(65535 - _startAddress); // inclusive cap
+            return Math.Min((ushort)120, cap);
+        }
 
         // Consutrctor
         private MODBUSService()
         {
-
             IpAddress = "165.165.165.11";
             TCPPort = 502;
             ScanRate = 1000;
@@ -262,7 +320,7 @@ namespace Schism.Models
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    this.IsConnected = true;
+                    IsConnected = true;
                 });
 
                 switch (SelectedDataType)
