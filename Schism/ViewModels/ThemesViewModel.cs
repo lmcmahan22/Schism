@@ -1,45 +1,38 @@
 ﻿using Schism.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace Schism.ViewModels
 {
     public class ThemesViewModel : BindableBase
     {
-        // 
+        // INotifyPropertyChanged interface for ViewModels
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            base.RaisePropertyChanged(propertyName);
+            RaisePropertyChanged(propertyName);
         }
 
-        private readonly ThemeService _TS = ThemeService.Instance; // ThemeService is a singleton, so we access the instance directly
-
+        // View Model properties
         private string _title = "Themes";
         private ObservableCollection<string> _availableThemes;
 
+        // Service Singleton (see App.xml)
+        private readonly ThemeService _TS = ThemeService.Instance; // ThemeService is a singleton, so we access the instance directly
+
+        // Public instances of the ViewModel for control in the View
         public string Title
         {
             get { return _title; }
             set { SetProperty(ref _title, value); }
         }
 
-        public ObservableCollection<string> AvailableThemes
-        {
-            get { return _availableThemes; }
-            set { SetProperty(ref _availableThemes, value); }
-        }
+        public ObservableCollection<string> AvailableThemes => _availableThemes;
 
         public string SelectedTheme
         {
             get { return _TS.SelectedTheme; }
-            set             {
+            set 
+            {
                 if (_TS.SelectedTheme != value)
                 {
                     _TS.SelectedTheme = value;
@@ -48,30 +41,27 @@ namespace Schism.ViewModels
             }
         }
 
+        // Constructor
         public ThemesViewModel()
         {
-            // Initialize properties with default values
-            _title = "Themes";
-            _availableThemes = new ObservableCollection<string>
-            {
-                "Dark",
-                "Light"
-            };
+            // Empty, since all references to Model data will be referenced as "TS.X" in View
         }
 
-        public bool CanCloseDialog()
-        {
-            return true;
-        }
+        // IDialogAware interface. Might not be needed!
 
-        public void OnDialogClosed()
-        {
+        //public bool CanCloseDialog()
+        //{
+        //    return true;
+        //}
 
-        }
+        //public void OnDialogClosed()
+        //{
 
-        public void OnDialogOpened(IDialogParameters parameters)
-        {
+        //}
 
-        }
+        //public void OnDialogOpened(IDialogParameters parameters)
+        //{
+
+        //}
     }
 }

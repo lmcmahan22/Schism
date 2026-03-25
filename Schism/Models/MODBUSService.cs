@@ -1,14 +1,10 @@
 ﻿using NModbus;
-using NModbus.Extensions.Enron;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.DirectoryServices.ActiveDirectory;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 
@@ -18,147 +14,219 @@ namespace Schism.Models
     public class MODBUSService : INotifyPropertyChanged
     {
 
-        // INotifyPropertyChanged interface for Models
+        // Singleton instance
+        private static readonly Lazy<MODBUSService> _instance = new(() => new MODBUSService());
+        public static MODBUSService Instance => _instance.Value;
+
+        // INotifyPropertyChanged interface for Services
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        // Singleton instance
-        private static readonly Lazy<MODBUSService> _instance = new(() => new MODBUSService());
-        public static MODBUSService Instance => _instance.Value;
-
         // Private variables
-        private string _ipAddress;
+        private string _ipAddr;
         private int _tcpPort;
         private int _scanRate;
-        private int _timeout;
-        private int _pollDelay;
+        private int _tcpTimeout;
         private int _numPolls;
-        private int _numOK;
+        private int _numOKs;
         private int _numErrors;
-        private int _numTX;
-        private int _numRX;
+        private int _numTx;
+        private int _numRx;
         private int _numRequests;
         private int _numResponses;
-        private byte _deviceID;
-        private ushort _length;
+        private byte _deviceId;
+        private ushort _dataLength;
         private ushort _startAddress; // Don't worry about leading zeros, Radzio just interprets a value without leading zeros as having leading zeroes (i.e. output coil range). Don't worry aboout "Global Data" either, since again Radzio doesn't bother.
         private bool _asciiEnable;
         private bool _isConnected;
         private string _selectedDataType;
         private string _selectedNumericBase;
         private string _selectedEndian;
-        private string _selectedADisplayType;
+        private string _selectedAsciiDisplayType;
 
-        // dropdowns
-        private ObservableCollection<string> _dataType = new ObservableCollection<string> { "Coil Status", "Input Status", "Holding Registers", "Input Registers" };
-        private ObservableCollection<string> _numericBase = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" };
-        private ObservableCollection<string> _endian = new ObservableCollection<string> { "Big Endian", "Little Endian", "Big Endian (Swap Words)", "Big Endian (Swap Bytes)" };
-        private ObservableCollection<string> _aDisplayType = new ObservableCollection<string> { "1 Char/Reg", "2 Char/Reg", "2 Char/Reg SW." };
+        // dropdown contents (never change)
+        private readonly ObservableCollection<string> _dataTypes = new ObservableCollection<string> { "Coil Status", "Input Status", "Holding Registers", "Input Registers" };
+        private readonly ObservableCollection<string> _numericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" };
+        private readonly ObservableCollection<string> _endians = new ObservableCollection<string> { "Big Endian", "Little Endian", "Big Endian (Swap Words)", "Big Endian (Swap Bytes)" };
+        private readonly ObservableCollection<string> _asciiDisplayTypes = new ObservableCollection<string> { "1 Char/Reg", "2 Char/Reg", "2 Char/Reg SW." };
+
+        // ModbusData Collection
+        private ObservableCollection<StringWrapper> _modbusData = new ObservableCollection<StringWrapper>();
 
         // Properties for connection settings
-        public string IpAddress
+        public string IPAddr
         {
-            get => _ipAddress;
-            set => _ipAddress = value;
-        }
-
-        public int TCPPort
-        {
-            get => _tcpPort;
-            set => _tcpPort = value;
-        }
-
-        public int ScanRate
-        {
-            get => _scanRate;
-            set => _scanRate = value;
-        }
-
-        public int Timeout
-        {
-            get => _timeout;
-            set => _timeout = value;
-        }
-
-        public int PollDelay
-        {
-            get => _pollDelay;
-            set => _pollDelay = value;
-        }
-
-        public int NumPolls
-        {
-            get => _numPolls;
-            set => _numPolls = value;
-        }
-
-        public int NumOK
-        {
-            get => _numOK;
-            set => _numOK = value;
-        }
-
-        public int NumErrors
-        {
-            get => _numErrors;
-            set => _numErrors = value;
-        }
-
-        public int NumTX
-        {
-            get => _numTX;
-            set => _numTX = value;
-        }
-
-        public int NumRX
-        {
-            get => _numRX;
-            set => _numRX = value;
-        }
-
-        public int NumRequests
-        {
-            get => _numRequests;
-            set => _numRequests = value;
-        }
-
-        public int NumResponses
-        {
-            get => _numResponses;
-            set => _numResponses = value;
-        }
-
-        public byte DeviceID
-        {
-            get { return _deviceID; }
+            get => _ipAddr;
             set
             {
-                // Min and Max boundaries on Device ID, according to MODBUS documentation
-                byte clamped = Math.Clamp(value, (byte)1, (byte)247);
-                if (_deviceID != clamped)
+                if(_ipAddr != value)
                 {
-                    _deviceID = clamped;
+                    _ipAddr = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        public ushort Length
+        public int TCPPort
         {
-            get { return _length; }
+            get => _tcpPort;
+            set
+            {
+                if (_tcpPort != value)
+                {
+                    _tcpPort = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int ScanRate
+        {
+            get => _scanRate;
+            set
+            {
+                if (_scanRate != value)
+                {
+                    _scanRate = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int TCPTimeout
+        {
+            get => _tcpTimeout;
+            set
+            {
+                if (_tcpTimeout != value)
+                {
+                    _tcpPort = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int NumPolls
+        {
+            get => _numPolls;
+            set
+            {
+                if (_numPolls != value)
+                {
+                    _numPolls = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int NumOKs
+        {
+            get => _numOKs;
+            set
+            {
+                if (_numOKs != value)
+                {
+                    _numOKs = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int NumErrors
+        {
+            get => _numErrors;
+            set
+            {
+                if (_numErrors != value)
+                {
+                    _numErrors = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int NumTX
+        {
+            get => _numTx;
+            set
+            {
+                if (_numTx != value)
+                {
+                    _numTx = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int NumRX
+        {
+            get => _numRx;
+            set
+            {
+                if (_numRx != value)
+                {
+                    _numRx = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int NumRequests
+        {
+            get => _numRequests;
+            set
+            {
+                if (_numRequests != value)
+                {
+                    _numRequests = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int NumResponses
+        {
+            get => _numResponses;
+            set
+            {
+                if (_numResponses != value)
+                {
+                    _numResponses = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public byte DeviceId
+        {
+            get { return _deviceId; }
+            set
+            {
+                // Min and Max boundaries on Device ID, according to MODBUS documentation
+                byte clamped = Math.Clamp(value, (byte)1, (byte)247);
+                if (_deviceId != clamped)
+                {
+                    _deviceId = clamped;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public ushort DataLength
+        {
+            get { return _dataLength; }
             set
             {
                 // Min and Max boundaries on Value relative to current StartAddress
                 ushort maxLen = GetMaxLengthForStartAddress();
-                ushort clampedLength = Math.Clamp(value, (ushort)1, maxLen);
+                ushort clampedDataLength = Math.Clamp(value, (ushort)1, maxLen);
 
-                if (_length != clampedLength)
+                if (_dataLength != clampedDataLength)
                 {
-                    _length = clampedLength;
-
+                    _dataLength = clampedDataLength;
                     OnPropertyChanged();
                 }
             }
@@ -177,32 +245,27 @@ namespace Schism.Models
                     _startAddress = clampedStart;
                     // When start address changes, ensure the current length does not exceed the new allowable range.
                     ushort maxLen = GetMaxLengthForStartAddress();
-                    ushort clampedLength = Math.Clamp(_length, (ushort)1, maxLen);
+                    ushort clampedDataLength = Math.Clamp(_dataLength, (ushort)1, maxLen);
 
-                    if (_length != clampedLength)
+                    if (_dataLength != clampedDataLength)
                     {
-                        _length = clampedLength;
-                        // Notify the UI that the AddressList contents changed
-                        OnPropertyChanged(nameof(Length));
+                        _dataLength = clampedDataLength;
+                        OnPropertyChanged();
                     }
-
-                    // Notify StartAddress changed (caller/member name handled by OnPropertyChanged call above in SetProperty,
-                    // but keeping parity with original behavior)
-                    OnPropertyChanged();
                 }
             }
         }
 
         public bool AsciiEnable
         {
-            get { return _asciiEnable; }
+            get => _asciiEnable;
             set
             {
                 if (_asciiEnable != value)
                 {
                     _asciiEnable = value;
+                    OnPropertyChanged();
                 }
-                OnPropertyChanged();
             }
         }
 
@@ -211,15 +274,13 @@ namespace Schism.Models
             get => _isConnected;
             set
             {
-                _isConnected = value;
-                OnPropertyChanged();
+                if (_isConnected != value)
+                {
+                    _isConnected = value;
+                    OnPropertyChanged();
+                }
             }
         }
-
-        public ObservableCollection<string> DataType => _dataType;
-        public ObservableCollection<string> NumericBase => _numericBase;
-        public ObservableCollection<string> Endian => _endian;
-        public ObservableCollection<string> ADisplayType => _aDisplayType;
 
         public string SelectedDataType
         {
@@ -229,7 +290,6 @@ namespace Schism.Models
                 if (_selectedDataType != value)
                 {
                     _selectedDataType = value;
-
                     OnPropertyChanged();
                 }
             }
@@ -238,64 +298,71 @@ namespace Schism.Models
         public string SelectedNumericBase
         {
             get => _selectedNumericBase;
-            set => _selectedNumericBase = value;
+            set
+            {
+                if (_selectedDataType != value)
+                {
+                    _selectedDataType = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public string SelectedEndian
         {
             get => _selectedEndian;
-            set => _selectedEndian = value;
-        }
-
-        public string SelectedADisplayType
-        {
-            get => _selectedADisplayType;
-            set => _selectedADisplayType = value;
-        }
-
-        // ModbusData Collection
-        private ObservableCollection<StringWrapper> _modbusData = new ObservableCollection<StringWrapper>();
-
-        public ObservableCollection<StringWrapper> ModbusData
-        {
-            get => _modbusData;
             set
             {
-                _modbusData = value;
-                OnPropertyChanged();
+                if (_selectedEndian != value)
+                {
+                    _selectedEndian = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
-        // Cleaner MVVM
-        private ushort GetMaxLengthForStartAddress()
+        public string SelectedAsciiDisplayType
         {
-            ushort cap = (ushort)(65535 - _startAddress); // inclusive cap
-            return Math.Min((ushort)120, cap);
+            get => _selectedAsciiDisplayType;
+            set
+            {
+                if (_selectedAsciiDisplayType != value)
+                {
+                    _selectedAsciiDisplayType = value;
+                    OnPropertyChanged();
+                }
+            }
         }
+
+        // Make Observable Collections public. None of these need Getters/Setters, by nature of ObservableCollections
+        public ObservableCollection<string> DataTypes => _dataTypes;
+        public ObservableCollection<string> NumericBases => _numericBases;
+        public ObservableCollection<string> Endians => _endians;
+        public ObservableCollection<string> AsciiDisplayTypes => _asciiDisplayTypes;
+        public ObservableCollection<StringWrapper> ModbusData => _modbusData;
 
         // Consutrctor
         private MODBUSService()
         {
-            IpAddress = "165.165.165.11";
+            IPAddr = "165.165.165.11";
             TCPPort = 502;
             ScanRate = 1000;
-            Timeout = 5000;
-            PollDelay = 10;
+            TCPTimeout = 5000;
             NumPolls = 0;
-            NumOK = 0;
+            NumOKs = 0;
             NumErrors = 0;
             NumTX = 0;
             NumRX = 0;
             NumRequests = 0;
             NumResponses = 0;
-            DeviceID = 1;
-            Length = 10;
+            DeviceId = 1;
+            DataLength = 10;
             StartAddress = 0;
             AsciiEnable = false;
-            SelectedDataType = DataType.First();
-            SelectedNumericBase = NumericBase.First();
-            SelectedEndian = Endian.First();
-            SelectedADisplayType = ADisplayType.First();
+            SelectedDataType = DataTypes.First();
+            SelectedNumericBase = NumericBases.First();
+            SelectedEndian = Endians.First();
+            SelectedAsciiDisplayType = DataTypes.First();
         }
 
         public async void Connection(){
@@ -307,15 +374,15 @@ namespace Schism.Models
         {
             try
             {
-                IPAddress address = IPAddress.Parse(IpAddress);
+                IPAddress address = IPAddress.Parse(IPAddr);
                 TcpClient masterTcpClient = new TcpClient(address.ToString(), TCPPort);
                 // Create the MODBUS factory, which handles MODBUS operations
                 var factory = new ModbusFactory();
                 IModbusMaster modbusMaster = factory.CreateMaster(masterTcpClient);
 
                 // Apply configurable timeout value from the connections window
-                modbusMaster.Transport.ReadTimeout = Timeout;
-                modbusMaster.Transport.WriteTimeout = Timeout;
+                modbusMaster.Transport.ReadTimeout = TCPTimeout;
+                modbusMaster.Transport.WriteTimeout = TCPTimeout;
                 modbusMaster.Transport.Retries = 3;
 
                 Application.Current.Dispatcher.Invoke(() =>
@@ -369,28 +436,20 @@ namespace Schism.Models
             {
                 while (IsConnected)
                 {
-                    bool[] coils = mM.ReadCoils(0, StartAddress, Length);
+                    bool[] coils = mM.ReadCoils(0, StartAddress, DataLength);
                     ushort[] coilsConv = coils.Select(Convert.ToUInt16).ToArray();
 
-                    var newData = new List<List<StringWrapper>>();
+                    var newData = new ObservableCollection<StringWrapper>();
 
-                    for (int i = 0; i < 6; i++)
-                        newData.Add(new List<StringWrapper>());
-
-                    for (int i = 0; i < Length; i++)
-                    {
-                        newData[i / 20].Add(new StringWrapper(coilsConv[i].ToString()));
-                    }
+                    for (int i = 0; i < DataLength; i++)
+                        newData.Add(new StringWrapper(coilsConv[i].ToString()));
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        for (int i = 0; i < Results.Length; i++)
-                        {
-                            Results[i].Clear();
+                        _modbusData.Clear();
 
-                            foreach (var item in newData[i])
-                                Results[i].Add(item);
-                        }
+                        foreach (var item in newData)
+                            _modbusData.Add(item);
                     });
 
                     Thread.Sleep(ScanRate);
@@ -406,28 +465,20 @@ namespace Schism.Models
 
                 while (IsConnected)
                 {
-                    bool[] inputs = mM.ReadInputs(0, StartAddress, Length);
+                    bool[] inputs = mM.ReadInputs(0, StartAddress, DataLength);
                     ushort[] inputsConv = inputs.Select(Convert.ToUInt16).ToArray();
 
-                    var newData = new List<List<StringWrapper>>();
+                    var newData = new ObservableCollection<StringWrapper>();
 
-                    for (int i = 0; i < 6; i++)
-                        newData.Add(new List<StringWrapper>());
-
-                    for (int i = 0; i < Length; i++)
-                    {
-                        newData[i / 20].Add(new StringWrapper(inputsConv[i].ToString()));
-                    }
+                    for (int i = 0; i < DataLength; i++)
+                        newData.Add(new StringWrapper(inputsConv[i].ToString()));
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        for (int i = 0; i < Results.Length; i++)
-                        {
-                            Results[i].Clear();
+                        _modbusData.Clear();
 
-                            foreach (var item in newData[i])
-                                Results[i].Add(item);
-                        }
+                        foreach (var item in newData)
+                            _modbusData.Add(item);
                     });
 
                     Thread.Sleep(ScanRate);
@@ -443,27 +494,59 @@ namespace Schism.Models
             {
                 while (IsConnected)
                 {
-                    ushort[] holdingRegs = mM.ReadHoldingRegisters(0, StartAddress, Length);
+                    ushort[] holdingRegs = mM.ReadHoldingRegisters(0, StartAddress, DataLength);
 
-                    var newData = new List<List<StringWrapper>>();
+                    var newData = new ObservableCollection<StringWrapper>();
 
-                    for (int i = 0; i < 6; i++)
-                        newData.Add(new List<StringWrapper>());
+                    for (int i = 0; i < DataLength; i++)
+                        newData.Add(new StringWrapper(holdingRegs[i].ToString()));
 
-                    for (int i = 0; i < Length; i++)
+                    //NOTE: This is where you'll implement the numeric base and endian control!
+                    // Possibly even the ASCII control as well.
+                    // You'll need to convert the received data based on that UI selection.
+                    // Each piece of data will then be converted into a string to be displayed in the UI
+
+                    // { "Decimal", "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" }
+
+                    switch (SelectedNumericBase)
                     {
-                        newData[i / 20].Add(new StringWrapper(holdingRegs[i].ToString()));
+                        case "Integer":
+                            short[] holdingRegsSigned = new short[holdingRegs.Length];
+                            for (int i = 0; i < DataLength; i++)
+                            {
+                                holdingRegsSigned[i] = (short)holdingRegs[i];
+                                newData.Add(new StringWrapper(holdingRegsSigned[i].ToString()));
+                            }
+                            break;
+                        case "Hexadecimal":
+                            for (int i = 0; i < DataLength; i++)
+                            {
+                                // the added "X" in the ToString parentheses does the conversion for us, since hex can't be parsed as a new numeric variable type
+                                newData.Add(new StringWrapper("0x" + holdingRegs[i].ToString("X")));
+                            }
+                            break;
+                        case "Binary":
+                            for (int i = 0; i < DataLength; i++)
+                            {
+                                string temp = Convert.ToString(holdingRegs[i], 2); // 2 parameter converts value to a binary string
+                                string paddedTemp = temp.PadLeft(16, '0');
+                                string formattedTemp = Regex.Replace(paddedTemp, ".{4}", "$0 ").Trim();
+                                newData.Add(new StringWrapper(formattedTemp));
+                            }
+                            break;
+                        // decimal
+                        default:
+                            for (int i = 0; i < DataLength; i++)
+                                newData.Add(new StringWrapper(holdingRegs[i].ToString()));
+                            break;
                     }
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        for (int i = 0; i < Results.Length; i++)
-                        {
-                            Results[i].Clear();
+                        _modbusData.Clear();
 
-                            foreach (var item in newData[i])
-                                Results[i].Add(item);
-                        }
+                        foreach (var item in newData)
+                            _modbusData.Add(item);
                     });
 
                     Thread.Sleep(ScanRate);
@@ -479,12 +562,12 @@ namespace Schism.Models
             {
                 while (IsConnected)
                 {
-                    ushort[] inputRegs = mM.ReadInputRegisters(0, StartAddress, Length);
+                    ushort[] inputRegs = mM.ReadInputRegisters(0, StartAddress, DataLength);
 
-                    // empty 2D collection of data that will get populated
-                    var newData = new List<List<StringWrapper>>();
-                    for (int i = 0; i < 6; i++)
-                        newData.Add(new List<StringWrapper>());
+                    var newData = new ObservableCollection<StringWrapper>();
+
+                    for (int i = 0; i < DataLength; i++)
+                        newData.Add(new StringWrapper(inputRegs[i].ToString()));
 
                     //NOTE: This is where you'll implement the numeric base and endian control!
                     // Possibly even the ASCII control as well.
@@ -496,48 +579,41 @@ namespace Schism.Models
                     switch (SelectedNumericBase)
                     {
                         case "Integer":
-                            short[] holdingRegsSigned = new short[inputRegs.Length];
-                            for (int i = 0; i < Length; i++)
+                            short[] inputRegsSigned = new short[inputRegs.Length];
+                            for (int i = 0; i < DataLength; i++)
                             {
-                                holdingRegsSigned[i] = (short)inputRegs[i];
-                                newData[i / 20].Add(new StringWrapper(holdingRegsSigned[i].ToString()));
+                                inputRegsSigned[i] = (short)inputRegs[i];
+                                newData.Add(new StringWrapper(inputRegsSigned[i].ToString()));
                             }
                             break;
                         case "Hexadecimal":
-                            for (int i = 0; i < Length; i++)
+                            for (int i = 0; i < DataLength; i++)
                             {
                                 // the added "X" in the ToString parentheses does the conversion for us, since hex can't be parsed as a new numeric variable type
-                                newData[i / 20].Add(new StringWrapper("0x"+inputRegs[i].ToString("X")));
+                                newData.Add(new StringWrapper("0x"+inputRegs[i].ToString("X")));
                             }
                             break;
                         case "Binary":
-                            string[] holdingRegsConv = new string[inputRegs.Length];
-                            for (int i = 0; i < Length; i++)
+                            for (int i = 0; i < DataLength; i++)
                             {
                                 string temp = Convert.ToString(inputRegs[i], 2); // 2 parameter converts value to a binary string
                                 string paddedTemp = temp.PadLeft(16, '0');
                                 string formattedTemp = Regex.Replace(paddedTemp, ".{4}", "$0 ").Trim();
-                                newData[i / 20].Add(new StringWrapper(formattedTemp));
+                                newData.Add(new StringWrapper(formattedTemp));
                             }
                             break;
                         // decimal
                         default:
-                            for (int i = 0; i < Length; i++)
-                            {
-                                newData[i / 20].Add(new StringWrapper(inputRegs[i].ToString()));
-                            }
+                            for (int i = 0; i < DataLength; i++)
+                                newData.Add(new StringWrapper(inputRegs[i].ToString()));
                             break;
                     }
-
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        for (int i = 0; i < Results.Length; i++)
-                        {
-                            Results[i].Clear();
+                        _modbusData.Clear();
 
-                            foreach (var item in newData[i])
-                                Results[i].Add(item);
-                        }
+                        foreach (var item in newData)
+                            _modbusData.Add(item);
                     });
 
                     Thread.Sleep(ScanRate);
@@ -545,6 +621,12 @@ namespace Schism.Models
                 // Does closing the app also close and stop these?
                 mtc.Close();
             }
+        }
+
+        private ushort GetMaxLengthForStartAddress()
+        {
+            ushort cap = (ushort)(65535 - _startAddress); // inclusive cap
+            return Math.Min((ushort)120, cap);
         }
     }
 }

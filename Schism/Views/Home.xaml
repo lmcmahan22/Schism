@@ -6,7 +6,7 @@
              xmlns:viewmodels="clr-namespace:Schism.ViewModels"
              prism:ViewModelLocator.AutoWireViewModel="True"
              Height="720" Width="1280"
-             Background="{Binding MainColor, UpdateSourceTrigger=PropertyChanged}">
+             Background="{Binding TS.MainColor, UpdateSourceTrigger=PropertyChanged}">
 
     <UserControl.Resources>
         <Style TargetType="ComboBox">
@@ -33,17 +33,17 @@
 
         <CollectionViewSource x:Key="ShiftColumnView" Source="{Binding ShiftColumn}" />
         <CollectionViewSource x:Key="MODBUS_N1" Source="{Binding Names[0]}" />
-        <CollectionViewSource x:Key="MODBUS_R1" Source="{Binding Results[0]}" />
+        <CollectionViewSource x:Key="MODBUS_R1" Source="{Binding ModbusGrid[0]}" />
         <CollectionViewSource x:Key="MODBUS_N2" Source="{Binding Names[1]}" />
-        <CollectionViewSource x:Key="MODBUS_R2" Source="{Binding Results[1]}" />
+        <CollectionViewSource x:Key="MODBUS_R2" Source="{Binding ModbusGrid[1]}" />
         <CollectionViewSource x:Key="MODBUS_N3" Source="{Binding Names[2]}" />
-        <CollectionViewSource x:Key="MODBUS_R3" Source="{Binding Results[2]}" />
+        <CollectionViewSource x:Key="MODBUS_R3" Source="{Binding ModbusGrid[2]}" />
         <CollectionViewSource x:Key="MODBUS_N4" Source="{Binding Names[3]}" />
-        <CollectionViewSource x:Key="MODBUS_R4" Source="{Binding Results[3]}" />
+        <CollectionViewSource x:Key="MODBUS_R4" Source="{Binding ModbusGrid[3]}" />
         <CollectionViewSource x:Key="MODBUS_N5" Source="{Binding Names[4]}" />
-        <CollectionViewSource x:Key="MODBUS_R5" Source="{Binding Results[4]}" />
+        <CollectionViewSource x:Key="MODBUS_R5" Source="{Binding ModbusGrid[4]}" />
         <CollectionViewSource x:Key="MODBUS_N6" Source="{Binding Names[5]}" />
-        <CollectionViewSource x:Key="MODBUS_R6" Source="{Binding Results[5]}" />
+        <CollectionViewSource x:Key="MODBUS_R6" Source="{Binding ModbusGrid[5]}" />
 
         <!-- Reusable template for MODBUS Columns to remove duplication -->
         <DataTemplate x:Key="NamesColumnTemplate">
@@ -54,14 +54,14 @@
                 </Grid.RowDefinitions>
 
                 <!-- Header row: Name -->
-                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
+                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="70" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" 
-                                BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentTwoColor, UpdateSourceTrigger=PropertyChanged}" >
+                        <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" 
+                                BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentTwoColor, UpdateSourceTrigger=PropertyChanged}" >
                             <TextBlock Text="Name" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"/>
                         </Border>
                     </Grid>
@@ -77,11 +77,11 @@
                                         <ColumnDefinition Width="70" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
-                                            Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
+                                    <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
+                                            Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
                                         <TextBox Text="{Binding Value, Mode=TwoWay}" VerticalAlignment="Center" BorderBrush="Transparent"
-                                                 Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" 
-                                                 CaretBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TextColor, UpdateSourceTrigger=PropertyChanged}"/>
+                                                 Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" 
+                                                 CaretBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.TextColor, UpdateSourceTrigger=PropertyChanged}"/>
                                     </Border>
                                 </Grid>
                             </DataTemplate>
@@ -91,7 +91,7 @@
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="ResultsColumnTemplate">
+        <DataTemplate x:Key="ModbusColumnTemplate">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30" />
@@ -99,14 +99,14 @@
                 </Grid.RowDefinitions>
 
                 <!-- Header row: Name + dynamic column header bound to the hosting ContentControl.Tag -->
-                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
+                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="130" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
-                            BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentTwoColor, UpdateSourceTrigger=PropertyChanged}">
+                        <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
+                            BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentTwoColor, UpdateSourceTrigger=PropertyChanged}">
                             <!-- Bind to the hosting ContentControl.Tag so each instance can supply its own address -->
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"
                                    Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}"/>
@@ -125,8 +125,8 @@
                                         <ColumnDefinition Width="130" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
-                                        Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
+                                    <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
+                                        Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
                                         <TextBlock Text="{Binding Value}" VerticalAlignment="Center" />
                                     </Border>
                                 </Grid>
@@ -154,12 +154,12 @@
                 <MenuItem Header="_File">
                     <MenuItem Header="_Save Config" Command="{Binding Save_Click}"/>
                     <MenuItem Header="_Load Config" Command="{Binding Load_Click}"/>
-                    <Separator Background="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Separator Background="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"/>
                     <MenuItem Header="_Exit App" Command="{Binding Exit_Click}"/>
                 </MenuItem>
                 <MenuItem Header="_Connection">
                     <MenuItem Header="_Toggle" Command="{Binding Conn_Click}"/>
-                    <Separator Background="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Separator Background="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"/>
                     <MenuItem Header="_Settings" Command="{Binding Sett_Click}"/>
                 </MenuItem>
                 <MenuItem Header="_Simulation">
@@ -198,14 +198,14 @@
                         <Button Name="Load" ToolTip="Load Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="55,5,0,5" Command="{Binding Load_Click}">
                             <Image Source="/Images/Load.png" />
                         </Button>
-                        <Separator Background="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="100,5,0,5" VerticalAlignment="Center" HorizontalAlignment="Left" Width="2" Height="25"/>
+                        <Separator Background="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="100,5,0,5" VerticalAlignment="Center" HorizontalAlignment="Left" Width="2" Height="25"/>
                         <Button ToolTip="Connect" HorizontalAlignment="Left" Width="40" Margin="107,5,0,5" Command="{Binding Conn_Click}">
                             <Image>
                                 <Image.Style>
                                     <Style TargetType="Image">
                                         <Setter Property="Source" Value="/Images/Disconnect.png"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ConnectStatus}" Value="True">
+                                            <DataTrigger Binding="{Binding MS.IsConnected}" Value="True">
                                                 <Setter Property="Source" Value="/Images/Connected.png"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -218,7 +218,7 @@
                         </Button>
                     </Grid>
                     <Grid Grid.Row="1">
-                        <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,0,5,5" Background="{Binding AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
+                        <Border BorderBrush="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,0,5,5" Background="{Binding TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
                             <StackPanel>
                                 <TextBlock Text="Device Settings" FontSize="16" FontWeight="Bold"/>
                                 <Grid>
@@ -233,19 +233,23 @@
                                     </Grid.ColumnDefinitions>
                                     <Grid Grid.Row="0" Grid.Column="0">
                                         <TextBlock Text="Device ID" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                        <TextBox Text="{Binding DeviceID, UpdateSourceTrigger=LostFocus}" Margin="70,0,0,2" Width="60" Height="26" MaxLength="3" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14"/>
+                                        <TextBox Text="{Binding MS.DeviceId, UpdateSourceTrigger=LostFocus}" Margin="70,0,0,2" Width="60" Height="26" MaxLength="3" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14"/>
                                     </Grid>
                                     <Grid Grid.Row="0" Grid.Column="1">
                                         <TextBlock Text="Length" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                        <TextBox Text="{Binding Length, UpdateSourceTrigger=LostFocus}" Margin="80,0,5,0" Width="65" Height="25" MaxLength="3" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                        <TextBox Text="{Binding MS.DataLength, UpdateSourceTrigger=LostFocus}" Margin="80,0,5,0" Width="65" Height="25" MaxLength="3" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                                     </Grid>
                                     <Grid Grid.Row="1" Grid.Column="0">
                                         <TextBlock Text="Address" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                        <TextBox Text="{Binding StartAddress, UpdateSourceTrigger=LostFocus}" Margin="70,0,5,0" Width="60" Height="25" MaxLength="5" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                        <TextBox Text="{Binding MS.StartAddress, UpdateSourceTrigger=LostFocus}" Margin="70,0,5,0" Width="60" Height="25" MaxLength="5" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                                     </Grid>
                                     <Grid Grid.Row="1" Grid.Column="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="23*"/>
+                                            <ColumnDefinition Width="24*"/>
+                                        </Grid.ColumnDefinitions>
                                         <TextBlock Text="Data Type" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                        <ComboBox Name="DataType" ItemsSource="{Binding DataType, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedDataType, Mode=TwoWay}" Margin="80,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="25" FontSize="14"/>
+                                        <ComboBox Name="DataType" ItemsSource="{Binding MS.DataTypes, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding MS.SelectedDataType}" Margin="80,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="26" FontSize="14" Grid.ColumnSpan="2"/>
                                     </Grid>
                                 </Grid>
                             </StackPanel>
@@ -254,7 +258,7 @@
                 </Grid>
             </Grid>
             <Grid Grid.Column="1">
-                <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
+                <Border BorderBrush="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
                     <StackPanel>
                         <TextBlock Text="Display Options" FontSize="16" FontWeight="Bold"/>
                         <Grid Margin="5,0,0,0">
@@ -271,23 +275,23 @@
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
                                 <TextBlock Text="Address Convention" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="AddressConv" ItemsSource="{Binding AddressConvention, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedAddressConvention, Mode=TwoWay}" Margin="135,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="425" Height="25" FontSize="14"/>
+                                <ComboBox Name="AddressConv" ItemsSource="{Binding AddressConventions, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedAddressConvention, Mode=TwoWay}" Margin="135,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="425" Height="25" FontSize="14"/>
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="0">
                                 <TextBlock Text="Numeric Base" Margin="2,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding NonBoolData}" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="BaseSystem" ItemsSource="{Binding NumericBase, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedNumericBase, Mode=TwoWay}" IsEnabled="{Binding NonBoolData}" Margin="135,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14" SelectionChanged="BaseSystem_SelectionChanged"/>
+                                <ComboBox Name="BaseSystem" ItemsSource="{Binding MS.NumericBases, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding MS.SelectedNumericBase, Mode=TwoWay}" IsEnabled="{Binding NonBoolData}" Margin="135,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14" SelectionChanged="BaseSystem_SelectionChanged"/>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="0">
                                 <TextBlock Text="Endian" Margin="2,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding NonBoolData}" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="Endian" ItemsSource="{Binding Endian, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedEndian, Mode=TwoWay}" IsEnabled="{Binding NonBoolData}" Margin="135,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14"/>
+                                <ComboBox Name="Endian" ItemsSource="{Binding MS.Endians, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding MS.SelectedEndian, Mode=TwoWay}" IsEnabled="{Binding NonBoolData}" Margin="135,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14"/>
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="1">
                                 <TextBlock Text="ASCII Display" Margin="10,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding NonBoolData}" HorizontalAlignment="Left" FontSize="14"/>
-                                <CheckBox IsChecked="{Binding ASCIIEnable, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding NonBoolData}" Content="Enable" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                <CheckBox IsChecked="{Binding MS.AsciiEnable, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding NonBoolData}" Content="Enable" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="1">
                                 <TextBlock Text="Display Type" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding NonBoolData}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="ASCIIType" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding ADisplayType}" IsEnabled="{Binding NonBoolData}" SelectedValue="{Binding SelectedADisplayType, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="130" Height="25" FontSize="14"/>
+                                <ComboBox Name="ASCIIType" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding MS.AsciiDisplayTypes}" IsEnabled="{Binding NonBoolData}" SelectedValue="{Binding MS.SelectedADisplayType, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="130" Height="25" FontSize="14"/>
                             </Grid>
                         </Grid>
                     </StackPanel>
@@ -298,7 +302,7 @@
             </Grid>
         </Grid>
         <Grid Grid.Row="2">
-            <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1">
+            <Border BorderBrush="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1">
                 <StackPanel>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -348,7 +352,7 @@
                             </Grid.RowDefinitions>
 
                             <!-- Header -->
-                            <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Background="{Binding AccentTwoColor, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0">
+                            <Border BorderBrush="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Background="{Binding TS.AccentTwoColor, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0">
                                 <TextBlock Text="Shift" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
                             </Border>
 
@@ -365,8 +369,8 @@
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="21"/>
                                                 </Grid.RowDefinitions>
-                                                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
-                                                        Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
+                                                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
+                                                        Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
                                                     <TextBlock Text="{Binding Value}" VerticalAlignment="Center" />
                                                 </Border>
                                             </Grid>
@@ -384,8 +388,8 @@
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
                         <ContentControl Grid.Row="0" Grid.Column="2" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[0]}"
-                                        Content="{Binding Results[0]}"
-                                        ContentTemplate="{StaticResource ResultsColumnTemplate}"
+                                        Content="{Binding ModbusGrid[0]}"
+                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[0], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         <ContentControl Grid.Row="0" Grid.Column="3" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[1]}"
@@ -393,8 +397,8 @@
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
                         <ContentControl Grid.Row="0" Grid.Column="4" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[1]}"
-                                        Content="{Binding Results[1]}"
-                                        ContentTemplate="{StaticResource ResultsColumnTemplate}"
+                                        Content="{Binding ModbusGrid[1]}"
+                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[1], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         <ContentControl Grid.Row="0" Grid.Column="5" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[2]}"
@@ -402,8 +406,8 @@
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
                         <ContentControl Grid.Row="0" Grid.Column="6" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[2]}"
-                                        Content="{Binding Results[2]}"
-                                        ContentTemplate="{StaticResource ResultsColumnTemplate}"
+                                        Content="{Binding ModbusGrid[2]}"
+                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[2], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         <ContentControl Grid.Row="0" Grid.Column="7" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[3]}"
@@ -411,8 +415,8 @@
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
                         <ContentControl Grid.Row="0" Grid.Column="8" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[3]}"
-                                        Content="{Binding Results[3]}"
-                                        ContentTemplate="{StaticResource ResultsColumnTemplate}"
+                                        Content="{Binding ModbusGrid[3]}"
+                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[3], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         <ContentControl Grid.Row="0" Grid.Column="9" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[4]}"
@@ -420,8 +424,8 @@
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
                         <ContentControl Grid.Row="0" Grid.Column="10" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[4]}"
-                                        Content="{Binding Results[4]}"
-                                        ContentTemplate="{StaticResource ResultsColumnTemplate}"
+                                        Content="{Binding ModbusGrid[4]}"
+                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[4], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         <ContentControl Grid.Row="0" Grid.Column="11" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[5]}"
@@ -429,15 +433,15 @@
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
                         <ContentControl Grid.Row="0" Grid.Column="12" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[5]}"
-                                        Content="{Binding Results[5]}"
-                                        ContentTemplate="{StaticResource ResultsColumnTemplate}"
+                                        Content="{Binding ModbusGrid[5]}"
+                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[5], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     </Grid>
                 </StackPanel>
             </Border>
         </Grid>
         <Grid Grid.Row="3">
-            <Border BorderBrush="{Binding AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,10" CornerRadius="1" Background="{Binding AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
+            <Border BorderBrush="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,10" CornerRadius="1" Background="{Binding TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
                 <StackPanel>
                     <Grid>
                         <Grid.RowDefinitions>

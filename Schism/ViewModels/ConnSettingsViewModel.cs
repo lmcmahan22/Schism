@@ -1,120 +1,55 @@
 ﻿using Schism.Models;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Schism.ViewModels
 {
-    public class ConnSettingsViewModel : BindableBase, IDialogAware
+    public class ConnSettingsViewModel : BindableBase
     {
 
-        private readonly MODBUSService _MS = MODBUSService.Instance; // MODBUSService is a singleton, so we access the instance directly
-
-        // The helper method to raise the event
+        // INotifyPropertyChanged interface for ViewModels
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-           base.RaisePropertyChanged(propertyName);
+            RaisePropertyChanged(propertyName);
         }
 
+        // View Model properties
         private string _title = "Connection Settings";
-        
 
+        // Service Singletons (see App.xml, Themes isn't implemented yet)
+        // public ThemeService TS => ThemeService.Instance; // ThemeService is a singleton, so we access the instance directly
+        public MODBUSService MS => MODBUSService.Instance; // MODBUSService is a singleton, so we access the instance directly
+
+        // Public instances of the ViewModel for control in the View
         public string Title
         {
             get => _title;
             set => SetProperty(ref _title, value);
         }
 
-        public string IPAddress
-        {
-            get => _MS.IpAddress;
-            set
-            {
-                if (_MS.IpAddress != value)
-                {
-                    _MS.IpAddress = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public int TCPPort
-        {
-            get => _MS.TCPPort;
-            set
-            {
-                if (_MS.TCPPort != value)
-                {
-                    _MS.TCPPort = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public int ScanRate
-        {
-            get => _MS.ScanRate;
-            set
-            {
-                if (_MS.ScanRate != value)
-                {
-                    _MS.ScanRate = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public int Timeout
-        {
-            get => _MS.Timeout;
-            set
-            {
-                if (_MS.Timeout != value)
-                {
-                    _MS.Timeout = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public int PollDelay
-        {
-            get => _MS.PollDelay;
-            set
-            {
-                if (_MS.PollDelay != value)
-                {
-                    _MS.PollDelay = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
         // Constructor
         public ConnSettingsViewModel()
         {
-            // Blank
+            // Empty, since all references to Model data will be referenced as "MS.X" in View
         }
 
-        public DialogCloseListener RequestClose => throw new NotImplementedException();
 
-        public bool CanCloseDialog()
-        {
-            return true;
-        }
+        // IDialogAware interface. Might not be needed!
 
-        public void OnDialogClosed()
-        {
+        //public DialogCloseListener RequestClose => throw new NotImplementedException();
 
-        }
+        //public bool CanCloseDialog()
+        //{
+        //    return true;
+        //}
 
-        public void OnDialogOpened(IDialogParameters parameters)
-        {
+        //public void OnDialogClosed()
+        //{
 
-        }
+        //}
+
+        //public void OnDialogOpened(IDialogParameters parameters)
+        //{
+
+        //}
     }
 }
