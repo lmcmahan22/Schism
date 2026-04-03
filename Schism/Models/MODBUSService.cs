@@ -103,7 +103,7 @@ namespace Schism.Models
             {
                 if (_tcpTimeout != value)
                 {
-                    _tcpPort = value;
+                    _tcpTimeout = value;
                     OnPropertyChanged();
                 }
             }
@@ -300,9 +300,9 @@ namespace Schism.Models
             get => _selectedNumericBase;
             set
             {
-                if (_selectedDataType != value)
+                if (_selectedNumericBase != value)
                 {
-                    _selectedDataType = value;
+                    _selectedNumericBase = value;
                     OnPropertyChanged();
                 }
             }
@@ -362,7 +362,7 @@ namespace Schism.Models
             SelectedDataType = DataTypes.First();
             SelectedNumericBase = NumericBases.First();
             SelectedEndian = Endians.First();
-            SelectedAsciiDisplayType = DataTypes.First();
+            SelectedAsciiDisplayType = AsciiDisplayTypes.First();
         }
 
         public async void Connection(){

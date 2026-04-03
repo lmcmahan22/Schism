@@ -14,31 +14,15 @@ namespace Schism.ViewModels
 
         // View Model properties
         private string _title = "Themes";
-        private ObservableCollection<string> _availableThemes;
 
         // Service Singleton (see App.xml)
-        private readonly ThemeService _TS = ThemeService.Instance; // ThemeService is a singleton, so we access the instance directly
+        public ThemeService TS => ThemeService.Instance; // ThemeService is a singleton, so we access the instance directly
 
         // Public instances of the ViewModel for control in the View
         public string Title
         {
             get { return _title; }
             set { SetProperty(ref _title, value); }
-        }
-
-        public ObservableCollection<string> AvailableThemes => _availableThemes;
-
-        public string SelectedTheme
-        {
-            get { return _TS.SelectedTheme; }
-            set 
-            {
-                if (_TS.SelectedTheme != value)
-                {
-                    _TS.SelectedTheme = value;
-                    OnPropertyChanged();
-                }
-            }
         }
 
         // Constructor

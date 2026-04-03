@@ -6,7 +6,7 @@
              xmlns:viewmodels="clr-namespace:Schism.ViewModels"
              prism:ViewModelLocator.AutoWireViewModel="True"
              Height="720" Width="1280"
-             Background="{Binding TS.MainColor, UpdateSourceTrigger=PropertyChanged}">
+             Background="{Binding TS.Main, UpdateSourceTrigger=PropertyChanged}">
 
     <UserControl.Resources>
         <Style TargetType="ComboBox">
@@ -54,14 +54,14 @@
                 </Grid.RowDefinitions>
 
                 <!-- Header row: Name -->
-                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
+                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="70" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" 
-                                BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentTwoColor, UpdateSourceTrigger=PropertyChanged}" >
+                        <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}" 
+                                BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent2, UpdateSourceTrigger=PropertyChanged}" >
                             <TextBlock Text="Name" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"/>
                         </Border>
                     </Grid>
@@ -77,10 +77,10 @@
                                         <ColumnDefinition Width="70" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
-                                            Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
+                                    <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}"
+                                            Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent1, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
                                         <TextBox Text="{Binding Value, Mode=TwoWay}" VerticalAlignment="Center" BorderBrush="Transparent"
-                                                 Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent1, UpdateSourceTrigger=PropertyChanged}" 
                                                  CaretBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.TextColor, UpdateSourceTrigger=PropertyChanged}"/>
                                     </Border>
                                 </Grid>
@@ -99,14 +99,14 @@
                 </Grid.RowDefinitions>
 
                 <!-- Header row: Name + dynamic column header bound to the hosting ContentControl.Tag -->
-                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
+                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="130" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
-                            BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentTwoColor, UpdateSourceTrigger=PropertyChanged}">
+                        <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}"
+                            BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent2, UpdateSourceTrigger=PropertyChanged}">
                             <!-- Bind to the hosting ContentControl.Tag so each instance can supply its own address -->
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"
                                    Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}"/>
@@ -125,8 +125,8 @@
                                         <ColumnDefinition Width="130" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
-                                        Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
+                                    <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}"
+                                        Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent1, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
                                         <TextBlock Text="{Binding Value}" VerticalAlignment="Center" />
                                     </Border>
                                 </Grid>
@@ -154,12 +154,12 @@
                 <MenuItem Header="_File">
                     <MenuItem Header="_Save Config" Command="{Binding Save_Click}"/>
                     <MenuItem Header="_Load Config" Command="{Binding Load_Click}"/>
-                    <Separator Background="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Separator Background="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}"/>
                     <MenuItem Header="_Exit App" Command="{Binding Exit_Click}"/>
                 </MenuItem>
                 <MenuItem Header="_Connection">
                     <MenuItem Header="_Toggle" Command="{Binding Conn_Click}"/>
-                    <Separator Background="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Separator Background="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}"/>
                     <MenuItem Header="_Settings" Command="{Binding Sett_Click}"/>
                 </MenuItem>
                 <MenuItem Header="_Simulation">
@@ -198,7 +198,7 @@
                         <Button Name="Load" ToolTip="Load Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="55,5,0,5" Command="{Binding Load_Click}">
                             <Image Source="/Images/Load.png" />
                         </Button>
-                        <Separator Background="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="100,5,0,5" VerticalAlignment="Center" HorizontalAlignment="Left" Width="2" Height="25"/>
+                        <Separator Background="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="100,5,0,5" VerticalAlignment="Center" HorizontalAlignment="Left" Width="2" Height="25"/>
                         <Button ToolTip="Connect" HorizontalAlignment="Left" Width="40" Margin="107,5,0,5" Command="{Binding Conn_Click}">
                             <Image>
                                 <Image.Style>
@@ -218,7 +218,7 @@
                         </Button>
                     </Grid>
                     <Grid Grid.Row="1">
-                        <Border BorderBrush="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,0,5,5" Background="{Binding TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
+                        <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,0,5,5" Background="{Binding TS.Accent1, UpdateSourceTrigger=PropertyChanged}">
                             <StackPanel>
                                 <TextBlock Text="Device Settings" FontSize="16" FontWeight="Bold"/>
                                 <Grid>
@@ -244,10 +244,6 @@
                                         <TextBox Text="{Binding MS.StartAddress, UpdateSourceTrigger=LostFocus}" Margin="70,0,5,0" Width="60" Height="25" MaxLength="5" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                                     </Grid>
                                     <Grid Grid.Row="1" Grid.Column="1">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="23*"/>
-                                            <ColumnDefinition Width="24*"/>
-                                        </Grid.ColumnDefinitions>
                                         <TextBlock Text="Data Type" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                                         <ComboBox Name="DataType" ItemsSource="{Binding MS.DataTypes, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding MS.SelectedDataType}" Margin="80,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="26" FontSize="14" Grid.ColumnSpan="2"/>
                                     </Grid>
@@ -258,7 +254,7 @@
                 </Grid>
             </Grid>
             <Grid Grid.Column="1">
-                <Border BorderBrush="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
+                <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding TS.Accent1, UpdateSourceTrigger=PropertyChanged}">
                     <StackPanel>
                         <TextBlock Text="Display Options" FontSize="16" FontWeight="Bold"/>
                         <Grid Margin="5,0,0,0">
@@ -291,7 +287,7 @@
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="1">
                                 <TextBlock Text="Display Type" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding NonBoolData}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="ASCIIType" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding MS.AsciiDisplayTypes}" IsEnabled="{Binding NonBoolData}" SelectedValue="{Binding MS.SelectedADisplayType, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="130" Height="25" FontSize="14"/>
+                                <ComboBox Name="ASCIIType" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding MS.AsciiDisplayTypes}" IsEnabled="{Binding NonBoolData}" SelectedValue="{Binding MS.SelectedAsciiDisplayType, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="130" Height="25" FontSize="14"/>
                             </Grid>
                         </Grid>
                     </StackPanel>
@@ -302,7 +298,7 @@
             </Grid>
         </Grid>
         <Grid Grid.Row="2">
-            <Border BorderBrush="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1">
+            <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1">
                 <StackPanel>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -352,7 +348,7 @@
                             </Grid.RowDefinitions>
 
                             <!-- Header -->
-                            <Border BorderBrush="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Background="{Binding TS.AccentTwoColor, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0">
+                            <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Background="{Binding TS.Accent2, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0">
                                 <TextBlock Text="Shift" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
                             </Border>
 
@@ -369,8 +365,8 @@
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="21"/>
                                                 </Grid.RowDefinitions>
-                                                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}"
-                                                        Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
+                                                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}"
+                                                        Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent1, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1">
                                                     <TextBlock Text="{Binding Value}" VerticalAlignment="Center" />
                                                 </Border>
                                             </Grid>
@@ -441,7 +437,7 @@
             </Border>
         </Grid>
         <Grid Grid.Row="3">
-            <Border BorderBrush="{Binding TS.AccentThreeColor, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,10" CornerRadius="1" Background="{Binding TS.AccentOneColor, UpdateSourceTrigger=PropertyChanged}">
+            <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,10" CornerRadius="1" Background="{Binding TS.Accent1, UpdateSourceTrigger=PropertyChanged}">
                 <StackPanel>
                     <Grid>
                         <Grid.RowDefinitions>

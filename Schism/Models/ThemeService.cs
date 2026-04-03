@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -23,6 +24,7 @@ namespace Schism.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private ObservableCollection<string> _availableThemes = new ObservableCollection<string> { "Dark", "Light" }; // Example themes
         private string _selectedTheme;
         private Brush _main;
         private Brush _accent1;
@@ -31,6 +33,8 @@ namespace Schism.Models
         private Brush _textColor;
 
         // Do these need to call "OnPropertyChanged()"? I'm not so sure atm...
+        public ObservableCollection<string> AvailableThemes => _availableThemes;
+
         public string SelectedTheme
         {
             get => _selectedTheme;
@@ -107,7 +111,7 @@ namespace Schism.Models
 
         public ThemeService() {
 
-            SelectedTheme = "Dark";
+            SelectedTheme = AvailableThemes.First();
             Main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
             Accent1 = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
             Accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));

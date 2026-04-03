@@ -84,7 +84,11 @@ namespace Schism.ViewModels
         public string SelectedAddressConvention
         {
             get => _selectedAddressConvention;
-            set => SetProperty(ref _selectedAddressConvention, value);
+            set
+            {
+                SetProperty(ref _selectedAddressConvention, value);
+                UpdateModbusTable(); // Ensure the table updates immediately when the address convention is changed, since this changes the content of the shift column!
+            }
         }
 
         // Grid collections
@@ -96,6 +100,7 @@ namespace Schism.ViewModels
         public HomeViewModel(IDialogService dialogService)
         {
             MS.PropertyChanged += MS_PropertyChanged;
+            UpdateModbusTable(); // Build the initial table based on default parameters in the Model
         }
 
         private void MS_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -104,14 +109,34 @@ namespace Schism.ViewModels
             if (e.PropertyName is nameof(MS.DataLength) or 
                 nameof(MS.ModbusData) or 
                 nameof(MS.DeviceId) or 
-                nameof(MS.StartAddress) or 
-                nameof(MS.AsciiEnable) or
                 nameof(MS.IsConnected) or 
-                nameof(MS.SelectedDataType) or 
                 nameof(MS.SelectedNumericBase) or 
                 nameof(MS.SelectedEndian) or 
                 nameof(MS.SelectedAsciiDisplayType))
                     UpdateModbusTable();
+
+            if (e.PropertyName is nameof(MS.SelectedDataType))
+            {
+                NonBoolData = MS.SelectedDataType is "Holding Registers" or "Input Registers";
+                UpdateModbusTable();
+            }
+
+            if (e.PropertyName is nameof(MS.AsciiEnable))
+            {
+                ADisplayTypeDropDown = MS.AsciiEnable ? Visibility.Visible : Visibility.Hidden; // Ensure the ADisplayType dropdown visibility is consistent with the ASCIIEnable value
+                UpdateModbusTable();
+            }
+
+            if (e.PropertyName is nameof(MS.StartAddress))
+            {
+                for(int i = 0; i < AddressList.Length; i++)
+                {
+                    int addr = MS.StartAddress + (i * 20);
+                    AddressList[i] = addr.ToString();
+                }
+                OnPropertyChanged(nameof(AddressList)); // Notify the UI that the address list has been updated
+                UpdateModbusTable();
+            }
         }
 
         //private void TS_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -161,7 +186,7 @@ namespace Schism.ViewModels
                 Names[i].Clear();
             }
 
-            // Loop through each column of the current ModbusData collection.
+            // Loop through each column of the current ModbusData collection and clear them.
             // If any columns are null (somehow), create the collection there
             for (int i = 0; i < ModbusGrid.Length; i++)
             {
@@ -178,9 +203,18 @@ namespace Schism.ViewModels
                 var reqRows = Math.Min((MS.DataLength - 20 * i), 20); // Calculate how many rows we need in the last column (or 20 if length is greater than 20)
                 for (int j = 0; j < reqRows; j++)
                 {
-                    string name = namesCache[(i * 20) + j];
-                    StringWrapper data = MS.ModbusData.ElementAt((i * 20) + j);
-                    Names[i].Add(new StringWrapper(name));
+                    int idx = (i * 20) + j;
+                    StringWrapper name = new StringWrapper(namesCache[idx]);
+
+                    // Only try to pull MODBUS data if we have a connection!
+                    StringWrapper data;
+                    if (MS.IsConnected)
+                        // Retrieve existing item if present; otherwise create one instance
+                        data = MS.ModbusData[idx] ?? new StringWrapper("");
+                    else
+                        data = new StringWrapper("");
+
+                    Names[i].Add(name);
                     ModbusGrid[i].Add(data);
                 }
             }
@@ -190,7 +224,6 @@ namespace Schism.ViewModels
             OnPropertyChanged(nameof(ShiftColumn));
             OnPropertyChanged(nameof(Names)); // Might not be needed, since this is an ObservableCollection...
             OnPropertyChanged(nameof(ModbusGrid)); // Might not be needed, since this is an ObservableCollection...
-
         }
 
 
