@@ -231,7 +231,7 @@ namespace Schism.ViewModels
         private void UpdateModbusData()
         {
             // Update columns for the configured length
-            var numCols = ModbusGrid.Length;
+            var numCols = _modbusGrid.Length;
             for (int i = 0; i < numCols; i++)
             {
                 var numRows = _modbusGrid[i].Count; // Get the number of rows currently displayed in this column
@@ -247,7 +247,7 @@ namespace Schism.ViewModels
                     else
                         data = new StringWrapper("");
 
-                    ModbusGrid[i][j] = data;
+                    _modbusGrid[i][j] = data;
                 }
             }
 
@@ -415,16 +415,11 @@ namespace Schism.ViewModels
 
         void Execute_Conn_Click()
         {
-            // TODO: Implement connection logic
-            if(MS.IsConnected == false)
-            {
-                MS.Connection();
-            }
+            // Looks a bit strange, but effectively works as a toggle! Press it once to connect, press it again to stop.
+            if (MS.AttemptConnect)
+                MS.AttemptConnect = false;
             else
-            {
-                // setting this to false will trigger the disconnect on the parallel thread's while loop!
-                MS.IsConnected = false;
-            }
+                MS.Connection();
         }
 
         public DelegateCommand Sett_Click =>

@@ -193,7 +193,7 @@
                                     <Style TargetType="Image">
                                         <Setter Property="Source" Value="/Images/Disconnect.png"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding MS.IsConnected}" Value="True">
+                                            <DataTrigger Binding="{Binding MS.AttemptConnect}" Value="True">
                                                 <Setter Property="Source" Value="/Images/Connected.png"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -444,15 +444,18 @@
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Row="0" Grid.Column="0">
                             <!--<TextBlock Text="{Binding NumPolls, StringFormat=Polls: {}}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
-                            <TextBlock Text="Polls: 0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock Text="Polls:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock Text="{Binding MS.NumPolls}" Margin="60,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
                         </Grid>
                         <Grid Grid.Row="0" Grid.Column="1">
                             <!--<TextBlock Text="{Binding NumOK, StringFormat=OK: {}}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
-                            <TextBlock Text="OK: 0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock Text="OK:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock Text="{Binding MS.NumOKs}" Margin="50,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
                         </Grid>
                         <Grid Grid.Row="0" Grid.Column="2">
                             <!--<TextBlock Text="{Binding NumErrors, StringFormat=Error: {}}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
-                            <TextBlock Text="Errors: 0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock Text="Errors:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock Text="{Binding MS.NumErrors}" Margin="70,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
                         </Grid>
                         <Grid Grid.Row="0" Grid.Column="4">
                             <!--<TextBlock Text="{Binding NumTX, StringFormat=Tx: {} B}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
