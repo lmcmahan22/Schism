@@ -10,13 +10,11 @@ using System.Windows;
 
 namespace Schism.Models
 {
-
     public class MODBUSService : INotifyPropertyChanged
     {
-
+        
         // Singleton instance
-        private static readonly Lazy<MODBUSService> _instance = new(() => new MODBUSService());
-        public static MODBUSService Instance => _instance.Value;
+        public static MODBUSService Instance { get; } = new();
 
         // INotifyPropertyChanged interface for Services
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -243,14 +241,15 @@ namespace Schism.Models
                 if (_startAddress != clampedStart)
                 {
                     _startAddress = clampedStart;
-                    // When start address changes, ensure the current length does not exceed the new allowable range.
+                    OnPropertyChanged(nameof(StartAddress)); // notify StartAddress
+
                     ushort maxLen = GetMaxLengthForStartAddress();
                     ushort clampedDataLength = Math.Clamp(_dataLength, (ushort)1, maxLen);
 
                     if (_dataLength != clampedDataLength)
                     {
                         _dataLength = clampedDataLength;
-                        OnPropertyChanged();
+                        OnPropertyChanged(nameof(DataLength)); // notify DataLength
                     }
                 }
             }
@@ -339,30 +338,33 @@ namespace Schism.Models
         public ObservableCollection<string> NumericBases => _numericBases;
         public ObservableCollection<string> Endians => _endians;
         public ObservableCollection<string> AsciiDisplayTypes => _asciiDisplayTypes;
+
+        // ModbusData ObservableCollection, which will have its data manipulated by this class.
+        // This is the collection that the UI will bind to in order to display the received data. Whenever this collection is updated, the UI will automatically reflect those changes.
         public ObservableCollection<StringWrapper> ModbusData => _modbusData;
 
         // Consutrctor
         private MODBUSService()
         {
-            IPAddr = "165.165.165.11";
-            TCPPort = 502;
-            ScanRate = 1000;
-            TCPTimeout = 5000;
-            NumPolls = 0;
-            NumOKs = 0;
-            NumErrors = 0;
-            NumTX = 0;
-            NumRX = 0;
-            NumRequests = 0;
-            NumResponses = 0;
-            DeviceId = 1;
-            DataLength = 10;
-            StartAddress = 0;
-            AsciiEnable = false;
-            SelectedDataType = DataTypes.First();
-            SelectedNumericBase = NumericBases.First();
-            SelectedEndian = Endians.First();
-            SelectedAsciiDisplayType = AsciiDisplayTypes.First();
+            _ipAddr = "165.165.165.11";
+            _tcpPort = 502;
+            _scanRate = 1000;
+            _tcpTimeout = 5000;
+            _numPolls = 0;
+            _numOKs = 0;
+            _numErrors = 0;
+            _numTx = 0;
+            _numRx = 0;
+            _numRequests = 0;
+            _numResponses = 0;
+            _deviceId = 1;
+            _dataLength = 10;
+            _startAddress = 0;
+            _asciiEnable = false;
+            _selectedDataType = DataTypes.First();
+            _selectedNumericBase = NumericBases.First();
+            _selectedEndian = Endians.First();
+            _selectedAsciiDisplayType = AsciiDisplayTypes.First();
         }
 
         public async void Connection(){
@@ -374,23 +376,24 @@ namespace Schism.Models
         {
             try
             {
-                IPAddress address = IPAddress.Parse(IPAddr);
-                TcpClient masterTcpClient = new TcpClient(address.ToString(), TCPPort);
+                IPAddress address = IPAddress.Parse(_ipAddr);
+                TcpClient masterTcpClient = new TcpClient(address.ToString(), _tcpPort);
                 // Create the MODBUS factory, which handles MODBUS operations
                 var factory = new ModbusFactory();
                 IModbusMaster modbusMaster = factory.CreateMaster(masterTcpClient);
 
                 // Apply configurable timeout value from the connections window
-                modbusMaster.Transport.ReadTimeout = TCPTimeout;
-                modbusMaster.Transport.WriteTimeout = TCPTimeout;
+                modbusMaster.Transport.ReadTimeout = _tcpTimeout;
+                modbusMaster.Transport.WriteTimeout = _tcpTimeout;
                 modbusMaster.Transport.Retries = 3;
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    IsConnected = true;
+                    _isConnected = true;
+                    OnPropertyChanged(nameof(IsConnected));
                 });
 
-                switch (SelectedDataType)
+                switch (_selectedDataType)
                 {
                     //{ "Coil Status", "Input Status", "Holding Registers", "Input Registers" }
                     case "Coil Status":
@@ -415,7 +418,8 @@ namespace Schism.Models
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    this.IsConnected = false;
+                    _isConnected = false;
+                    OnPropertyChanged(nameof(IsConnected));
                 });
                 MessageBox.Show($"Application MODBUS Timeout Failure: \n Timeout period reached during all 3 connection attempts. \n");
             }
@@ -424,7 +428,8 @@ namespace Schism.Models
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    this.IsConnected = false;
+                    _isConnected = false;
+                    OnPropertyChanged(nameof(IsConnected));
                 });
                 MessageBox.Show($"Unknown Application/MODBUS Failure: \n" + e.Message);
             }
@@ -434,25 +439,23 @@ namespace Schism.Models
         {
             using (mtc)
             {
-                while (IsConnected)
+                while (_isConnected)
                 {
-                    bool[] coils = mM.ReadCoils(0, StartAddress, DataLength);
+                    bool[] coils = mM.ReadCoils(0, _startAddress, _dataLength);
                     ushort[] coilsConv = coils.Select(Convert.ToUInt16).ToArray();
 
                     var newData = new ObservableCollection<StringWrapper>();
 
-                    for (int i = 0; i < DataLength; i++)
+                    for (int i = 0; i < _dataLength; i++)
                         newData.Add(new StringWrapper(coilsConv[i].ToString()));
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        _modbusData.Clear();
-
-                        foreach (var item in newData)
-                            _modbusData.Add(item);
+                        _modbusData = new ObservableCollection<StringWrapper>(newData);
+                        OnPropertyChanged(nameof(ModbusData));
                     });
 
-                    Thread.Sleep(ScanRate);
+                    Thread.Sleep(_scanRate);
                 }
                 // Does closing the app also close and stop these?
                 mtc.Close();
@@ -463,25 +466,23 @@ namespace Schism.Models
         {
             using (mtc) {
 
-                while (IsConnected)
+                while (_isConnected)
                 {
-                    bool[] inputs = mM.ReadInputs(0, StartAddress, DataLength);
+                    bool[] inputs = mM.ReadInputs(0, _startAddress, _dataLength);
                     ushort[] inputsConv = inputs.Select(Convert.ToUInt16).ToArray();
 
                     var newData = new ObservableCollection<StringWrapper>();
 
-                    for (int i = 0; i < DataLength; i++)
+                    for (int i = 0; i < _dataLength; i++)
                         newData.Add(new StringWrapper(inputsConv[i].ToString()));
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        _modbusData.Clear();
-
-                        foreach (var item in newData)
-                            _modbusData.Add(item);
+                        _modbusData = new ObservableCollection<StringWrapper>(newData);
+                        OnPropertyChanged(nameof(ModbusData));
                     });
 
-                    Thread.Sleep(ScanRate);
+                    Thread.Sleep(_scanRate);
                 }
                 // Does closing the app also close and stop these?
                 mtc.Close();
@@ -492,13 +493,13 @@ namespace Schism.Models
         {
             using (mtc)
             {
-                while (IsConnected)
+                while (_isConnected)
                 {
-                    ushort[] holdingRegs = mM.ReadHoldingRegisters(0, StartAddress, DataLength);
+                    ushort[] holdingRegs = mM.ReadHoldingRegisters(0, _startAddress, _dataLength);
 
                     var newData = new ObservableCollection<StringWrapper>();
 
-                    for (int i = 0; i < DataLength; i++)
+                    for (int i = 0; i < _dataLength; i++)
                         newData.Add(new StringWrapper(holdingRegs[i].ToString()));
 
                     //NOTE: This is where you'll implement the numeric base and endian control!
@@ -508,25 +509,25 @@ namespace Schism.Models
 
                     // { "Decimal", "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" }
 
-                    switch (SelectedNumericBase)
+                    switch (_selectedNumericBase)
                     {
                         case "Integer":
                             short[] holdingRegsSigned = new short[holdingRegs.Length];
-                            for (int i = 0; i < DataLength; i++)
+                            for (int i = 0; i < _dataLength; i++)
                             {
                                 holdingRegsSigned[i] = (short)holdingRegs[i];
                                 newData.Add(new StringWrapper(holdingRegsSigned[i].ToString()));
                             }
                             break;
                         case "Hexadecimal":
-                            for (int i = 0; i < DataLength; i++)
+                            for (int i = 0; i < _dataLength; i++)
                             {
                                 // the added "X" in the ToString parentheses does the conversion for us, since hex can't be parsed as a new numeric variable type
                                 newData.Add(new StringWrapper("0x" + holdingRegs[i].ToString("X")));
                             }
                             break;
                         case "Binary":
-                            for (int i = 0; i < DataLength; i++)
+                            for (int i = 0; i < _dataLength; i++)
                             {
                                 string temp = Convert.ToString(holdingRegs[i], 2); // 2 parameter converts value to a binary string
                                 string paddedTemp = temp.PadLeft(16, '0');
@@ -536,20 +537,18 @@ namespace Schism.Models
                             break;
                         // decimal
                         default:
-                            for (int i = 0; i < DataLength; i++)
+                            for (int i = 0; i < _dataLength; i++)
                                 newData.Add(new StringWrapper(holdingRegs[i].ToString()));
                             break;
                     }
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        _modbusData.Clear();
-
-                        foreach (var item in newData)
-                            _modbusData.Add(item);
+                        _modbusData = new ObservableCollection<StringWrapper>(newData);
+                        OnPropertyChanged(nameof(ModbusData));
                     });
 
-                    Thread.Sleep(ScanRate);
+                    Thread.Sleep(_scanRate);
                 }
                 // Does closing the app also close and stop these?
                 mtc.Close();
@@ -560,13 +559,13 @@ namespace Schism.Models
         {
             using (mtc)
             {
-                while (IsConnected)
+                while (_isConnected)
                 {
-                    ushort[] inputRegs = mM.ReadInputRegisters(0, StartAddress, DataLength);
+                    ushort[] inputRegs = mM.ReadInputRegisters(0, _startAddress, _dataLength);
 
                     var newData = new ObservableCollection<StringWrapper>();
 
-                    for (int i = 0; i < DataLength; i++)
+                    for (int i = 0; i < _dataLength; i++)
                         newData.Add(new StringWrapper(inputRegs[i].ToString()));
 
                     //NOTE: This is where you'll implement the numeric base and endian control!
@@ -576,25 +575,25 @@ namespace Schism.Models
 
                     // { "Decimal", "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" }
 
-                    switch (SelectedNumericBase)
+                    switch (_selectedNumericBase)
                     {
                         case "Integer":
                             short[] inputRegsSigned = new short[inputRegs.Length];
-                            for (int i = 0; i < DataLength; i++)
+                            for (int i = 0; i < _dataLength; i++)
                             {
                                 inputRegsSigned[i] = (short)inputRegs[i];
                                 newData.Add(new StringWrapper(inputRegsSigned[i].ToString()));
                             }
                             break;
                         case "Hexadecimal":
-                            for (int i = 0; i < DataLength; i++)
+                            for (int i = 0; i < _dataLength; i++)
                             {
                                 // the added "X" in the ToString parentheses does the conversion for us, since hex can't be parsed as a new numeric variable type
                                 newData.Add(new StringWrapper("0x"+inputRegs[i].ToString("X")));
                             }
                             break;
                         case "Binary":
-                            for (int i = 0; i < DataLength; i++)
+                            for (int i = 0; i < _dataLength; i++)
                             {
                                 string temp = Convert.ToString(inputRegs[i], 2); // 2 parameter converts value to a binary string
                                 string paddedTemp = temp.PadLeft(16, '0');
@@ -604,19 +603,17 @@ namespace Schism.Models
                             break;
                         // decimal
                         default:
-                            for (int i = 0; i < DataLength; i++)
+                            for (int i = 0; i < _dataLength; i++)
                                 newData.Add(new StringWrapper(inputRegs[i].ToString()));
                             break;
                     }
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        _modbusData.Clear();
-
-                        foreach (var item in newData)
-                            _modbusData.Add(item);
+                        _modbusData = new ObservableCollection<StringWrapper>(newData);
+                        OnPropertyChanged(nameof(ModbusData));
                     });
 
-                    Thread.Sleep(ScanRate);
+                    Thread.Sleep(_scanRate);
                 }
                 // Does closing the app also close and stop these?
                 mtc.Close();

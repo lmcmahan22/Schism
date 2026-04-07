@@ -23,7 +23,7 @@ namespace Schism.ViewModels
         // View Model properties
         private string _title = "Schism Home Screen";
         private Visibility[] _colsVis = { Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed };
-        private Visibility _aDisplayTypeDropDown = Visibility.Hidden;
+        private Visibility _aDisplayTypeDropdown = Visibility.Hidden;
         private string[] _addressList = { "0", "20", "40", "60", "80", "100" };
         private static ObservableCollection<string> _addressConventions = ["Register Address (starting from 0)", "Register Number (starting from 1)"];
         private string _selectedAddressConvention = _addressConventions.First();
@@ -45,8 +45,8 @@ namespace Schism.ViewModels
         private DelegateCommand? _aboutClick;
 
         // Service Singletons (see App.xml)
-        public ThemeService TS => ThemeService.Instance; // ThemeService is a singleton, so we access the instance directly
-        public MODBUSService MS => MODBUSService.Instance; // MODBUSService is a singleton, so we access the instance directly
+        public ThemeService TS => ThemeService.Instance;
+        public MODBUSService MS => MODBUSService.Instance;
 
         // Public instances of the ViewModel for control in the View
         public string Title
@@ -67,10 +67,10 @@ namespace Schism.ViewModels
             set => SetProperty(ref _colsVis, value);
         }
 
-        public Visibility ADisplayTypeDropDown
+        public Visibility ADisplayTypeDropdown
         {
-            get => _aDisplayTypeDropDown;
-            set => SetProperty(ref _aDisplayTypeDropDown, value);
+            get => _aDisplayTypeDropdown;
+            set => SetProperty(ref _aDisplayTypeDropdown, value);
         }
 
         public bool NonBoolData
@@ -106,10 +106,8 @@ namespace Schism.ViewModels
         private void MS_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             // Make it so this updates with respect to relevant parameters in the Model
-            if (e.PropertyName is nameof(MS.DataLength) or 
-                nameof(MS.ModbusData) or 
-                nameof(MS.DeviceId) or 
-                nameof(MS.IsConnected) or 
+            if (e.PropertyName is nameof(MS.DataLength) or
+                nameof(MS.DeviceId) or
                 nameof(MS.SelectedNumericBase) or 
                 nameof(MS.SelectedEndian) or 
                 nameof(MS.SelectedAsciiDisplayType))
@@ -117,25 +115,31 @@ namespace Schism.ViewModels
 
             if (e.PropertyName is nameof(MS.SelectedDataType))
             {
-                NonBoolData = MS.SelectedDataType is "Holding Registers" or "Input Registers";
+                _nonBoolData = MS.SelectedDataType is "Holding Registers" or "Input Registers";
+                OnPropertyChanged(nameof(NonBoolData)); // Notify the UI that the NonBoolData value has been updated, so that it can show/hide the numeric base and endian dropdowns accordingly
                 UpdateModbusTable();
             }
 
             if (e.PropertyName is nameof(MS.AsciiEnable))
             {
-                ADisplayTypeDropDown = MS.AsciiEnable ? Visibility.Visible : Visibility.Hidden; // Ensure the ADisplayType dropdown visibility is consistent with the ASCIIEnable value
+                _aDisplayTypeDropdown = MS.AsciiEnable ? Visibility.Visible : Visibility.Hidden; // Ensure the ADisplayType dropdown visibility is consistent with the ASCIIEnable value
+                OnPropertyChanged(nameof(ADisplayTypeDropdown)); // Notify the UI that the ADisplayType dropdown visibility has been updated)
                 UpdateModbusTable();
             }
 
             if (e.PropertyName is nameof(MS.StartAddress))
             {
-                for(int i = 0; i < AddressList.Length; i++)
+                for(int i = 0; i < _addressList.Length; i++)
                 {
                     int addr = MS.StartAddress + (i * 20);
-                    AddressList[i] = addr.ToString();
+                    _addressList[i] = addr.ToString();
                 }
                 OnPropertyChanged(nameof(AddressList)); // Notify the UI that the address list has been updated
                 UpdateModbusTable();
+            }
+
+            if (e.PropertyName is nameof(MS.ModbusData)){
+                UpdateModbusData(); // Only update the MODBUS data if we see an update on the data from the Model!
             }
         }
 
@@ -148,34 +152,37 @@ namespace Schism.ViewModels
         private void UpdateModbusTable()
         {
             // Determine which columns should be visible, based on the provided DataLength from the Model!
-            for (int i = 0; i < ColsVis.Length; i++)
-                ColsVis[i] = MS.DataLength > (i * 20) ? Visibility.Visible : Visibility.Collapsed;
+            for (int i = 0; i < _colsVis.Length; i++)
+            {
+                _colsVis[i] = MS.DataLength > (i * 20) ? Visibility.Visible : Visibility.Collapsed;
+                OnPropertyChanged(nameof(ColsVis));
+            }
 
             // Update shift column contents, in case the SelectedAddressConvention was updated.
             // Make it so this only updates if SelectedAddressConvention has been changed since the last call of this method!
-            ShiftColumn.Clear();
+            _shiftColumn.Clear();
             for (int i = 0; i < 20; i++)
             {
                 // This will print each index as i if counting from 0, or i+1 if counting from 1
                 string content = $"+{(SelectedAddressConvention == "Register Address (starting from 0)" ? i : i + 1)}";
-                ShiftColumn.Add(new StringWrapper(content));
+                _shiftColumn.Add(new StringWrapper(content));
             }
 
             // Prepare the name data, in case we need to keep it around for the next table build
             string[] namesCache = new string[MS.DataLength];
-            for (int i = 0; i < Names.Length; i++)
+            for (int i = 0; i < _names.Length; i++)
             {
-                if (Names[i] == null)
-                    Names[i] = new ObservableCollection<StringWrapper>();
+                if (_names[i] == null)
+                    _names[i] = new ObservableCollection<StringWrapper>();
                 else
                 {
-                    for(int j = 0; j < Names[i].Count; j++)
+                    for(int j = 0; j < _names[i].Count; j++)
                     {
                         // Only save this name for the new display if we know that we'll see it in the new length.
                         // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
                         if (((i * 20) + j) < MS.DataLength)
                         {
-                            string? temp = Names[i][j].Value;
+                            string? temp = _names[i][j].Value;
                             if (temp == null)
                                 namesCache[(i * 20) + j] = "";
                             else
@@ -183,17 +190,17 @@ namespace Schism.ViewModels
                         }
                     }
                 }
-                Names[i].Clear();
+                _names[i].Clear();
             }
 
             // Loop through each column of the current ModbusData collection and clear them.
             // If any columns are null (somehow), create the collection there
-            for (int i = 0; i < ModbusGrid.Length; i++)
+            for (int i = 0; i < _modbusGrid.Length; i++)
             {
-                if (ModbusGrid[i] == null)
-                    ModbusGrid[i] = new ObservableCollection<StringWrapper>();
+                if (_modbusGrid[i] == null)
+                    _modbusGrid[i] = new ObservableCollection<StringWrapper>();
 
-                ModbusGrid[i].Clear();
+                _modbusGrid[i].Clear();
             }
 
             // Add rows for the configured length
@@ -206,6 +213,32 @@ namespace Schism.ViewModels
                     int idx = (i * 20) + j;
                     StringWrapper name = new StringWrapper(namesCache[idx]);
 
+                    // MODBUS Data does not get pulled at this time!
+                    StringWrapper data = new StringWrapper("");
+
+                    _names[i].Add(name);
+                    _modbusGrid[i].Add(data);
+                }
+            }
+
+            // Notify the UI of element updates
+            OnPropertyChanged(nameof(ColsVis));
+            OnPropertyChanged(nameof(ShiftColumn));
+            OnPropertyChanged(nameof(Names)); // Might not be needed, since this is an ObservableCollection...
+            OnPropertyChanged(nameof(ModbusGrid)); // Might not be needed, since this is an ObservableCollection...
+        }
+
+        private void UpdateModbusData()
+        {
+            // Update columns for the configured length
+            var numCols = ModbusGrid.Length;
+            for (int i = 0; i < numCols; i++)
+            {
+                var numRows = _modbusGrid[i].Count; // Get the number of rows currently displayed in this column
+                for (int j = 0; j < numRows; j++)
+                {
+                    int idx = (i * 20) + j;
+
                     // Only try to pull MODBUS data if we have a connection!
                     StringWrapper data;
                     if (MS.IsConnected)
@@ -214,15 +247,11 @@ namespace Schism.ViewModels
                     else
                         data = new StringWrapper("");
 
-                    Names[i].Add(name);
-                    ModbusGrid[i].Add(data);
+                    ModbusGrid[i][j] = data;
                 }
             }
 
             // Notify the UI of element updates
-            OnPropertyChanged(nameof(ColsVis));
-            OnPropertyChanged(nameof(ShiftColumn));
-            OnPropertyChanged(nameof(Names)); // Might not be needed, since this is an ObservableCollection...
             OnPropertyChanged(nameof(ModbusGrid)); // Might not be needed, since this is an ObservableCollection...
         }
 
@@ -337,7 +366,7 @@ namespace Schism.ViewModels
                 SaveAsciiEnable = MS.AsciiEnable,
                 SaveAsciiDisplayType = MS.SelectedAsciiDisplayType,
 
-                SaveAddressConv = SelectedAddressConvention
+                SaveAddressConv = _selectedAddressConvention
             };
             Save(sD);
         }
@@ -361,10 +390,13 @@ namespace Schism.ViewModels
             MS.SelectedAsciiDisplayType = lD.SaveAsciiDisplayType;
 
             // ViewModel specific save parameter
-            SelectedAddressConvention = lD.SaveAddressConv;
+            _selectedAddressConvention = lD.SaveAddressConv;
 
-            ADisplayTypeDropDown = lD.SaveAsciiEnable ? Visibility.Visible : Visibility.Hidden; // Ensure the ADisplayType dropdown visibility is consistent with the loaded ASCIIEnable value
-            
+            _aDisplayTypeDropdown = lD.SaveAsciiEnable ? Visibility.Visible : Visibility.Hidden; // Ensure the ADisplayType dropdown visibility is consistent with the loaded ASCIIEnable value
+
+            OnPropertyChanged(nameof(SelectedAddressConvention));
+            OnPropertyChanged(nameof(ADisplayTypeDropdown));
+
             // Since you're updating these parameters in the Model, your subscription from the constructor will catch this!
             // Load --> Update Model --> Subscription pings --> Table is rebuilt
         }

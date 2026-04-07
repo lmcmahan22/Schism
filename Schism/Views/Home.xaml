@@ -32,18 +32,6 @@
         </Style>
 
         <CollectionViewSource x:Key="ShiftColumnView" Source="{Binding ShiftColumn}" />
-        <CollectionViewSource x:Key="MODBUS_N1" Source="{Binding Names[0]}" />
-        <CollectionViewSource x:Key="MODBUS_R1" Source="{Binding ModbusGrid[0]}" />
-        <CollectionViewSource x:Key="MODBUS_N2" Source="{Binding Names[1]}" />
-        <CollectionViewSource x:Key="MODBUS_R2" Source="{Binding ModbusGrid[1]}" />
-        <CollectionViewSource x:Key="MODBUS_N3" Source="{Binding Names[2]}" />
-        <CollectionViewSource x:Key="MODBUS_R3" Source="{Binding ModbusGrid[2]}" />
-        <CollectionViewSource x:Key="MODBUS_N4" Source="{Binding Names[3]}" />
-        <CollectionViewSource x:Key="MODBUS_R4" Source="{Binding ModbusGrid[3]}" />
-        <CollectionViewSource x:Key="MODBUS_N5" Source="{Binding Names[4]}" />
-        <CollectionViewSource x:Key="MODBUS_R5" Source="{Binding ModbusGrid[4]}" />
-        <CollectionViewSource x:Key="MODBUS_N6" Source="{Binding Names[5]}" />
-        <CollectionViewSource x:Key="MODBUS_R6" Source="{Binding ModbusGrid[5]}" />
 
         <!-- Reusable template for MODBUS Columns to remove duplication -->
         <DataTemplate x:Key="NamesColumnTemplate">
@@ -286,8 +274,8 @@
                                 <CheckBox IsChecked="{Binding MS.AsciiEnable, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding NonBoolData}" Content="Enable" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="1">
-                                <TextBlock Text="Display Type" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding NonBoolData}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                                <ComboBox Name="ASCIIType" Visibility="{Binding ADisplayTypeDropDown, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding MS.AsciiDisplayTypes}" IsEnabled="{Binding NonBoolData}" SelectedValue="{Binding MS.SelectedAsciiDisplayType, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="130" Height="25" FontSize="14"/>
+                                <TextBlock Text="Display Type" Visibility="{Binding ADisplayTypeDropdown, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding NonBoolData}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                <ComboBox Name="ASCIIType" Visibility="{Binding ADisplayTypeDropdown, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding MS.AsciiDisplayTypes}" IsEnabled="{Binding NonBoolData}" SelectedValue="{Binding MS.SelectedAsciiDisplayType, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="130" Height="25" FontSize="14"/>
                             </Grid>
                         </Grid>
                     </StackPanel>
