@@ -8,33 +8,31 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows;
-using System.Windows.Media;
 
 namespace Schism.ViewModels
 {
-    public class HomeViewModel : BindableBase
+    public class HomeViewModel : BindableBase, INotifyPropertyChanged
     {
 
-        // The helper method to raise the event
+        // INotifyPropertyChanged interface for ViewModels
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            base.RaisePropertyChanged(propertyName);
+            RaisePropertyChanged(propertyName);
         }
 
         // View Model properties
         private string _title = "Schism Home Screen";
-        private Visibility[] _colsVis = new Visibility[6] { Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed };
-        private Visibility _aDisplayTypeDropDown = Visibility.Hidden;
-        private string[] _addressList = new string[6] { "0", "20", "40", "60", "80", "100" };
+        private Visibility[] _colsVis = { Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed };
+        private Visibility _aDisplayTypeDropdown = Visibility.Hidden;
+        private string[] _addressList = { "0", "20", "40", "60", "80", "100" };
+        private static ObservableCollection<string> _addressConventions = ["Register Address (starting from 0)", "Register Number (starting from 1)"];
+        private string _selectedAddressConvention = _addressConventions.First();
+        private bool _nonBoolData = false;
+
+        // View Model grid elements
         private ObservableCollection<StringWrapper> _shiftColumn = new ObservableCollection<StringWrapper>();
         private ObservableCollection<StringWrapper>[] _names = new ObservableCollection<StringWrapper>[6];
-        private ObservableCollection<string> _addressConvention = new ObservableCollection<string>
-            {
-                "Register Address (starting from 0)",
-                "Register Number (starting from 1)"
-            };
-        private string _selectedAddressConvention = "";
-        private bool _nonBoolData = false;
+        private ObservableCollection<StringWrapper>[] _modbusGrid = new ObservableCollection<StringWrapper>[6];
 
         // Commands
         private DelegateCommand? _saveClick;
@@ -47,520 +45,214 @@ namespace Schism.ViewModels
         private DelegateCommand? _aboutClick;
 
         // Service Singletons (see App.xml)
-        private readonly ThemeService _TS = ThemeService.Instance; // ThemeService is a singleton, so we access the instance directly
-        private readonly MODBUSService _MS = MODBUSService.Instance; // MODBUSService is a singleton, so we access the instance directly
+        public ThemeService TS => ThemeService.Instance;
+        public MODBUSService MS => MODBUSService.Instance;
 
-        // Public instances of the Model for control in the View
+        // Public instances of the ViewModel for control in the View
         public string Title
         {
-            get { return _title; }
-            set { SetProperty(ref _title, value); }
-        }
-
-        public int NumPolls
-        {
-            get { return _MS.NumPolls; }
-            set
-            {
-                if (_MS.NumPolls != value)
-                {
-                    _MS.NumPolls = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public int NumOK
-        {
-            get { return _MS.NumOK; }
-            set
-            {
-                if (_MS.NumOK != value)
-                {
-                    _MS.NumOK = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public int NumErrors
-        {
-            get { return _MS.NumErrors; }
-            set
-            {
-                if (_MS.NumErrors != value)
-                {
-                    _MS.NumErrors = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public int NumTX
-        {
-            get { return _MS.NumTX; }
-            set
-            {
-                if (_MS.NumTX != value)
-                {
-                    _MS.NumTX = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public int NumRX
-        {
-            get { return _MS.NumRX; }
-            set
-            {
-                if (_MS.NumRX != value)
-                {
-                    _MS.NumRX = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public int NumRequests
-        {
-            get { return _MS.NumRequests; }
-            set
-            {
-                if (_MS.NumRequests != value)
-                {
-                    _MS.NumRequests = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public int NumResponses
-        {
-            get { return _MS.NumResponses; }
-            set
-            {
-                if (_MS.NumResponses != value)
-                {
-                    _MS.NumResponses = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public byte DeviceID
-        {
-            get { return _MS.DeviceID; }
-            set
-            {
-                // Min and Max boundaries on Device ID, according to MODBUS documentation
-                byte clamped = Math.Clamp(value, (byte)1, (byte)247);
-                if (_MS.DeviceID != clamped)
-                {
-                    _MS.DeviceID = clamped;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public ushort Length
-        {
-            get { return _MS.Length; }
-            set
-            {
-                // Min and Max boundaries on Value relative to current StartAddress
-                ushort maxLen = GetMaxLengthForStartAddress();
-                ushort clampedLength = Math.Clamp(value, (ushort)1, maxLen);
-
-                if (_MS.Length != clampedLength)
-                {
-                    _MS.Length = clampedLength;
-                    // Rebuild the collection to reflect new length (uses Length getter now)
-                    BuildModbusData();
-                    // Update column visibility and notify UI
-                    UpdateColsVisAndNotify();
-
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public ushort StartAddress
-        {
-            get { return _MS.StartAddress; }
-            set
-            {
-                // Min and Max boundaries on Starting Address, according to MODBUS documentation
-                ushort clampedStart = Math.Clamp(value, (ushort)0, (ushort)65535);
-
-                if (_MS.StartAddress != clampedStart)
-                {
-                    _MS.StartAddress = clampedStart;
-                    // When start address changes, ensure the current length does not exceed the new allowable range.
-                    ushort maxLen = GetMaxLengthForStartAddress();
-                    ushort clampedLength = Math.Clamp(_MS.Length, (ushort)1, maxLen);
-
-                    if (_MS.Length != clampedLength)
-                    {
-                        _MS.Length = clampedLength;
-                        // Notify the UI that the AddressList contents changed
-                        OnPropertyChanged(nameof(Length));
-
-                        // Rebuild the collection to reflect new length
-                        BuildModbusData();
-
-                        // Update column visibility based on the (possibly changed) length
-                        UpdateColsVisAndNotify();
-                    }
-
-                    // update the textual address representation
-                    for (int i = 0; i < AddressList.Length; i++)
-                    {
-                        AddressList[i] = (_MS.StartAddress + (i * 20)).ToString();
-                    }
-
-                    // Notify the UI that the AddressList contents changed
-                    OnPropertyChanged(nameof(AddressList));
-
-                    // Notify StartAddress changed (caller/member name handled by OnPropertyChanged call above in SetProperty,
-                    // but keeping parity with original behavior)
-                    OnPropertyChanged();
-                }
-            }
+            get => _title;
+            set => SetProperty(ref _title, value);
         }
 
         public string[] AddressList
         {
-            get { return _addressList; }
-            set { SetProperty(ref _addressList, value); }
+            get => _addressList;
+            set => SetProperty(ref _addressList, value);
         }
 
         public Visibility[] ColsVis
         {
-            get { return _colsVis; }
-            set
-            {
-                SetProperty(ref _colsVis, value);
-            }
+            get => _colsVis;
+            set => SetProperty(ref _colsVis, value);
         }
 
-        public bool ASCIIEnable
+        public Visibility ADisplayTypeDropdown
         {
-            get { return _MS.AsciiEnable; }
-            set
-            {
-                if (_MS.AsciiEnable != value)
-                {
-                    _MS.AsciiEnable = value;
-                    SetProperty(ref _aDisplayTypeDropDown, _MS.AsciiEnable ? Visibility.Visible : Visibility.Hidden);
-                    OnPropertyChanged(nameof(ADisplayTypeDropDown));
-                }
-                OnPropertyChanged();
-            }
+            get => _aDisplayTypeDropdown;
+            set => SetProperty(ref _aDisplayTypeDropdown, value);
         }
 
-        public ObservableCollection<string> AddressConvention
+        public bool NonBoolData
         {
-            get => _addressConvention;
-            set => SetProperty(ref _addressConvention, value);
+            get => _nonBoolData;
+            set => SetProperty(ref _nonBoolData, value);
         }
+
+        public ObservableCollection<string> AddressConventions{ get => _addressConventions; }
+
         public string SelectedAddressConvention
         {
             get => _selectedAddressConvention;
             set
             {
                 SetProperty(ref _selectedAddressConvention, value);
-
-                // Rebuild the collection to reflect new shift counting
-                BuildModbusData();
-
-                OnPropertyChanged();
+                UpdateModbusTable(); // Ensure the table updates immediately when the address convention is changed, since this changes the content of the shift column!
             }
         }
 
-        public bool ConnectStatus
-        {
-            get { return _MS.IsConnected; }
-            set
-            {
-                if (_MS.IsConnected != value)
-                {
-                    _MS.IsConnected = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool NonBoolData
-        {
-            get { return _nonBoolData; }
-            set { SetProperty(ref _nonBoolData, value); OnPropertyChanged(); }
-        }
-
-        public ObservableCollection<StringWrapper> ShiftColumn
-        {
-            get { return _shiftColumn; }
-            set { SetProperty(ref _shiftColumn, value); }
-        }
-
-        public ObservableCollection<StringWrapper>[] Names
-        {
-            get { return _names; }
-            set { SetProperty(ref _names, value); }
-        }
-
-        public ObservableCollection<StringWrapper>[] Results
-        {
-            get { return _MS.Results; }
-            set
-            {
-                if (_MS.Results != value)
-                {
-                    _MS.Results = value;
-                    OnPropertyChanged(nameof(Results));
-                }
-            }
-        }
-
-        public ObservableCollection<string> DataType
-        {
-            get { return _MS.DataType; }
-        }
-
-        public ObservableCollection<string> NumericBase
-        {
-            get { return _MS.NumericBase; }
-        }
-
-        public ObservableCollection<string> Endian
-        {
-            get { return _MS.Endian; }
-        }
-
-        public ObservableCollection<string> ADisplayType
-        {
-            get { return _MS.ADisplayType; }
-        }
-
-        public string SelectedDataType
-        {
-            get { return _MS.SelectedDataType; }
-            set
-            {
-                if (_MS.SelectedDataType != value)
-                {
-                    _MS.SelectedDataType = value;
-
-                    // set NonBoolData to true in order to disable UI elements when we don't need them!
-                    NonBoolData = _MS.SelectedDataType is "Holding Registers" or "Input Registers";
-
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public string SelectedNumericBase
-        {
-            get { return _MS.SelectedNumericBase; }
-            set
-            {
-                if (_MS.SelectedNumericBase != value)
-                {
-                    _MS.SelectedNumericBase = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public string SelectedEndian
-        {
-            get { return _MS.SelectedEndian; }
-            set
-            {
-                if (_MS.SelectedEndian != value)
-                {
-                    _MS.SelectedEndian = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public string SelectedADisplayType
-        {
-            get { return _MS.SelectedADisplayType; }
-            set
-            {
-                if (_MS.SelectedADisplayType != value)
-                {
-                    _MS.SelectedADisplayType = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public Visibility ADisplayTypeDropDown
-        {
-            get { return _aDisplayTypeDropDown; }
-            set { SetProperty(ref _aDisplayTypeDropDown, value); }
-        }
-
-        public Brush MainColor
-        {
-            get { return _TS.Main; }
-        }
-        public Brush AccentOneColor
-        {
-            get { return _TS.Accent1; }
-        }
-
-        public Brush AccentTwoColor
-        {
-            get { return _TS.Accent2; }
-        }
-
-        public Brush AccentThreeColor
-        {
-            get { return _TS.Accent3; }
-        }
-
-        public Brush TextColor
-        {
-            get { return _TS.Text; }
-        }
+        // Grid collections
+        public ObservableCollection<StringWrapper> ShiftColumn => _shiftColumn;
+        public ObservableCollection<StringWrapper>[] Names => _names;
+        public ObservableCollection<StringWrapper>[] ModbusGrid => _modbusGrid;
 
         // ViewModel constructor
         public HomeViewModel(IDialogService dialogService)
         {
-            _TS.PropertyChanged += Themes_PropertyChanged; // Subscribe to the PropertyChanged event of the ThemeService singleton to react to theme changes
-
-            _MS.PropertyChanged += MODBUS_PropertyChanged; // Subscribe to the PropertyChanged event of the ThemeService singleton to react to connection status change
-
-            SelectedAddressConvention = AddressConvention.First();
-
-            // Ensure collection is populated with a header + Length rows
-            BuildModbusData();
+            MS.PropertyChanged += MS_PropertyChanged;
+            UpdateModbusTable(); // Build the initial table based on default parameters in the Model
         }
 
-        private void Themes_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        private void MS_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(_TS.Main))
-            {
-                OnPropertyChanged(nameof(MainColor));
-            }
-            if (e.PropertyName == nameof(_TS.Accent1))
-            {
-                OnPropertyChanged(nameof(AccentOneColor));
-            }
-            if (e.PropertyName == nameof(_TS.Accent2))
-            {
-                OnPropertyChanged(nameof(AccentTwoColor));
-            }
-            if (e.PropertyName == nameof(_TS.Accent3))
-            {
-                OnPropertyChanged(nameof(AccentThreeColor));
-            }
-            if (e.PropertyName == nameof(_TS.Text))
-            {
-                OnPropertyChanged(nameof(TextColor));
-            }
-        }
+            // Make it so this updates with respect to relevant parameters in the Model
+            if (e.PropertyName is nameof(MS.DataLength) or
+                nameof(MS.DeviceId) or
+                nameof(MS.SelectedNumericBase) or 
+                nameof(MS.SelectedEndian) or 
+                nameof(MS.SelectedAsciiDisplayType))
+                    UpdateModbusTable();
 
-        private void MODBUS_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(_MS.IsConnected))
+            if (e.PropertyName is nameof(MS.SelectedDataType))
             {
-                OnPropertyChanged(nameof(ConnectStatus));
-            }
-        }
-
-        private void UpdateColsVisAndNotify()
-        {
-            for (int i = 0; i < ColsVis.Length; i++)
-            {
-                _colsVis[i] = Length > (i * 20) ? Visibility.Visible : Visibility.Collapsed;
+                _nonBoolData = MS.SelectedDataType is "Holding Registers" or "Input Registers";
+                OnPropertyChanged(nameof(NonBoolData)); // Notify the UI that the NonBoolData value has been updated, so that it can show/hide the numeric base and endian dropdowns accordingly
+                UpdateModbusTable();
             }
 
-            // Notify the UI that the ColsVis contents changed
-            OnPropertyChanged(nameof(ColsVis));
-        }
-
-        private ushort GetMaxLengthForStartAddress()
-        {
-            ushort cap = (ushort)(65535 - _MS.StartAddress); // inclusive cap
-            return Math.Min((ushort)120, cap);
-        }
-
-        // Rebuilds the observable collection items so the UI sees the expected rows
-        private void BuildModbusData()
-        {
-            // Defensive: if collection is null (shouldn't be), create it
-            if (ShiftColumn == null)
+            if (e.PropertyName is nameof(MS.AsciiEnable))
             {
-                ShiftColumn = new ObservableCollection<StringWrapper>();
+                _aDisplayTypeDropdown = MS.AsciiEnable ? Visibility.Visible : Visibility.Hidden; // Ensure the ADisplayType dropdown visibility is consistent with the ASCIIEnable value
+                OnPropertyChanged(nameof(ADisplayTypeDropdown)); // Notify the UI that the ADisplayType dropdown visibility has been updated)
+                UpdateModbusTable();
             }
 
-            ShiftColumn.Clear();
-
-            string[] namesCache = new string[Length];
-            for (int i = 0; i < Names.Length; i++)
+            if (e.PropertyName is nameof(MS.StartAddress))
             {
-                if (Names[i] == null)
+                for(int i = 0; i < _addressList.Length; i++)
                 {
-                    Names[i] = new ObservableCollection<StringWrapper>();
+                    int addr = MS.StartAddress + (i * 20);
+                    _addressList[i] = addr.ToString();
                 }
-                else
-                {
-                    for(int j = 0; j < Names[i].Count; j++)
-                    {
-                        // Only save this name for the new display if we know that we'll see it in the new length.
-                        // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
-                        if (((i * 20) + j) < Length)
-                        {
-                            string? temp = Names[i][j].Value;
-                            if (temp == null)
-                            {
-                                namesCache[(i * 20) + j] = "";
-                            }
-                            else
-                            {
-                                namesCache[(i * 20) + j] = temp;
-                            }
-                        }
-                    }
-                }
-                Names[i].Clear();
+                OnPropertyChanged(nameof(AddressList)); // Notify the UI that the address list has been updated
+                UpdateModbusTable();
             }
 
-            for (int i = 0; i < Results.Length; i++)
+            if (e.PropertyName is nameof(MS.ModbusData)){
+                UpdateModbusData(); // Only update the MODBUS data if we see an update on the data from the Model!
+            }
+        }
+
+        //private void TS_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        //{
+        //    // Your View has public variables that it references to grab the right colors. Instead, refer to the TS.X instances. You can probably remove the subscription since you don't need the ViewModel to act on these changes.
+        //}
+
+        // Build the table for the main UI based on the provided MODBUS Data from the MODBUSService Model
+        private void UpdateModbusTable()
+        {
+            // Determine which columns should be visible, based on the provided DataLength from the Model!
+            for (int i = 0; i < _colsVis.Length; i++)
             {
-                if (Results[i] == null)
-                {
-                    Results[i] = new ObservableCollection<StringWrapper>();
-                }
-                Results[i].Clear();
+                _colsVis[i] = MS.DataLength > (i * 20) ? Visibility.Visible : Visibility.Collapsed;
+                OnPropertyChanged(nameof(ColsVis));
             }
 
-            // Generate header shifts (always 20 rows with 1 header cell)
+            // Update shift column contents, in case the SelectedAddressConvention was updated.
+            // Make it so this only updates if SelectedAddressConvention has been changed since the last call of this method!
+            _shiftColumn.Clear();
             for (int i = 0; i < 20; i++)
             {
                 // This will print each index as i if counting from 0, or i+1 if counting from 1
                 string content = $"+{(SelectedAddressConvention == "Register Address (starting from 0)" ? i : i + 1)}";
-                ShiftColumn.Add(new StringWrapper(content));
+                _shiftColumn.Add(new StringWrapper(content));
+            }
+
+            // Prepare the name data, in case we need to keep it around for the next table build
+            string[] namesCache = new string[MS.DataLength];
+            for (int i = 0; i < _names.Length; i++)
+            {
+                if (_names[i] == null)
+                    _names[i] = new ObservableCollection<StringWrapper>();
+                else
+                {
+                    for(int j = 0; j < _names[i].Count; j++)
+                    {
+                        // Only save this name for the new display if we know that we'll see it in the new length.
+                        // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
+                        if (((i * 20) + j) < MS.DataLength)
+                        {
+                            string? temp = _names[i][j].Value;
+                            if (temp == null)
+                                namesCache[(i * 20) + j] = "";
+                            else
+                                namesCache[(i * 20) + j] = temp;
+                        }
+                    }
+                }
+                _names[i].Clear();
+            }
+
+            // Loop through each column of the current ModbusData collection and clear them.
+            // If any columns are null (somehow), create the collection there
+            for (int i = 0; i < _modbusGrid.Length; i++)
+            {
+                if (_modbusGrid[i] == null)
+                    _modbusGrid[i] = new ObservableCollection<StringWrapper>();
+
+                _modbusGrid[i].Clear();
             }
 
             // Add rows for the configured length
-            var reqCols = ((Length - 1) / 20) + 1; // Calculate how many columns we need based on the length (integer division rounding up)
+            var reqCols = ((MS.DataLength - 1) / 20) + 1; // Calculate how many columns we need based on the length (integer division rounding up)
             for (int i = 0; i < reqCols; i++)
             {
-                var reqRows = Math.Min((Length - 20 * i), 20); // Calculate how many rows we need in the last column (or 20 if length is greater than 20)
+                var reqRows = Math.Min((MS.DataLength - 20 * i), 20); // Calculate how many rows we need in the last column (or 20 if length is greater than 20)
                 for (int j = 0; j < reqRows; j++)
                 {
-                    string name = namesCache[(i * 20) + j];
-                    string data = "";
-                    Names[i].Add(new StringWrapper(name));
-                    Results[i].Add(new StringWrapper(data));
+                    int idx = (i * 20) + j;
+                    StringWrapper name = new StringWrapper(namesCache[idx]);
+
+                    // MODBUS Data does not get pulled at this time!
+                    StringWrapper data = new StringWrapper("");
+
+                    _names[i].Add(name);
+                    _modbusGrid[i].Add(data);
                 }
             }
+
+            // Notify the UI of element updates
+            OnPropertyChanged(nameof(ColsVis));
+            OnPropertyChanged(nameof(ShiftColumn));
+            OnPropertyChanged(nameof(Names)); // Might not be needed, since this is an ObservableCollection...
+            OnPropertyChanged(nameof(ModbusGrid)); // Might not be needed, since this is an ObservableCollection...
+        }
+
+        private void UpdateModbusData()
+        {
+            // Update columns for the configured length
+            var numCols = _modbusGrid.Length;
+            for (int i = 0; i < numCols; i++)
+            {
+                var numRows = _modbusGrid[i].Count; // Get the number of rows currently displayed in this column
+                for (int j = 0; j < numRows; j++)
+                {
+                    int idx = (i * 20) + j;
+
+                    // Only try to pull MODBUS data if we have a connection!
+                    StringWrapper data;
+                    if (MS.IsConnected)
+                        // Retrieve existing item if present; otherwise create one instance
+                        data = MS.ModbusData[idx] ?? new StringWrapper("");
+                    else
+                        data = new StringWrapper("");
+
+                    _modbusGrid[i][j] = data;
+                }
+            }
+
+            // Notify the UI of element updates
+            OnPropertyChanged(nameof(ModbusGrid)); // Might not be needed, since this is an ObservableCollection...
         }
 
 
@@ -575,14 +267,14 @@ namespace Schism.ViewModels
 
             string json = JsonSerializer.Serialize(new
             {
-                sD.SaveDeviceID,
+                sD.SaveDeviceId,
                 sD.SaveStartAddress,
                 sD.SaveLength,
                 sD.SaveDataType,
                 sD.SaveNumericBase,
                 sD.SaveEndian,
-                sD.SaveASCIIEnable,
-                sD.SaveADisplayType,
+                sD.SaveAsciiEnable,
+                sD.SaveAsciiDisplayType,
                 sD.SaveAddressConv
             });
 
@@ -614,6 +306,7 @@ namespace Schism.ViewModels
                 }
             }
         }
+
         private SaveData Load()
         {
 
@@ -664,15 +357,16 @@ namespace Schism.ViewModels
             // Create a SaveData object with the current state of the ViewModel
             SaveData sD = new SaveData
             {
-                SaveDeviceID = this.DeviceID,
-                SaveStartAddress = this.StartAddress,
-                SaveLength = this.Length,
-                SaveDataType = this.SelectedDataType,
-                SaveNumericBase = this.SelectedNumericBase,
-                SaveEndian = this.SelectedEndian,
-                SaveASCIIEnable = this.ASCIIEnable,
-                SaveADisplayType = this.SelectedADisplayType,
-                SaveAddressConv = this.SelectedAddressConvention
+                SaveDeviceId = MS.DeviceId,
+                SaveStartAddress = MS.StartAddress,
+                SaveLength = MS.DataLength,
+                SaveDataType = MS.SelectedDataType,
+                SaveNumericBase = MS.SelectedNumericBase,
+                SaveEndian = MS.SelectedEndian,
+                SaveAsciiEnable = MS.AsciiEnable,
+                SaveAsciiDisplayType = MS.SelectedAsciiDisplayType,
+
+                SaveAddressConv = _selectedAddressConvention
             };
             Save(sD);
         }
@@ -686,19 +380,25 @@ namespace Schism.ViewModels
 
             // Update ViewModel properties with loaded data
             // NOTE: Setting the public instances of variables runs the logic in the setters implicitly! ;)
-            this.DeviceID = lD.SaveDeviceID;
-            this.Length = lD.SaveLength;
-            this.StartAddress = lD.SaveStartAddress;
-            this.SelectedDataType = lD.SaveDataType;
-            this.SelectedNumericBase = lD.SaveNumericBase;
-            this.SelectedEndian = lD.SaveEndian;
-            this.ASCIIEnable = lD.SaveASCIIEnable;
-            this.ADisplayTypeDropDown = lD.SaveASCIIEnable ? Visibility.Visible : Visibility.Hidden; // Ensure the ADisplayType dropdown visibility is consistent with the loaded ASCIIEnable value
-            this.SelectedADisplayType = lD.SaveADisplayType;
-            this.SelectedAddressConvention = lD.SaveAddressConv;
+            MS.DeviceId = lD.SaveDeviceId;
+            MS.DataLength = lD.SaveLength;
+            MS.StartAddress = lD.SaveStartAddress;
+            MS.SelectedDataType = lD.SaveDataType;
+            MS.SelectedNumericBase = lD.SaveNumericBase;
+            MS.SelectedEndian = lD.SaveEndian;
+            MS.AsciiEnable = lD.SaveAsciiEnable;
+            MS.SelectedAsciiDisplayType = lD.SaveAsciiDisplayType;
 
-            // Update UI as needed
-            UpdateColsVisAndNotify();
+            // ViewModel specific save parameter
+            _selectedAddressConvention = lD.SaveAddressConv;
+
+            _aDisplayTypeDropdown = lD.SaveAsciiEnable ? Visibility.Visible : Visibility.Hidden; // Ensure the ADisplayType dropdown visibility is consistent with the loaded ASCIIEnable value
+
+            OnPropertyChanged(nameof(SelectedAddressConvention));
+            OnPropertyChanged(nameof(ADisplayTypeDropdown));
+
+            // Since you're updating these parameters in the Model, your subscription from the constructor will catch this!
+            // Load --> Update Model --> Subscription pings --> Table is rebuilt
         }
 
         public DelegateCommand Exit_Click =>
@@ -706,7 +406,8 @@ namespace Schism.ViewModels
 
         void Execute_Exit_Click()
         {
-            //  TODO: Implement application exit logic
+            // Close the app!
+            Application.Current.Shutdown();
         }
 
         public DelegateCommand Conn_Click =>
@@ -714,16 +415,11 @@ namespace Schism.ViewModels
 
         void Execute_Conn_Click()
         {
-            // TODO: Implement connection logic
-            if(ConnectStatus == false)
-            {
-                _MS.Connection();
-            }
+            // Looks a bit strange, but effectively works as a toggle! Press it once to connect, press it again to stop.
+            if (MS.AttemptConnect)
+                MS.AttemptConnect = false;
             else
-            {
-                // setting this to false will trigger the disconnect on the parallel thread's while loop!
-                ConnectStatus = false;
-            }
+                MS.Connection();
         }
 
         public DelegateCommand Sett_Click =>

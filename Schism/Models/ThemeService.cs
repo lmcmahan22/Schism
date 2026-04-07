@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -13,21 +14,29 @@ namespace Schism.Models
     {
 
         // Singleton instance
-        private static readonly Lazy<ThemeService> _instance = new(() => new ThemeService());
-        public static ThemeService Instance => _instance.Value;
+        public static ThemeService Instance { get; } = new();
 
+        // INotifyPropertyChanged interface for Services
         public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
+        private ObservableCollection<string> _availableThemes = new ObservableCollection<string> { "Dark", "Light" }; // Example themes
         private string _selectedTheme;
         private Brush _main;
         private Brush _accent1;
         private Brush _accent2;
         private Brush _accent3;
-        private Brush _text;
+        private Brush _textColor;
+
+        // Do these need to call "OnPropertyChanged()"? I'm not so sure atm...
+        public ObservableCollection<string> AvailableThemes => _availableThemes;
 
         public string SelectedTheme
         {
-            get { return _selectedTheme; }
+            get => _selectedTheme;
             set
             {
                 _selectedTheme = value;
@@ -37,76 +46,100 @@ namespace Schism.Models
 
         public Brush Main
         {
-            get { return _main; }
-            set { _main = value;
-                OnPropertyChanged(); 
+            get => _main;
+            set
+            {
+                if (_main != value)
+                {
+                    _main = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
         public Brush Accent1
         {
-            get { return _accent1; }
-            set { _accent1 = value;
-                OnPropertyChanged();
+            get => _accent1;
+            set
+            {
+                if (_accent1 != value)
+                {
+                    _accent1 = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
         public Brush Accent2 
         {
-            get { return _accent2; }
-            set { _accent2 = value;
-                OnPropertyChanged();
+            get => _accent2;
+            set
+            {
+                if (_accent2 != value)
+                {
+                    _accent2 = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
         public Brush Accent3 
         {
-            get { return _accent3; }
-            set { _accent3 = value;
-                OnPropertyChanged();
+            get => _accent3;
+            set
+            {
+                if (_accent3 != value)
+                {
+                    _accent3 = value;
+                    OnPropertyChanged();
+                }
             }
         }
-        public Brush Text 
+        public Brush TextColor 
         {
-            get { return _text; }
-            set { _text = value;
-                OnPropertyChanged();
+            get => _textColor;
+            set
+            {
+                if (_textColor != value)
+                {
+                    _textColor = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
-        public ThemeService() {
+        public ThemeService()
+        {
 
-            _selectedTheme = "Dark";
-            Main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
-            Accent1 = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
-            Accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
-            Accent3 = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180));
-            Text = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+            _selectedTheme = AvailableThemes.First();
+            OnPropertyChanged(nameof(SelectedTheme));
+            UpdateTheme(); // First call to set the initial theme colors
         }
 
         private void UpdateTheme()
         {
-            if(_selectedTheme == "Dark")
+            if(SelectedTheme == "Dark")
             {
-                Main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
-                Accent1 = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
-                Accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
-                Accent3 = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180));
-                Text = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                _main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
+                _accent1 = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
+                _accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
+                _accent3 = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180));
+                _textColor = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
             }
             else
             {
-                Main = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
-                Accent1 = new SolidColorBrush(Color.FromArgb(255, 220, 220, 220));
-                Accent2 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
-                Accent3 = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180));
-                Text = new SolidColorBrush(Color.FromArgb(255,0,0,0));
+                _main = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
+                _accent1 = new SolidColorBrush(Color.FromArgb(255, 220, 220, 220));
+                _accent2 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+                _accent3 = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180));
+                _textColor = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
             }
-        }
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            OnPropertyChanged(nameof(Main));
+            OnPropertyChanged(nameof(Accent1));
+            OnPropertyChanged(nameof(Accent2));
+            OnPropertyChanged(nameof(Accent3));
+            OnPropertyChanged(nameof(TextColor));
         }
     }
 }

@@ -24,5 +24,10 @@ namespace Schism.Views
         {
             InitializeComponent();
         }
+
+        private void Theme_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

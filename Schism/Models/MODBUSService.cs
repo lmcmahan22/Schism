@@ -1,164 +1,285 @@
 ﻿using NModbus;
-using NModbus.Extensions.Enron;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.DirectoryServices.ActiveDirectory;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace Schism.Models
 {
-    
-    // Functionality yoinked and trimmed from NMODBUS Github sample project :D
-
-    //TODO:
-    // - The below methods allow for different times of data polling. Connect these methods to the UI and allow users to select which one they want to use.
-    // - Implement error injection, if not already here
-
     public class MODBUSService : INotifyPropertyChanged
     {
+        
+        // Singleton instance
+        public static MODBUSService Instance { get; } = new();
 
+        // INotifyPropertyChanged interface for Services
         public event PropertyChangedEventHandler? PropertyChanged;
-
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        // Singleton instance
-        private static readonly Lazy<MODBUSService> _instance = new(() => new MODBUSService());
-        public static MODBUSService Instance => _instance.Value;
-
         // Private variables
-        private string _ipAddress;
+        private string _ipAddr;
         private int _tcpPort;
         private int _scanRate;
-        private int _timeout;
-        private int _pollDelay;
+        private int _tcpTimeout;
         private int _numPolls;
-        private int _numOK;
+        private int _numOKs;
         private int _numErrors;
-        private int _numTX;
-        private int _numRX;
+        private int _numTx;
+        private int _numRx;
         private int _numRequests;
         private int _numResponses;
-        private byte _deviceID;
-        private ushort _length;
+        private byte _deviceId;
+        private ushort _dataLength;
         private ushort _startAddress; // Don't worry about leading zeros, Radzio just interprets a value without leading zeros as having leading zeroes (i.e. output coil range). Don't worry aboout "Global Data" either, since again Radzio doesn't bother.
         private bool _asciiEnable;
+        private bool _attemptConnect;
         private bool _isConnected;
         private string _selectedDataType;
         private string _selectedNumericBase;
         private string _selectedEndian;
-        private string _selectedADisplayType;
+        private string _selectedAsciiDisplayType;
 
-        // dropdowns
-        private ObservableCollection<string> _dataType = new ObservableCollection<string> { "Coil Status", "Input Status", "Holding Registers", "Input Registers" };
-        private ObservableCollection<string> _numericBase = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" };
-        private ObservableCollection<string> _endian = new ObservableCollection<string> { "Big Endian", "Little Endian", "Big Endian (Swap Words)", "Big Endian (Swap Bytes)" };
-        private ObservableCollection<string> _aDisplayType = new ObservableCollection<string> { "1 Char/Reg", "2 Char/Reg", "2 Char/Reg SW." };
+        // dropdown contents (never change)
+        private readonly ObservableCollection<string> _dataTypes = new ObservableCollection<string> { "Coil Status", "Input Status", "Holding Registers", "Input Registers" };
+        private readonly ObservableCollection<string> _numericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" };
+        private readonly ObservableCollection<string> _endians = new ObservableCollection<string> { "Big Endian", "Little Endian", "Big Endian (Swap Words)", "Big Endian (Swap Bytes)" };
+        private readonly ObservableCollection<string> _asciiDisplayTypes = new ObservableCollection<string> { "1 Char/Reg", "2 Char/Reg", "2 Char/Reg SW." };
+
+        // ModbusData Collection
+        private ObservableCollection<StringWrapper> _modbusData = new ObservableCollection<StringWrapper>();
 
         // Properties for connection settings
-        public string IpAddress
+        public string IPAddr
         {
-            get => _ipAddress;
-            set => _ipAddress = value;
+            get => _ipAddr;
+            set
+            {
+                if(_ipAddr != value)
+                {
+                    _ipAddr = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int TCPPort
         {
             get => _tcpPort;
-            set => _tcpPort = value;
+            set
+            {
+                if (_tcpPort != value)
+                {
+                    _tcpPort = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int ScanRate
         {
             get => _scanRate;
-            set => _scanRate = value;
+            set
+            {
+                if (_scanRate != value)
+                {
+                    _scanRate = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
-        public int Timeout
+        public int TCPTimeout
         {
-            get => _timeout;
-            set => _timeout = value;
-        }
-
-        public int PollDelay
-        {
-            get => _pollDelay;
-            set => _pollDelay = value;
+            get => _tcpTimeout;
+            set
+            {
+                if (_tcpTimeout != value)
+                {
+                    _tcpTimeout = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int NumPolls
         {
             get => _numPolls;
-            set => _numPolls = value;
+            set
+            {
+                if (_numPolls != value)
+                {
+                    _numPolls = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
-        public int NumOK
+        public int NumOKs
         {
-            get => _numOK;
-            set => _numOK = value;
+            get => _numOKs;
+            set
+            {
+                if (_numOKs != value)
+                {
+                    _numOKs = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int NumErrors
         {
             get => _numErrors;
-            set => _numErrors = value;
+            set
+            {
+                if (_numErrors != value)
+                {
+                    _numErrors = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int NumTX
         {
-            get => _numTX;
-            set => _numTX = value;
+            get => _numTx;
+            set
+            {
+                if (_numTx != value)
+                {
+                    _numTx = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int NumRX
         {
-            get => _numRX;
-            set => _numRX = value;
+            get => _numRx;
+            set
+            {
+                if (_numRx != value)
+                {
+                    _numRx = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int NumRequests
         {
             get => _numRequests;
-            set => _numRequests = value;
+            set
+            {
+                if (_numRequests != value)
+                {
+                    _numRequests = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int NumResponses
         {
             get => _numResponses;
-            set => _numResponses = value;
+            set
+            {
+                if (_numResponses != value)
+                {
+                    _numResponses = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
-        public byte DeviceID
+        public byte DeviceId
         {
-            get => _deviceID;
-            set => _deviceID = value;
+            get { return _deviceId; }
+            set
+            {
+                // Min and Max boundaries on Device ID, according to MODBUS documentation
+                byte clamped = Math.Clamp(value, (byte)1, (byte)247);
+                if (_deviceId != clamped)
+                {
+                    _deviceId = clamped;
+                    OnPropertyChanged();
+                }
+            }
         }
 
-        public ushort Length
+        public ushort DataLength
         {
-            get => _length;
-            set => _length = value;
+            get { return _dataLength; }
+            set
+            {
+                // Min and Max boundaries on Value relative to current StartAddress
+                ushort maxLen = GetMaxLengthForStartAddress();
+                ushort clampedDataLength = Math.Clamp(value, (ushort)1, maxLen);
+
+                if (_dataLength != clampedDataLength)
+                {
+                    _dataLength = clampedDataLength;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public ushort StartAddress
         {
-            get => _startAddress;
-            set => _startAddress = value;
+            get { return _startAddress; }
+            set
+            {
+                // Min and Max boundaries on Starting Address, according to MODBUS documentation
+                ushort clampedStart = Math.Clamp(value, (ushort)0, (ushort)65535);
+
+                if (_startAddress != clampedStart)
+                {
+                    _startAddress = clampedStart;
+                    OnPropertyChanged(nameof(StartAddress)); // notify StartAddress
+
+                    ushort maxLen = GetMaxLengthForStartAddress();
+                    ushort clampedDataLength = Math.Clamp(_dataLength, (ushort)1, maxLen);
+
+                    if (_dataLength != clampedDataLength)
+                    {
+                        _dataLength = clampedDataLength;
+                        OnPropertyChanged(nameof(DataLength)); // notify DataLength
+                    }
+                }
+            }
         }
 
         public bool AsciiEnable
         {
             get => _asciiEnable;
-            set => _asciiEnable = value;
+            set
+            {
+                if (_asciiEnable != value)
+                {
+                    _asciiEnable = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool AttemptConnect
+        {
+            get => _attemptConnect;
+            set
+            {
+                if (_attemptConnect != value)
+                {
+                    _attemptConnect = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public bool IsConnected
@@ -166,142 +287,162 @@ namespace Schism.Models
             get => _isConnected;
             set
             {
-                _isConnected = value;
-                OnPropertyChanged();
+                if (_isConnected != value)
+                {
+                    _isConnected = value;
+                    OnPropertyChanged();
+                }
             }
         }
-
-        public ObservableCollection<string> DataType => _dataType;
-        public ObservableCollection<string> NumericBase => _numericBase;
-        public ObservableCollection<string> Endian => _endian;
-        public ObservableCollection<string> ADisplayType => _aDisplayType;
 
         public string SelectedDataType
         {
             get => _selectedDataType;
-            set => _selectedDataType = value;
+            set
+            {
+                if (_selectedDataType != value)
+                {
+                    _selectedDataType = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public string SelectedNumericBase
         {
             get => _selectedNumericBase;
-            set => _selectedNumericBase = value;
+            set
+            {
+                if (_selectedNumericBase != value)
+                {
+                    _selectedNumericBase = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public string SelectedEndian
         {
             get => _selectedEndian;
-            set => _selectedEndian = value;
-        }
-
-        public string SelectedADisplayType
-        {
-            get => _selectedADisplayType;
-            set => _selectedADisplayType = value;
-        }
-
-        // Results Collection
-        private ObservableCollection<StringWrapper>[] _results = new ObservableCollection<StringWrapper>[6];
-
-        public ObservableCollection<StringWrapper>[] Results
-        {
-            get => _results;
             set
             {
-                _results = value;
-                OnPropertyChanged();
+                if (_selectedEndian != value)
+                {
+                    _selectedEndian = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
+        public string SelectedAsciiDisplayType
+        {
+            get => _selectedAsciiDisplayType;
+            set
+            {
+                if (_selectedAsciiDisplayType != value)
+                {
+                    _selectedAsciiDisplayType = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        // Make Observable Collections public. None of these need Getters/Setters, by nature of ObservableCollections
+        public ObservableCollection<string> DataTypes => _dataTypes;
+        public ObservableCollection<string> NumericBases => _numericBases;
+        public ObservableCollection<string> Endians => _endians;
+        public ObservableCollection<string> AsciiDisplayTypes => _asciiDisplayTypes;
+
+        // ModbusData ObservableCollection, which will have its data manipulated by this class.
+        // This is the collection that the UI will bind to in order to display the received data. Whenever this collection is updated, the UI will automatically reflect those changes.
+        public ObservableCollection<StringWrapper> ModbusData => _modbusData;
 
         // Consutrctor
         private MODBUSService()
         {
-
-            IpAddress = "165.165.165.11";
-            TCPPort = 502;
-            ScanRate = 1000;
-            Timeout = 5000;
-            PollDelay = 10;
-            NumPolls = 0;
-            NumOK = 0;
-            NumErrors = 0;
-            NumTX = 0;
-            NumRX = 0;
-            NumRequests = 0;
-            NumResponses = 0;
-            DeviceID = 1;
-            Length = 10;
-            StartAddress = 0;
-            AsciiEnable = false;
-            SelectedDataType = DataType.First();
-            SelectedNumericBase = NumericBase.First();
-            SelectedEndian = Endian.First();
-            SelectedADisplayType = ADisplayType.First();
+            _ipAddr = "165.165.165.11";
+            _tcpPort = 502;
+            _scanRate = 1000;
+            _tcpTimeout = 5000;
+            _numPolls = 0;
+            _numOKs = 0;
+            _numErrors = 0;
+            _numTx = 0;
+            _numRx = 0;
+            _numRequests = 0;
+            _numResponses = 0;
+            _deviceId = 1;
+            _dataLength = 10;
+            _startAddress = 0;
+            _asciiEnable = false;
+            _selectedDataType = DataTypes.First();
+            _selectedNumericBase = NumericBases.First();
+            _selectedEndian = Endians.First();
+            _selectedAsciiDisplayType = AsciiDisplayTypes.First();
         }
 
         public async void Connection(){
+
+            _attemptConnect = true;
+            OnPropertyChanged(nameof(AttemptConnect));
 
             await Task.Run(() => MODBUSComms());
         }
 
         private void MODBUSComms()
         {
-            try
+            while (_attemptConnect)
             {
-                IPAddress address = IPAddress.Parse(IpAddress);
-                TcpClient masterTcpClient = new TcpClient(address.ToString(), TCPPort);
-                // Create the MODBUS factory, which handles MODBUS operations
-                var factory = new ModbusFactory();
-                IModbusMaster modbusMaster = factory.CreateMaster(masterTcpClient);
-
-                // Apply configurable timeout value from the connections window
-                modbusMaster.Transport.ReadTimeout = Timeout;
-                modbusMaster.Transport.WriteTimeout = Timeout;
-                modbusMaster.Transport.Retries = 3;
-
-                Application.Current.Dispatcher.Invoke(() =>
+                try
                 {
-                    this.IsConnected = true;
-                });
+                    IPAddress address = IPAddress.Parse(_ipAddr);
+                    TcpClient masterTcpClient = new TcpClient(address.ToString(), _tcpPort);
+                    // Create the MODBUS factory, which handles MODBUS operations
+                    var factory = new ModbusFactory();
+                    IModbusMaster modbusMaster = factory.CreateMaster(masterTcpClient);
 
-                switch (SelectedDataType)
-                {
-                    //{ "Coil Status", "Input Status", "Holding Registers", "Input Registers" }
-                    case "Coil Status":
-                        ReadCoils(masterTcpClient, modbusMaster);
-                        break;
-                    case "Input Status":
-                        ReadInputs(masterTcpClient,modbusMaster);
-                        break;
-                    case "Holding Registers":
-                        ReadHoldingRegs(masterTcpClient, modbusMaster);
-                        break;
-                    case "Input Registers":
-                        ReadInputRegs(masterTcpClient, modbusMaster);
-                        break;
-                    default:
-                        // This will never occur...
-                        break;
+                    // Apply configurable timeout value from the connections window
+                    modbusMaster.Transport.ReadTimeout = _tcpTimeout;
+                    modbusMaster.Transport.WriteTimeout = _tcpTimeout;
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        _isConnected = true;
+                        OnPropertyChanged(nameof(IsConnected));
+                    });
+
+                    switch (_selectedDataType)
+                    {
+                        //{ "Coil Status", "Input Status", "Holding Registers", "Input Registers" }
+                        case "Coil Status":
+                            ReadCoils(masterTcpClient, modbusMaster);
+                            break;
+                        case "Input Status":
+                            ReadInputs(masterTcpClient, modbusMaster);
+                            break;
+                        case "Holding Registers":
+                            ReadHoldingRegs(masterTcpClient, modbusMaster);
+                            break;
+                        case "Input Registers":
+                            ReadInputRegs(masterTcpClient, modbusMaster);
+                            break;
+                        default:
+                            // This will never occur...
+                            break;
+                    }
                 }
-            }
 
-            catch (Exception toe) when (toe is IOException or TimeoutException)
-            {
-                Application.Current.Dispatcher.Invoke(() =>
+                catch (SlaveException se)
                 {
-                    this.IsConnected = false;
-                });
-                MessageBox.Show($"Application MODBUS Timeout Failure: \n Timeout period reached during all 3 connection attempts. \n");
-            }
+                    // Handle slave exceptions (e.g., illegal function, illegal data address, etc.)
+                    FailedPoll(); // turns isConnected to false
+                    _attemptConnect = false; // stop further connection attempts if a slave exception occurs
+                }
 
-            catch (Exception e)
-            {
-                Application.Current.Dispatcher.Invoke(() =>
+                catch (Exception e)
                 {
-                    this.IsConnected = false;
-                });
-                MessageBox.Show($"Unknown Application/MODBUS Failure: \n" + e.Message);
+                    FailedPoll(); // turns isConnected to false
+                }
             }
         }
 
@@ -309,36 +450,35 @@ namespace Schism.Models
         {
             using (mtc)
             {
-                while (IsConnected)
+                while (_isConnected && _attemptConnect)
                 {
-                    bool[] coils = mM.ReadCoils(0, StartAddress, Length);
-                    ushort[] coilsConv = coils.Select(Convert.ToUInt16).ToArray();
-
-                    var newData = new List<List<StringWrapper>>();
-
-                    for (int i = 0; i < 6; i++)
-                        newData.Add(new List<StringWrapper>());
-
-                    for (int i = 0; i < Length; i++)
+                    try
                     {
-                        newData[i / 20].Add(new StringWrapper(coilsConv[i].ToString()));
-                    }
+                        bool[] coils = mM.ReadCoils(0, _startAddress, _dataLength);
+                        ushort[] coilsConv = coils.Select(Convert.ToUInt16).ToArray();
 
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        for (int i = 0; i < Results.Length; i++)
+                        var newData = new ObservableCollection<StringWrapper>();
+
+                        for (int i = 0; i < _dataLength; i++)
+                            newData.Add(new StringWrapper(coilsConv[i].ToString()));
+
+                        Application.Current.Dispatcher.Invoke(() =>
                         {
-                            Results[i].Clear();
-
-                            foreach (var item in newData[i])
-                                Results[i].Add(item);
-                        }
-                    });
-
-                    Thread.Sleep(ScanRate);
+                            _modbusData = new ObservableCollection<StringWrapper>(newData);
+                            OnPropertyChanged(nameof(ModbusData));
+                        });
+                        SuccessfulPoll();
+                        Thread.Sleep(_scanRate);
+                    }
+                    catch (Exception e)
+                    {
+                        FailedPoll(); // turns isConnected to false
+                    }
                 }
                 // Does closing the app also close and stop these?
                 mtc.Close();
+                _isConnected = false;
+                OnPropertyChanged(nameof(IsConnected));
             }
         }
 
@@ -346,36 +486,34 @@ namespace Schism.Models
         {
             using (mtc) {
 
-                while (IsConnected)
+                while (_isConnected && _attemptConnect)
                 {
-                    bool[] inputs = mM.ReadInputs(0, StartAddress, Length);
-                    ushort[] inputsConv = inputs.Select(Convert.ToUInt16).ToArray();
+                    try {
+                        bool[] inputs = mM.ReadInputs(0, _startAddress, _dataLength);
+                        ushort[] inputsConv = inputs.Select(Convert.ToUInt16).ToArray();
 
-                    var newData = new List<List<StringWrapper>>();
+                        var newData = new ObservableCollection<StringWrapper>();
 
-                    for (int i = 0; i < 6; i++)
-                        newData.Add(new List<StringWrapper>());
+                        for (int i = 0; i < _dataLength; i++)
+                            newData.Add(new StringWrapper(inputsConv[i].ToString()));
 
-                    for (int i = 0; i < Length; i++)
-                    {
-                        newData[i / 20].Add(new StringWrapper(inputsConv[i].ToString()));
-                    }
-
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        for (int i = 0; i < Results.Length; i++)
+                        Application.Current.Dispatcher.Invoke(() =>
                         {
-                            Results[i].Clear();
-
-                            foreach (var item in newData[i])
-                                Results[i].Add(item);
-                        }
-                    });
-
-                    Thread.Sleep(ScanRate);
+                            _modbusData = new ObservableCollection<StringWrapper>(newData);
+                            OnPropertyChanged(nameof(ModbusData));
+                        });
+                        SuccessfulPoll();
+                        Thread.Sleep(_scanRate);
+                    }
+                    catch (Exception e)
+                    {
+                        FailedPoll(); // turns isConnected to false
+                    }
                 }
                 // Does closing the app also close and stop these?
                 mtc.Close();
+                _isConnected = false;
+                OnPropertyChanged(nameof(IsConnected));
             }
         }
 
@@ -383,35 +521,73 @@ namespace Schism.Models
         {
             using (mtc)
             {
-                while (IsConnected)
+                while (_isConnected && _attemptConnect)
                 {
-                    ushort[] holdingRegs = mM.ReadHoldingRegisters(0, StartAddress, Length);
+                    try {
+                        ushort[] holdingRegs = mM.ReadHoldingRegisters(0, _startAddress, _dataLength);
 
-                    var newData = new List<List<StringWrapper>>();
+                        var newData = new ObservableCollection<StringWrapper>();
 
-                    for (int i = 0; i < 6; i++)
-                        newData.Add(new List<StringWrapper>());
+                        for (int i = 0; i < _dataLength; i++)
+                            newData.Add(new StringWrapper(holdingRegs[i].ToString()));
 
-                    for (int i = 0; i < Length; i++)
-                    {
-                        newData[i / 20].Add(new StringWrapper(holdingRegs[i].ToString()));
-                    }
+                        //NOTE: This is where you'll implement the numeric base and endian control!
+                        // Possibly even the ASCII control as well.
+                        // You'll need to convert the received data based on that UI selection.
+                        // Each piece of data will then be converted into a string to be displayed in the UI
 
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        for (int i = 0; i < Results.Length; i++)
+                        // { "Decimal", "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" }
+
+                        switch (_selectedNumericBase)
                         {
-                            Results[i].Clear();
-
-                            foreach (var item in newData[i])
-                                Results[i].Add(item);
+                            case "Integer":
+                                short[] holdingRegsSigned = new short[holdingRegs.Length];
+                                for (int i = 0; i < _dataLength; i++)
+                                {
+                                    holdingRegsSigned[i] = (short)holdingRegs[i];
+                                    newData.Add(new StringWrapper(holdingRegsSigned[i].ToString()));
+                                }
+                                break;
+                            case "Hexadecimal":
+                                for (int i = 0; i < _dataLength; i++)
+                                {
+                                    // the added "X" in the ToString parentheses does the conversion for us, since hex can't be parsed as a new numeric variable type
+                                    newData.Add(new StringWrapper("0x" + holdingRegs[i].ToString("X")));
+                                }
+                                break;
+                            case "Binary":
+                                for (int i = 0; i < _dataLength; i++)
+                                {
+                                    string temp = Convert.ToString(holdingRegs[i], 2); // 2 parameter converts value to a binary string
+                                    string paddedTemp = temp.PadLeft(16, '0');
+                                    string formattedTemp = Regex.Replace(paddedTemp, ".{4}", "$0 ").Trim();
+                                    newData.Add(new StringWrapper(formattedTemp));
+                                }
+                                break;
+                            // decimal
+                            default:
+                                for (int i = 0; i < _dataLength; i++)
+                                    newData.Add(new StringWrapper(holdingRegs[i].ToString()));
+                                break;
                         }
-                    });
 
-                    Thread.Sleep(ScanRate);
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            _modbusData = new ObservableCollection<StringWrapper>(newData);
+                            OnPropertyChanged(nameof(ModbusData));
+                        });
+                        SuccessfulPoll();
+                        Thread.Sleep(_scanRate);
+                    }
+                    catch (Exception e)
+                    {
+                        FailedPoll(); // turns isConnected to false
+                    }
                 }
                 // Does closing the app also close and stop these?
                 mtc.Close();
+                _isConnected = false;
+                OnPropertyChanged(nameof(IsConnected));
             }
         }
 
@@ -419,74 +595,99 @@ namespace Schism.Models
         {
             using (mtc)
             {
-                while (IsConnected)
+                while (_isConnected && _attemptConnect)
                 {
-                    ushort[] inputRegs = mM.ReadInputRegisters(0, StartAddress, Length);
+                    try {
+                        ushort[] inputRegs = mM.ReadInputRegisters(0, _startAddress, _dataLength);
 
-                    // empty 2D collection of data that will get populated
-                    var newData = new List<List<StringWrapper>>();
-                    for (int i = 0; i < 6; i++)
-                        newData.Add(new List<StringWrapper>());
+                        var newData = new ObservableCollection<StringWrapper>();
 
-                    //NOTE: This is where you'll implement the numeric base and endian control!
-                    // Possibly even the ASCII control as well.
-                    // You'll need to convert the received data based on that UI selection.
-                    // Each piece of data will then be converted into a string to be displayed in the UI
+                        for (int i = 0; i < _dataLength; i++)
+                            newData.Add(new StringWrapper(inputRegs[i].ToString()));
 
-                    // { "Decimal", "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" }
+                        //NOTE: This is where you'll implement the numeric base and endian control!
+                        // Possibly even the ASCII control as well.
+                        // You'll need to convert the received data based on that UI selection.
+                        // Each piece of data will then be converted into a string to be displayed in the UI
 
-                    switch (SelectedNumericBase)
-                    {
-                        case "Integer":
-                            short[] holdingRegsSigned = new short[inputRegs.Length];
-                            for (int i = 0; i < Length; i++)
-                            {
-                                holdingRegsSigned[i] = (short)inputRegs[i];
-                                newData[i / 20].Add(new StringWrapper(holdingRegsSigned[i].ToString()));
-                            }
-                            break;
-                        case "Hexadecimal":
-                            for (int i = 0; i < Length; i++)
-                            {
-                                // the added "X" in the ToString parentheses does the conversion for us, since hex can't be parsed as a new numeric variable type
-                                newData[i / 20].Add(new StringWrapper("0x"+inputRegs[i].ToString("X")));
-                            }
-                            break;
-                        case "Binary":
-                            string[] holdingRegsConv = new string[inputRegs.Length];
-                            for (int i = 0; i < Length; i++)
-                            {
-                                string temp = Convert.ToString(inputRegs[i], 2); // 2 parameter converts value to a binary string
-                                string paddedTemp = temp.PadLeft(16, '0');
-                                string formattedTemp = Regex.Replace(paddedTemp, ".{4}", "$0 ").Trim();
-                                newData[i / 20].Add(new StringWrapper(formattedTemp));
-                            }
-                            break;
-                        // decimal
-                        default:
-                            for (int i = 0; i < Length; i++)
-                            {
-                                newData[i / 20].Add(new StringWrapper(inputRegs[i].ToString()));
-                            }
-                            break;
-                    }
+                        // { "Decimal", "Integer", "Hexadecimal", "Binary", "32 Bit Float", "32 Bit SW. Float", "64 Bit Float", "64 Bit SW. Float" }
 
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        for (int i = 0; i < Results.Length; i++)
+                        switch (_selectedNumericBase)
                         {
-                            Results[i].Clear();
-
-                            foreach (var item in newData[i])
-                                Results[i].Add(item);
+                            case "Integer":
+                                short[] inputRegsSigned = new short[inputRegs.Length];
+                                for (int i = 0; i < _dataLength; i++)
+                                {
+                                    inputRegsSigned[i] = (short)inputRegs[i];
+                                    newData.Add(new StringWrapper(inputRegsSigned[i].ToString()));
+                                }
+                                break;
+                            case "Hexadecimal":
+                                for (int i = 0; i < _dataLength; i++)
+                                {
+                                    // the added "X" in the ToString parentheses does the conversion for us, since hex can't be parsed as a new numeric variable type
+                                    newData.Add(new StringWrapper("0x"+inputRegs[i].ToString("X")));
+                                }
+                                break;
+                            case "Binary":
+                                for (int i = 0; i < _dataLength; i++)
+                                {
+                                    string temp = Convert.ToString(inputRegs[i], 2); // 2 parameter converts value to a binary string
+                                    string paddedTemp = temp.PadLeft(16, '0');
+                                    string formattedTemp = Regex.Replace(paddedTemp, ".{4}", "$0 ").Trim();
+                                    newData.Add(new StringWrapper(formattedTemp));
+                                }
+                                break;
+                            // decimal
+                            default:
+                                for (int i = 0; i < _dataLength; i++)
+                                    newData.Add(new StringWrapper(inputRegs[i].ToString()));
+                                break;
                         }
-                    });
-
-                    Thread.Sleep(ScanRate);
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            _modbusData = new ObservableCollection<StringWrapper>(newData);
+                            OnPropertyChanged(nameof(ModbusData));
+                        });
+                        SuccessfulPoll();
+                        Thread.Sleep(_scanRate);
+                    }
+                    catch (Exception e)
+                    {
+                        FailedPoll(); // turns isConnected to false
+                    }
                 }
                 // Does closing the app also close and stop these?
                 mtc.Close();
+                _isConnected = false;
+                OnPropertyChanged(nameof(IsConnected));
             }
+        }
+
+        private void SuccessfulPoll()
+        {
+            _numPolls++;
+            _numOKs++;
+
+            OnPropertyChanged(nameof(NumPolls));
+            OnPropertyChanged(nameof(NumOKs));
+        }
+
+        private void FailedPoll()
+        {
+            _numPolls++;
+            _numErrors++;
+            _isConnected = false;
+
+            OnPropertyChanged(nameof(NumPolls));
+            OnPropertyChanged(nameof(NumErrors));
+            OnPropertyChanged(nameof(IsConnected));
+        }
+
+        private ushort GetMaxLengthForStartAddress()
+        {
+            ushort cap = (ushort)(65535 - _startAddress); // inclusive cap
+            return Math.Min((ushort)120, cap);
         }
     }
 }

@@ -43,12 +43,12 @@ namespace Schism.Models
 
         public ushort SaveLength { get => _saveLength; set => _saveLength = value; }
         public ushort SaveStartAddress { get => _saveStartAddress; set => _saveStartAddress = value; }
-        public byte SaveDeviceID { get => _saveDeviceID; set => _saveDeviceID = value; }
+        public byte SaveDeviceId { get => _saveDeviceID; set => _saveDeviceID = value; }
         public string SaveDataType { get => _saveDataType; set => _saveDataType = value; }
         public string SaveNumericBase { get => _saveNumericBase; set => _saveNumericBase = value; }
         public string SaveEndian { get => _saveEndian; set => _saveEndian = value; }
-        public bool SaveASCIIEnable { get => _saveASCIIEnable; set => _saveASCIIEnable = value; }
-        public string SaveADisplayType { get => _saveADisplayType; set => _saveADisplayType = value; }
+        public bool SaveAsciiEnable { get => _saveASCIIEnable; set => _saveASCIIEnable = value; }
+        public string SaveAsciiDisplayType { get => _saveADisplayType; set => _saveADisplayType = value; }
         public string SaveAddressConv { get => _saveAddressConv; set => _saveAddressConv = value; }
     }
 }
