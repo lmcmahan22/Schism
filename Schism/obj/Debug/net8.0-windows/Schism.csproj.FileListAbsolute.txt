@@ -94,3 +94,4 @@ C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\ConnSettin
 C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\Themes.g.cs
 C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\NModbus.dll
 C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\Themes.baml
+C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Images\Connecting.png

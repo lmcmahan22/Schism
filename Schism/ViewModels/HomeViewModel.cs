@@ -108,10 +108,22 @@ namespace Schism.ViewModels
             // Make it so this updates with respect to relevant parameters in the Model
             if (e.PropertyName is nameof(MS.DataLength) or
                 nameof(MS.DeviceId) or
-                nameof(MS.SelectedNumericBase) or 
-                nameof(MS.SelectedEndian) or 
+                nameof(MS.SelectedEndian) or
                 nameof(MS.SelectedAsciiDisplayType))
-                    UpdateModbusTable();
+                UpdateModbusTable();
+
+            if (e.PropertyName is nameof(MS.SelectedNumericBase) or nameof(MS.DataLength)) {
+
+                // If we're attempting to poll an odd number of registers while in a numeric base that requires an even number of registers, reduce the length until it is a multiple of 2 to ensure we don't exceed the length with our data display.
+                if (MS.SelectedNumericBase == "32 Bit Float" && (MS.DataLength % 2 != 0))
+                    MS.DataLength = (ushort)(MS.DataLength - (MS.DataLength % 2));
+
+                // If we're attempting to poll a number of registers that isn't a multiple of 4 while in a numeric base that requires a multiple of 4, reduce the length until it is a multiple of 4 to ensure we don't exceed the length with our data display.
+                else if (MS.SelectedNumericBase == "64 Bit Double" && (MS.DataLength % 4 != 0))
+                    MS.DataLength = (ushort)(MS.DataLength - (MS.DataLength % 4));
+
+                UpdateModbusTable();
+            }
 
             if (e.PropertyName is nameof(MS.SelectedDataType))
             {
@@ -151,6 +163,9 @@ namespace Schism.ViewModels
         // Build the table for the main UI based on the provided MODBUS Data from the MODBUSService Model
         private void UpdateModbusTable()
         {
+
+            MS.IsConnected = false; // Force disconnect if we're currently connected, since we're changing parameters that would affect the data display.
+
             // Determine which columns should be visible, based on the provided DataLength from the Model!
             for (int i = 0; i < _colsVis.Length; i++)
             {
@@ -416,8 +431,8 @@ namespace Schism.ViewModels
         void Execute_Conn_Click()
         {
             // Looks a bit strange, but effectively works as a toggle! Press it once to connect, press it again to stop.
-            if (MS.AttemptConnect)
-                MS.AttemptConnect = false;
+            if (MS.ConnectEngage)
+                MS.ConnectEngage = false;
             else
                 MS.Connection();
         }

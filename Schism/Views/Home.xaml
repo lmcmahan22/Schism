@@ -193,9 +193,20 @@
                                     <Style TargetType="Image">
                                         <Setter Property="Source" Value="/Images/Disconnect.png"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding MS.AttemptConnect}" Value="True">
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding MS.ConnectEngage}" Value="True" />
+                                                    <Condition Binding="{Binding MS.IsConnected}" Value="False" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Source" Value="/Images/Connecting.png"/>
+                                            </MultiDataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding MS.ConnectEngage}" Value="True" />
+                                                    <Condition Binding="{Binding MS.IsConnected}" Value="True" />
+                                                </MultiDataTrigger.Conditions>
                                                 <Setter Property="Source" Value="/Images/Connected.png"/>
-                                            </DataTrigger>
+                                            </MultiDataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Image.Style>
@@ -443,51 +454,26 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Row="0" Grid.Column="0">
-                            <!--<TextBlock Text="{Binding NumPolls, StringFormat=Polls: {}}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
-                            <TextBlock Text="Polls:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
-                            <TextBlock Text="{Binding MS.NumPolls}" Margin="60,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock Text="Error Message:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
                         </Grid>
-                        <Grid Grid.Row="0" Grid.Column="1">
-                            <!--<TextBlock Text="{Binding NumOK, StringFormat=OK: {}}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
+                        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8">
+                            <TextBlock Text="{Binding MS.ErrMess}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                        </Grid>
+                        <Grid Grid.Row="0" Grid.Column="4">
+                            <TextBlock Text="Requests:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock Text="{Binding MS.NumRequests}" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                        </Grid>
+                        <Grid Grid.Row="0" Grid.Column="5">
+                            <TextBlock Text="Responses:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock Text="{Binding MS.NumResponses}" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                        </Grid>
+                        <Grid Grid.Row="0" Grid.Column="6">
                             <TextBlock Text="OK:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
                             <TextBlock Text="{Binding MS.NumOKs}" Margin="50,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
                         </Grid>
-                        <Grid Grid.Row="0" Grid.Column="2">
-                            <!--<TextBlock Text="{Binding NumErrors, StringFormat=Error: {}}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
+                        <Grid Grid.Row="0" Grid.Column="7">
                             <TextBlock Text="Errors:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
                             <TextBlock Text="{Binding MS.NumErrors}" Margin="70,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
-                        </Grid>
-                        <Grid Grid.Row="0" Grid.Column="4">
-                            <!--<TextBlock Text="{Binding NumTX, StringFormat=Tx: {} B}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
-                            <TextBlock Text="Tx: 0 B" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
-                        </Grid>
-                        <Grid Grid.Row="1" Grid.Column="4">
-                            <!--<TextBlock Text="{Binding NumTXKBs, StringFormat={} KB/s}" Margin="50,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
-                            <TextBlock Text="0.00 KB/s" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
-                        </Grid>
-                        <Grid Grid.Row="0" Grid.Column="5">
-                            <!--<TextBlock Text="{Binding NumRX, StringFormat=Tx: {} B}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
-                            <TextBlock Text="Rx: 0 B" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
-                        </Grid>
-                        <Grid Grid.Row="1" Grid.Column="5">
-                            <!--<TextBlock Text="{Binding NumRXKBs, StringFormat={} KB/s}" Margin="50,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
-                            <TextBlock Text="0.00 KB/s" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
-                        </Grid>
-                        <Grid Grid.Row="0" Grid.Column="6">
-                            <!--<TextBlock Text="{Binding NumRequests, StringFormat=Requests: {}}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
-                            <TextBlock Text="Requests: 0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
-                        </Grid>
-                        <Grid Grid.Row="1" Grid.Column="6">
-                            <!--<TextBlock Text="{Binding NumRQs, StringFormat={}/s}" Margin="50,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
-                            <TextBlock Text="0.00/s" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
-                        </Grid>
-                        <Grid Grid.Row="0" Grid.Column="7">
-                            <!--<TextBlock Text="{Binding NumResponses, StringFormat=Responses: {}}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
-                            <TextBlock Text="Responses: 0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
-                        </Grid>
-                        <Grid Grid.Row="1" Grid.Column="7">
-                            <!--<TextBlock Text="{Binding NumRPs, StringFormat={}/s}" Margin="50,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>-->
-                            <TextBlock Text="0.00/s" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
                         </Grid>
                     </Grid>
                 </StackPanel>
