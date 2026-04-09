@@ -29,6 +29,7 @@ namespace Schism.Models
         private Brush _accent1;
         private Brush _accent2;
         private Brush _accent3;
+        private Brush _accent4;
         private Brush _textColor;
 
         // Do these need to call "OnPropertyChanged()"? I'm not so sure atm...
@@ -95,6 +96,20 @@ namespace Schism.Models
                 }
             }
         }
+
+        public Brush Accent4
+        {
+            get => _accent4;
+            set
+            {
+                if (_accent4 != value)
+                {
+                    _accent4 = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public Brush TextColor 
         {
             get => _textColor;
@@ -123,15 +138,17 @@ namespace Schism.Models
                 _main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
                 _accent1 = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
                 _accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
-                _accent3 = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180));
+                _accent3 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
+                _accent4 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
                 _textColor = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
             }
             else
             {
-                _main = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
-                _accent1 = new SolidColorBrush(Color.FromArgb(255, 220, 220, 220));
-                _accent2 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
-                _accent3 = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180));
+                _main = new SolidColorBrush(Color.FromArgb(255, 250, 250, 250));
+                _accent1 = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
+                _accent2 = new SolidColorBrush(Color.FromArgb(255, 220, 220, 220));
+                _accent3 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+                _accent4 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
                 _textColor = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
             }
 
@@ -139,6 +156,7 @@ namespace Schism.Models
             OnPropertyChanged(nameof(Accent1));
             OnPropertyChanged(nameof(Accent2));
             OnPropertyChanged(nameof(Accent3));
+            OnPropertyChanged(nameof(Accent4));
             OnPropertyChanged(nameof(TextColor));
         }
     }

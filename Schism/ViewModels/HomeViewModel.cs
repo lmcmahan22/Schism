@@ -476,13 +476,13 @@ namespace Schism.ViewModels
             connSettings.ShowDialog();
         }
 
-        public DelegateCommand InsErr_Click =>
-            _insErrClick ??= new DelegateCommand(Execute_InsErr_Click);
+        //public DelegateCommand InsErr_Click =>
+        //    _insErrClick ??= new DelegateCommand(Execute_InsErr_Click);
 
-        void Execute_InsErr_Click()
-        {
-            // TODO: Implement error injection dialog
-        }
+        //void Execute_InsErr_Click()
+        //{
+        //    // TODO: Implement error injection dialog
+        //}
 
         public DelegateCommand Themes_Click =>
             _themesClick ??= new DelegateCommand(Execute_Themes_Click);
