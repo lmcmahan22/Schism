@@ -28,6 +28,8 @@ namespace Schism.ViewModels
         private static ObservableCollection<string> _addressConventions = ["Register Address (starting from 0)", "Register Number (starting from 1)"];
         private string _selectedAddressConvention = _addressConventions.First();
         private bool _nonBoolData = false;
+        private bool _endianEnable = false;
+        private bool _hexData = false;
 
         // View Model grid elements
         private ObservableCollection<StringWrapper> _shiftColumn = new ObservableCollection<StringWrapper>();
@@ -79,6 +81,18 @@ namespace Schism.ViewModels
             set => SetProperty(ref _nonBoolData, value);
         }
 
+        public bool EndianEnable
+        {
+            get => _endianEnable;
+            set => SetProperty(ref _endianEnable, value);
+        }
+
+        public bool HexData
+        {
+            get => _hexData;
+            set => SetProperty(ref _hexData, value);
+        }
+
         public ObservableCollection<string> AddressConventions{ get => _addressConventions; }
 
         public string SelectedAddressConvention
@@ -122,13 +136,22 @@ namespace Schism.ViewModels
                 else if (MS.SelectedNumericBase == "64 Bit Double" && (MS.DataLength % 4 != 0))
                     MS.DataLength = (ushort)(MS.DataLength - (MS.DataLength % 4));
 
+                _hexData = (MS.SelectedDataType is "Holding Registers" or "Input Registers") && MS.SelectedNumericBase is "Hexadecimal";
+                _endianEnable = (MS.SelectedDataType is "Holding Registers" or "Input Registers") && (MS.SelectedNumericBase is "32 Bit Float" or "64 Bit Double");
+                OnPropertyChanged(nameof(HexData));
+                OnPropertyChanged(nameof(EndianEnable));
+
                 UpdateModbusTable();
             }
 
             if (e.PropertyName is nameof(MS.SelectedDataType))
             {
                 _nonBoolData = MS.SelectedDataType is "Holding Registers" or "Input Registers";
+                _hexData = (MS.SelectedDataType is "Holding Registers" or "Input Registers") && MS.SelectedNumericBase is "Hexadecimal";
+                _endianEnable = (MS.SelectedDataType is "Holding Registers" or "Input Registers") && (MS.SelectedNumericBase is "32 Bit Float" or "64 Bit Double");
                 OnPropertyChanged(nameof(NonBoolData)); // Notify the UI that the NonBoolData value has been updated, so that it can show/hide the numeric base and endian dropdowns accordingly
+                OnPropertyChanged(nameof(EndianEnable)); // Notify the UI that the EndianEnable value has been updated, so that it can show/hide the endian dropdown accordingly
+                OnPropertyChanged(nameof(HexData)); // Notify the UI that the HexData value has been updated
                 UpdateModbusTable();
             }
 

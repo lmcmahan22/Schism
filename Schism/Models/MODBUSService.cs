@@ -57,8 +57,8 @@ namespace Schism.Models
         // dropdown contents (never change)
         private readonly ObservableCollection<string> _dataTypes = new ObservableCollection<string> { "Coil Status", "Input Status", "Holding Registers", "Input Registers" };
         private readonly ObservableCollection<string> _numericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary", "32 Bit Float", "64 Bit Double" };
-        private readonly ObservableCollection<string> _endians = new ObservableCollection<string> { "Big Endian", "Little Endian", "Big Endian (Byte-Swap)", "Little-Endian (Byte-Swap)" };
-        private readonly ObservableCollection<string> _asciiDisplayTypes = new ObservableCollection<string> { "1 Char/Reg", "2 Char/Reg", "2 Char/Reg SW." };
+        private readonly ObservableCollection<string> _endians = new ObservableCollection<string> { "Big Endian", "Little Endian", "Big Endian (Byte-Swap)", "Little Endian (Byte-Swap)" };
+        private readonly ObservableCollection<string> _asciiDisplayTypes = new ObservableCollection<string> { "1 Char/Reg", "2 Char/Reg", "2 Char/Reg (Byte-Swap)" };
 
         // ModbusData Collection
         private ObservableCollection<StringWrapper> _modbusData = new ObservableCollection<StringWrapper>();
@@ -690,8 +690,27 @@ namespace Schism.Models
                             case "Hexadecimal":
                                 for (int i = 0; i < _dataLength; i++)
                                 {
-                                    // the added "X" in the ToString parentheses does the conversion for us, since hex can't be parsed as a new numeric variable type
-                                    newData.Add(new StringWrapper("0x" + holdingRegs[i].ToString("X")));
+                                    if (_asciiEnable)
+                                    {
+                                        if (_selectedAsciiDisplayType is "1 Char/Reg")
+                                        {
+                                            // Truncate the incoming data down to a byte, since we're only expecting a single character here.
+                                            byte truncData = (byte) holdingRegs[i];
+                                            newData.Add(new StringWrapper("(" + (char)truncData + ") 0x" + truncData.ToString("X2")));
+                                        }
+                                        else if(_selectedAsciiDisplayType is "2 Char/Reg")
+                                        {
+                                            ushort swapped = System.Buffers.Binary.BinaryPrimitives.ReverseEndianness(holdingRegs[i]); // The bit converter method in the following line expects little endian, but MODBUS Hex values are transmitted in Big Endian! This allows us to swap, only where needed.
+                                            newData.Add(new StringWrapper("(" + Encoding.ASCII.GetString(BitConverter.GetBytes(swapped)) + ") 0x" + holdingRegs[i].ToString("X4")));
+                                        }
+                                        else if(_selectedAsciiDisplayType is "2 Char/Reg (Byte-Swap)")
+                                        {
+                                            ushort swapped = System.Buffers.Binary.BinaryPrimitives.ReverseEndianness(holdingRegs[i]); // Similar to above, but instead of swapping the ASCII display, we're swapping how the hex data is displayed
+                                            newData.Add(new StringWrapper("(" + Encoding.ASCII.GetString(BitConverter.GetBytes(holdingRegs[i])) + ") 0x" + swapped.ToString("X4")));
+                                        }
+                                    }
+                                    else
+                                        newData.Add(new StringWrapper("0x" + holdingRegs[i].ToString("X4")));
                                 }
                                 break;
                             case "Binary":
@@ -719,10 +738,10 @@ namespace Schism.Models
                                         Array.Reverse(bytes); // Ensure correct endianness
 
                                     else if(_selectedEndian is "Big Endian (Byte-Swap)")
-                                        bytes = new byte[] { bytes[1], bytes[0], bytes[3], bytes[2] }; // Swap the byte order for big endian byte-swap
+                                        bytes = [bytes[1], bytes[0], bytes[3], bytes[2]]; // Swap the byte order for big endian byte-swap
 
                                     else if(_selectedEndian is "Little Endian (Byte-Swap)")
-                                        bytes = new byte[] { bytes[2], bytes[3], bytes[0], bytes[1] }; // Swap the byte order for little endian byte-swap
+                                        bytes = [bytes[2], bytes[3], bytes[0], bytes[1]]; // Swap the byte order for little endian byte-swap
 
                                     float floatValue = BitConverter.ToSingle(bytes, 0);
                                     newData.Add(new StringWrapper(floatValue.ToString()));
@@ -746,6 +765,12 @@ namespace Schism.Models
 
                                     if (_selectedEndian is "Little Endian")
                                         Array.Reverse(bytes); // Ensure correct endianness
+
+                                    if(_selectedEndian is "Big Endian (Byte-Swap)")
+                                        bytes = [bytes[1], bytes[0], bytes[3], bytes[2], bytes[5], bytes[4], bytes[7], bytes[6]]; // Swap the byte order for big endian byte-swap
+
+                                    if(_selectedEndian is "Little Endian (Byte-Swap)")
+                                        bytes = [bytes[6], bytes[7], bytes[4], bytes[5], bytes[2], bytes[3], bytes[0], bytes[1]]; // Swap the byte order for little endian byte-swap
 
                                     double doubleValue = BitConverter.ToDouble(bytes, 0);
                                     newData.Add(new StringWrapper(doubleValue.ToString()));
@@ -828,8 +853,27 @@ namespace Schism.Models
                             case "Hexadecimal":
                                 for (int i = 0; i < _dataLength; i++)
                                 {
-                                    // the added "X" in the ToString parentheses does the conversion for us, since hex can't be parsed as a new numeric variable type
-                                    newData.Add(new StringWrapper("0x"+inputRegs[i].ToString("X")));
+                                    if (_asciiEnable)
+                                    {
+                                        if (_selectedAsciiDisplayType is "1 Char/Reg")
+                                        {
+                                            // Truncate the incoming data down to a byte, since we're only expecting a single character here.
+                                            byte truncData = (byte)inputRegs[i];
+                                            newData.Add(new StringWrapper("(" + (char)truncData + ") 0x" + truncData.ToString("X2")));
+                                        }
+                                        else if (_selectedAsciiDisplayType is "2 Char/Reg")
+                                        {
+                                            ushort swapped = System.Buffers.Binary.BinaryPrimitives.ReverseEndianness(inputRegs[i]); // The bit converter method in the following line expects little endian, but MODBUS Hex values are transmitted in Big Endian! This allows us to swap, only where needed.
+                                            newData.Add(new StringWrapper("(" + Encoding.ASCII.GetString(BitConverter.GetBytes(swapped)) + ") 0x" + inputRegs[i].ToString("X4")));
+                                        }
+                                        else if (_selectedAsciiDisplayType is "2 Char/Reg (Byte-Swap)")
+                                        {
+                                            ushort swapped = System.Buffers.Binary.BinaryPrimitives.ReverseEndianness(inputRegs[i]); // Similar to above, but instead of swapping the ASCII display, we're swapping how the hex data is displayed
+                                            newData.Add(new StringWrapper("(" + Encoding.ASCII.GetString(BitConverter.GetBytes(inputRegs[i])) + ") 0x" + swapped.ToString("X4")));
+                                        }
+                                    }
+                                    else
+                                        newData.Add(new StringWrapper("0x" + inputRegs[i].ToString("X4")));
                                 }
                                 break;
                             case "Binary":
@@ -839,6 +883,61 @@ namespace Schism.Models
                                     string paddedTemp = temp.PadLeft(16, '0');
                                     string formattedTemp = Regex.Replace(paddedTemp, ".{4}", "$0 ").Trim();
                                     newData.Add(new StringWrapper(formattedTemp));
+                                }
+                                break;
+                            case "32 Bit Float":
+                                for (int i = 0; i < _dataLength; i += 2)
+                                {
+                                    if (i + 1 >= inputRegs.Length)
+                                        break; // Prevent out-of-range access
+
+                                    // Combine two 16-bit registers into a 32-bit integer
+                                    uint combined = ((uint)inputRegs[i] << 16) | inputRegs[i + 1];
+                                    // Convert the combined integer to a float
+                                    byte[] bytes = BitConverter.GetBytes(combined);
+
+                                    if (_selectedEndian is "Little Endian")
+                                        Array.Reverse(bytes); // Ensure correct endianness
+
+                                    else if (_selectedEndian is "Big Endian (Byte-Swap)")
+                                        bytes = [bytes[1], bytes[0], bytes[3], bytes[2]]; // Swap the byte order for big endian byte-swap
+
+                                    else if (_selectedEndian is "Little Endian (Byte-Swap)")
+                                        bytes = [bytes[2], bytes[3], bytes[0], bytes[1]]; // Swap the byte order for little endian byte-swap
+
+                                    float floatValue = BitConverter.ToSingle(bytes, 0);
+                                    newData.Add(new StringWrapper(floatValue.ToString()));
+                                    newData.Add(new StringWrapper("")); // Empty string to offset
+                                }
+                                break;
+                            case "64 Bit Double":
+                                for (int i = 0; i < _dataLength; i += 4)
+                                {
+                                    if (i + 3 >= inputRegs.Length)
+                                        break; // Prevent out-of-range access
+
+                                    // Combine four 16-bit registers into a 64-bit integer (use ulong to avoid truncation)
+                                    ulong combined = ((ulong)inputRegs[i] << 48)
+                                                    | ((ulong)inputRegs[i + 1] << 32)
+                                                    | ((ulong)inputRegs[i + 2] << 16)
+                                                    | (ulong)inputRegs[i + 3];
+
+                                    // Convert the combined integer to a double
+                                    byte[] bytes = BitConverter.GetBytes(combined);
+
+                                    if (_selectedEndian is "Little Endian")
+                                        Array.Reverse(bytes); // Ensure correct endianness
+
+                                    if (_selectedEndian is "Big Endian (Byte-Swap)")
+                                        bytes = [bytes[1], bytes[0], bytes[3], bytes[2], bytes[5], bytes[4], bytes[7], bytes[6]]; // Swap the byte order for big endian byte-swap
+
+                                    if (_selectedEndian is "Little Endian (Byte-Swap)")
+                                        bytes = [bytes[6], bytes[7], bytes[4], bytes[5], bytes[2], bytes[3], bytes[0], bytes[1]]; // Swap the byte order for little endian byte-swap
+
+                                    double doubleValue = BitConverter.ToDouble(bytes, 0);
+                                    newData.Add(new StringWrapper(doubleValue.ToString()));
+                                    for (int j = 0; j < 3; j++)
+                                        newData.Add(new StringWrapper("")); // Empty strings to offset
                                 }
                                 break;
                             // decimal
