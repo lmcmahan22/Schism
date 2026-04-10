@@ -126,18 +126,44 @@ namespace Schism.ViewModels
                 nameof(MS.SelectedAsciiDisplayType))
                 UpdateModbusTable();
 
-            if (e.PropertyName is nameof(MS.SelectedNumericBase) or nameof(MS.DataLength)) {
+            if (e.PropertyName is nameof(MS.SelectedNumericBase) or nameof(MS.DataLength) or nameof(MS.SelectedDataSize))
+            {
 
                 // If we're attempting to poll an odd number of registers while in a numeric base that requires an even number of registers, reduce the length until it is a multiple of 2 to ensure we don't exceed the length with our data display.
-                if (MS.SelectedNumericBase == "32 Bit Float" && (MS.DataLength % 2 != 0))
+                if ((MS.SelectedDataType is "Holding Registers" or "Input Registers") && (MS.SelectedDataSize == "32-Bit") && (MS.DataLength % 2 != 0))
                     MS.DataLength = (ushort)(MS.DataLength - (MS.DataLength % 2));
 
                 // If we're attempting to poll a number of registers that isn't a multiple of 4 while in a numeric base that requires a multiple of 4, reduce the length until it is a multiple of 4 to ensure we don't exceed the length with our data display.
-                else if (MS.SelectedNumericBase == "64 Bit Double" && (MS.DataLength % 4 != 0))
+                else if ((MS.SelectedDataType is "Holding Registers" or "Input Registers") && (MS.SelectedDataSize == "64-Bit") && (MS.DataLength % 4 != 0))
                     MS.DataLength = (ushort)(MS.DataLength - (MS.DataLength % 4));
 
-                _hexData = (MS.SelectedDataType is "Holding Registers" or "Input Registers") && MS.SelectedNumericBase is "Hexadecimal";
-                _endianEnable = (MS.SelectedDataType is "Holding Registers" or "Input Registers") && (MS.SelectedNumericBase is "32 Bit Float" or "64 Bit Double");
+                if(MS.SelectedNumericBase is "Floating Point")
+                {
+                    // Force data size update if it is currently set to 16-Bit while attempting to use Floating Point as the Numeric Base
+                    if(MS.SelectedDataSize == "16-Bit")
+                        MS.SelectedDataSize = "32-Bit";
+
+                    // Update the available data sizes for Floating Point
+                    MS.DataSizes = new ObservableCollection<string>{"32-Bit", "64-Bit" };
+                }
+                else
+                    // Update the available data sizes for non-Floating Point numeric bases
+                    MS.DataSizes = new ObservableCollection<string> { "16-Bit", "32-Bit", "64-Bit" };
+
+                if(MS.SelectedDataSize is "16-Bit")
+                {
+                    if(MS.SelectedNumericBase is "Floating Point")
+                        // Force numeric base update if it is currently set to Floating Point while attempting to use 16-Bit as the Data Size
+                        MS.SelectedNumericBase = "Decimal";
+
+                    MS.NumericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary"};
+                }
+                else
+                    // Update the available numeric bases for non-16-Bit data sizes
+                    MS.NumericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary", "Floating Point" };
+
+                _hexData = (MS.SelectedDataType is "Holding Registers" or "Input Registers") && (MS.SelectedNumericBase is "Hexadecimal");
+                _endianEnable = (MS.SelectedDataType is "Holding Registers" or "Input Registers");
                 OnPropertyChanged(nameof(HexData));
                 OnPropertyChanged(nameof(EndianEnable));
 
@@ -147,8 +173,8 @@ namespace Schism.ViewModels
             if (e.PropertyName is nameof(MS.SelectedDataType))
             {
                 _nonBoolData = MS.SelectedDataType is "Holding Registers" or "Input Registers";
-                _hexData = (MS.SelectedDataType is "Holding Registers" or "Input Registers") && MS.SelectedNumericBase is "Hexadecimal";
-                _endianEnable = (MS.SelectedDataType is "Holding Registers" or "Input Registers") && (MS.SelectedNumericBase is "32 Bit Float" or "64 Bit Double");
+                _hexData = (MS.SelectedDataType is "Holding Registers" or "Input Registers") && (MS.SelectedNumericBase is "Hexadecimal");
+                _endianEnable = (MS.SelectedDataType is "Holding Registers" or "Input Registers");
                 OnPropertyChanged(nameof(NonBoolData)); // Notify the UI that the NonBoolData value has been updated, so that it can show/hide the numeric base and endian dropdowns accordingly
                 OnPropertyChanged(nameof(EndianEnable)); // Notify the UI that the EndianEnable value has been updated, so that it can show/hide the endian dropdown accordingly
                 OnPropertyChanged(nameof(HexData)); // Notify the UI that the HexData value has been updated
@@ -400,6 +426,7 @@ namespace Schism.ViewModels
                 SaveLength = MS.DataLength,
                 SaveDataType = MS.SelectedDataType,
                 SaveNumericBase = MS.SelectedNumericBase,
+                SaveDataSize = MS.SelectedDataSize,
                 SaveEndian = MS.SelectedEndian,
                 SaveAsciiEnable = MS.AsciiEnable,
                 SaveAsciiDisplayType = MS.SelectedAsciiDisplayType,
@@ -423,6 +450,7 @@ namespace Schism.ViewModels
             MS.StartAddress = lD.SaveStartAddress;
             MS.SelectedDataType = lD.SaveDataType;
             MS.SelectedNumericBase = lD.SaveNumericBase;
+            MS.SelectedDataSize = lD.SaveDataSize;
             MS.SelectedEndian = lD.SaveEndian;
             MS.AsciiEnable = lD.SaveAsciiEnable;
             MS.SelectedAsciiDisplayType = lD.SaveAsciiDisplayType;

@@ -14,6 +14,7 @@ namespace Schism.Models
         private byte _saveDeviceID = 0;
         private string _saveDataType = "";
         private string _saveNumericBase = "";
+        private string _saveDataSize = "";
         private string _saveEndian = "";
         private bool _saveASCIIEnable;
         private string _saveADisplayType = "";
@@ -25,7 +26,7 @@ namespace Schism.Models
         }
 
         public SaveData(ushort _sL, ushort _sSA, byte _sDID, string _sDT,
-            string _sNB, string _sE, bool _sAE,
+            string _sNB, string _sDS, string _sE, bool _sAE,
             string _sADT, string _sAC)
         {
             _saveLength = _sL;
@@ -33,6 +34,7 @@ namespace Schism.Models
             _saveDeviceID = _sDID;
             _saveDataType = _sDT;
             _saveNumericBase = _sNB;
+            _saveDataSize = _sDS;
             _saveEndian = _sE;
             _saveASCIIEnable = _sAE;
             _saveADisplayType = _sADT;
@@ -46,6 +48,7 @@ namespace Schism.Models
         public byte SaveDeviceId { get => _saveDeviceID; set => _saveDeviceID = value; }
         public string SaveDataType { get => _saveDataType; set => _saveDataType = value; }
         public string SaveNumericBase { get => _saveNumericBase; set => _saveNumericBase = value; }
+        public string SaveDataSize { get => _saveDataSize; set => _saveDataSize = value; }
         public string SaveEndian { get => _saveEndian; set => _saveEndian = value; }
         public bool SaveAsciiEnable { get => _saveASCIIEnable; set => _saveASCIIEnable = value; }
         public string SaveAsciiDisplayType { get => _saveADisplayType; set => _saveADisplayType = value; }
