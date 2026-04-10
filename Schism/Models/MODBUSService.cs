@@ -498,6 +498,7 @@ namespace Schism.Models
             _selectedNumericBase = NumericBases.First();
             _selectedEndian = Endians.First();
             _selectedAsciiDisplayType = AsciiDisplayTypes.First();
+            _errMess= "";
         }
 
         public async void Connection(){

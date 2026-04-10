@@ -30,6 +30,7 @@ namespace Schism.ViewModels
         private bool _nonBoolData = false;
         private bool _endianEnable = false;
         private bool _hexData = false;
+        private Visibility _errorContents = Visibility.Collapsed;
 
         // View Model grid elements
         private ObservableCollection<StringWrapper> _shiftColumn = new ObservableCollection<StringWrapper>();
@@ -102,6 +103,16 @@ namespace Schism.ViewModels
             {
                 SetProperty(ref _selectedAddressConvention, value);
                 UpdateModbusTable(); // Ensure the table updates immediately when the address convention is changed, since this changes the content of the shift column!
+            }
+        }
+
+        // View Model Visibility element bases from Model boolean! :D
+        public Visibility ErrorContents
+        {
+            get
+            {
+                // Use IsNullOrEmpty for safety (handles null and empty)
+                return string.IsNullOrEmpty(MS.ErrMess) ? Visibility.Collapsed : Visibility.Visible;
             }
         }
 
@@ -201,6 +212,12 @@ namespace Schism.ViewModels
 
             if (e.PropertyName is nameof(MS.ModbusData)){
                 UpdateModbusData(); // Only update the MODBUS data if we see an update on the data from the Model!
+            }
+
+            if (e.PropertyName is nameof(MS.ErrMess))
+            {
+                OnPropertyChanged(nameof(ErrorContents));
+                // No MODBUS table update needed here.
             }
         }
 
