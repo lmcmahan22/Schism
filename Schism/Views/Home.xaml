@@ -424,60 +424,65 @@
                             </ScrollViewer>
                         </Grid>
 
-                        <ContentControl Grid.Row="0" Grid.Column="1" Grid.RowSpan="21"
+                        <!-- ItemsControl wrapped in ScrollViewer to mimic DataGrid scrolling -->
+                        <ScrollViewer Grid.Row="0" Grid.Column="1" Grid.RowSpan="21" Grid.ColumnSpan="12" VerticalScrollBarVisibility="Disabled">
+                            <StackPanel Orientation="Horizontal">
+                                <ContentControl Grid.Row="0" Grid.Column="1" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[0]}"
                                         Content="{Binding Names[0]}"
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
-                        <ContentControl Grid.Row="0" Grid.Column="2" Grid.RowSpan="21"
+                                <ContentControl Grid.Row="0" Grid.Column="2" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[0]}"
                                         Content="{Binding ModbusGrid[0]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[0], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                        <ContentControl Grid.Row="0" Grid.Column="3" Grid.RowSpan="21"
+                                <ContentControl Grid.Row="0" Grid.Column="3" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[1]}"
                                         Content="{Binding Names[1]}"
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
-                        <ContentControl Grid.Row="0" Grid.Column="4" Grid.RowSpan="21"
+                                <ContentControl Grid.Row="0" Grid.Column="4" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[1]}"
                                         Content="{Binding ModbusGrid[1]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[1], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                        <ContentControl Grid.Row="0" Grid.Column="5" Grid.RowSpan="21"
+                                <ContentControl Grid.Row="0" Grid.Column="5" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[2]}"
                                         Content="{Binding Names[2]}"
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
-                        <ContentControl Grid.Row="0" Grid.Column="6" Grid.RowSpan="21"
+                                <ContentControl Grid.Row="0" Grid.Column="6" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[2]}"
                                         Content="{Binding ModbusGrid[2]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[2], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                        <ContentControl Grid.Row="0" Grid.Column="7" Grid.RowSpan="21"
+                                <ContentControl Grid.Row="0" Grid.Column="7" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[3]}"
                                         Content="{Binding Names[3]}"
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
-                        <ContentControl Grid.Row="0" Grid.Column="8" Grid.RowSpan="21"
+                                <ContentControl Grid.Row="0" Grid.Column="8" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[3]}"
                                         Content="{Binding ModbusGrid[3]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[3], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                        <ContentControl Grid.Row="0" Grid.Column="9" Grid.RowSpan="21"
+                                <ContentControl Grid.Row="0" Grid.Column="9" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[4]}"
                                         Content="{Binding Names[4]}"
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
-                        <ContentControl Grid.Row="0" Grid.Column="10" Grid.RowSpan="21"
+                                <ContentControl Grid.Row="0" Grid.Column="10" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[4]}"
                                         Content="{Binding ModbusGrid[4]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[4], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                        <ContentControl Grid.Row="0" Grid.Column="11" Grid.RowSpan="21"
+                                <ContentControl Grid.Row="0" Grid.Column="11" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[5]}"
                                         Content="{Binding Names[5]}"
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
-                        <ContentControl Grid.Row="0" Grid.Column="12" Grid.RowSpan="21"
+                                <ContentControl Grid.Row="0" Grid.Column="12" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[5]}"
                                         Content="{Binding ModbusGrid[5]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[5], RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                            </StackPanel>
+                        </ScrollViewer>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -501,10 +506,10 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Row="0" Grid.Column="0">
-                            <TextBlock Text="Error Message:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16" Visibility="{Binding ErrorContents}" Foreground="DarkRed" FontWeight="Bold"/>
+                            <TextBlock Text="Error Message:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16" Visibility="{Binding ErrorContents}" Foreground="{Binding TS.ErrorColor}" FontWeight="Bold"/>
                         </Grid>
                         <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8">
-                            <TextBlock Text="{Binding MS.ErrMess}" Margin="10,0,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14" Visibility="{Binding ErrorContents}" Foreground="DarkRed"/>
+                            <TextBlock Text="{Binding MS.ErrMess}" Margin="10,0,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14" Visibility="{Binding ErrorContents}" Foreground="{Binding TS.ErrorColor}"/>
                         </Grid>
                         <Grid Grid.Row="0" Grid.Column="4">
                             <TextBlock Text="Requests:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>

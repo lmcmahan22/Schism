@@ -31,6 +31,7 @@ namespace Schism.Models
         private Brush _accent3;
         private Brush _accent4;
         private Brush _textColor;
+        private Brush _errorColor;
 
         // Do these need to call "OnPropertyChanged()"? I'm not so sure atm...
         public ObservableCollection<string> AvailableThemes => _availableThemes;
@@ -122,6 +123,18 @@ namespace Schism.Models
                 }
             }
         }
+        public Brush ErrorColor
+        {
+            get => _errorColor;
+            set
+            {
+                if (_errorColor != value)
+                {
+                    _errorColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public ThemeService()
         {
@@ -141,6 +154,7 @@ namespace Schism.Models
                 _accent3 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
                 _accent4 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
                 _textColor = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                _errorColor = new SolidColorBrush(Color.FromArgb(255, 100, 0, 0));
             }
             else
             {
@@ -150,6 +164,7 @@ namespace Schism.Models
                 _accent3 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
                 _accent4 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
                 _textColor = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                _errorColor = new SolidColorBrush(Color.FromArgb(255, 200, 0, 0));
             }
 
             OnPropertyChanged(nameof(Main));
@@ -158,6 +173,7 @@ namespace Schism.Models
             OnPropertyChanged(nameof(Accent3));
             OnPropertyChanged(nameof(Accent4));
             OnPropertyChanged(nameof(TextColor));
+            OnPropertyChanged(nameof(ErrorColor));
         }
     }
 }
