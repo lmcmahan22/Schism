@@ -22,7 +22,7 @@ namespace Schism.ViewModels
 
         // View Model properties
         private string _title = "Schism Home Screen";
-        private Visibility[] _colsVis = { Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed };
+        private ObservableCollection<Visibility> _colsVis = new ObservableCollection<Visibility> { Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed };
         private Visibility _aDisplayTypeDropdown = Visibility.Hidden;
         private string[] _addressList = { "0", "20", "40", "60", "80", "100" };
         private static ObservableCollection<string> _addressConventions = ["Register Address (starting from 0)", "Register Number (starting from 1)"];
@@ -30,12 +30,10 @@ namespace Schism.ViewModels
         private bool _nonBoolData = false;
         private bool _endianEnable = false;
         private bool _hexData = false;
-        private Visibility _errorContents = Visibility.Collapsed;
 
         // View Model grid elements
-        private ObservableCollection<StringWrapper> _shiftColumn = new ObservableCollection<StringWrapper>();
-        private ObservableCollection<StringWrapper>[] _names = new ObservableCollection<StringWrapper>[6];
-        private ObservableCollection<StringWrapper>[] _modbusGrid = new ObservableCollection<StringWrapper>[6];
+        private ObservableCollection<string> _shiftColumn = new ObservableCollection<string>();
+        private ObservableCollection<ModbusRow>[] _modbusRows = new ObservableCollection<ModbusRow>[6];
 
         // Commands
         private DelegateCommand? _saveClick;
@@ -64,7 +62,7 @@ namespace Schism.ViewModels
             set => SetProperty(ref _addressList, value);
         }
 
-        public Visibility[] ColsVis
+        public ObservableCollection<Visibility> ColsVis
         {
             get => _colsVis;
             set => SetProperty(ref _colsVis, value);
@@ -117,9 +115,10 @@ namespace Schism.ViewModels
         }
 
         // Grid collections
-        public ObservableCollection<StringWrapper> ShiftColumn => _shiftColumn;
-        public ObservableCollection<StringWrapper>[] Names => _names;
-        public ObservableCollection<StringWrapper>[] ModbusGrid => _modbusGrid;
+        public ObservableCollection<string> ShiftColumn => _shiftColumn;
+
+        // Two part observable collection for the main UI table. Think of it as a shell for how your DataGrid builds itself, fixed at length 20 for each column pair.
+        public ObservableCollection<ModbusRow>[] ModbusRows => _modbusRows;
 
         // ViewModel constructor
         public HomeViewModel(IDialogService dialogService)
@@ -232,13 +231,6 @@ namespace Schism.ViewModels
 
             MS.IsConnected = false; // Force disconnect if we're currently connected, since we're changing parameters that would affect the data display.
 
-            // Determine which columns should be visible, based on the provided DataLength from the Model!
-            for (int i = 0; i < _colsVis.Length; i++)
-            {
-                _colsVis[i] = MS.DataLength > (i * 20) ? Visibility.Visible : Visibility.Collapsed;
-                OnPropertyChanged(nameof(ColsVis));
-            }
-
             // Update shift column contents, in case the SelectedAddressConvention was updated.
             // Make it so this only updates if SelectedAddressConvention has been changed since the last call of this method!
             _shiftColumn.Clear();
@@ -246,94 +238,82 @@ namespace Schism.ViewModels
             {
                 // This will print each index as i if counting from 0, or i+1 if counting from 1
                 string content = $"+{(SelectedAddressConvention == "Register Address (starting from 0)" ? i : i + 1)}";
-                _shiftColumn.Add(new StringWrapper(content));
+                _shiftColumn.Add(new string(content));
             }
 
             // Prepare the name data, in case we need to keep it around for the next table build
             string[] namesCache = new string[MS.DataLength];
-            for (int i = 0; i < _names.Length; i++)
+
+            for (int i = 0; i < namesCache.Length; i++)
+                namesCache[i] = ""; // Initialize the cache with empty strings to avoid null issues
+
+            for (int i = 0; i < _modbusRows.Length; i++)
             {
-                if (_names[i] == null)
-                    _names[i] = new ObservableCollection<StringWrapper>();
-                else
+
+                // Prevent null issues on the first run (should probably be put in the constructor tbh...
+                if(_modbusRows[i] == null)
+                    _modbusRows[i] = new ObservableCollection<ModbusRow>();
+
+                for (int j = 0; j < _modbusRows[i].Count; j++)
                 {
-                    for(int j = 0; j < _names[i].Count; j++)
+                    int idx = (i * 20) + j; // Calculate the overall index based on column and row
+
+                    // Only save this name for the new display if we know that we'll see it in the new length.
+                    // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
+                    if (idx < MS.DataLength)
                     {
-                        // Only save this name for the new display if we know that we'll see it in the new length.
-                        // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
-                        if (((i * 20) + j) < MS.DataLength)
-                        {
-                            string? temp = _names[i][j].Value;
-                            if (temp == null)
-                                namesCache[(i * 20) + j] = "";
-                            else
-                                namesCache[(i * 20) + j] = temp;
-                        }
+                        string? temp = _modbusRows[i][j].Name;
+                        if (temp == null)
+                            namesCache[idx] = "";
+                        else
+                            namesCache[idx] = temp;
                     }
                 }
-                _names[i].Clear();
-            }
-
-            // Loop through each column of the current ModbusData collection and clear them.
-            // If any columns are null (somehow), create the collection there
-            for (int i = 0; i < _modbusGrid.Length; i++)
-            {
-                if (_modbusGrid[i] == null)
-                    _modbusGrid[i] = new ObservableCollection<StringWrapper>();
-
-                _modbusGrid[i].Clear();
+                _modbusRows[i].Clear();
             }
 
             // Add rows for the configured length
-            var reqCols = ((MS.DataLength - 1) / 20) + 1; // Calculate how many columns we need based on the length (integer division rounding up)
+            var reqCols = ((MS.DataLength - 1) / 20) + 1; // Calculate how many columns we need based on the length (integer division)
             for (int i = 0; i < reqCols; i++)
             {
-                var reqRows = Math.Min((MS.DataLength - 20 * i), 20); // Calculate how many rows we need in the last column (or 20 if length is greater than 20)
-                for (int j = 0; j < reqRows; j++)
-                {
-                    int idx = (i * 20) + j;
-                    StringWrapper name = new StringWrapper(namesCache[idx]);
+                var reqRows = Math.Min((MS.DataLength - 20 * i), 20); // Calculate how many rows we need in each column, ensuring we don't exceed the total length
 
-                    // MODBUS Data does not get pulled at this time!
-                    StringWrapper data = new StringWrapper("");
+                for (int j = 0; j < reqRows; j++) {
 
-                    _names[i].Add(name);
-                    _modbusGrid[i].Add(data);
+                    int idx = (i * 20) + j; // Calculate the overall index based on column and row
+                    _modbusRows[i].Add(new ModbusRow(namesCache[idx], ""));
                 }
             }
 
-            // Notify the UI of element updates
-            OnPropertyChanged(nameof(ColsVis));
+            // Determine which columns should be visible, based on the provided DataLength from the Model!
+            _colsVis.Clear();
+            for (int i = 0; i < 6; i++)
+                _colsVis.Add(MS.DataLength > (i * 20) ? Visibility.Visible : Visibility.Collapsed);
+
             OnPropertyChanged(nameof(ShiftColumn));
-            OnPropertyChanged(nameof(Names)); // Might not be needed, since this is an ObservableCollection...
-            OnPropertyChanged(nameof(ModbusGrid)); // Might not be needed, since this is an ObservableCollection...
+            OnPropertyChanged(nameof(ModbusRows));
         }
 
         private void UpdateModbusData()
         {
-            // Update columns for the configured length
-            var numCols = _modbusGrid.Length;
-            for (int i = 0; i < numCols; i++)
+            for (int i = 0; i < _modbusRows.Length; i++)
             {
-                var numRows = _modbusGrid[i].Count; // Get the number of rows currently displayed in this column
-                for (int j = 0; j < numRows; j++)
+                for (int j = 0; j < _modbusRows[i].Count; j++)
                 {
-                    int idx = (i * 20) + j;
-
-                    // Only try to pull MODBUS data if we have a connection!
-                    StringWrapper data;
-                    if (MS.IsConnected)
+                    int idx = (i * 20) + j; // Calculate the overall index based on column and row
+                    // Only try to pull MODBUS data if we have a connection and if the index is within the bounds of the current length!
+                    string data;
+                    if (MS.IsConnected && idx < MS.DataLength)
                         // Retrieve existing item if present; otherwise create one instance
-                        data = MS.ModbusData[idx] ?? new StringWrapper("");
+                        data = MS.ModbusData[idx].ToString() ?? new string("");
                     else
-                        data = new StringWrapper("");
-
-                    _modbusGrid[i][j] = data;
+                        data = new string("");
+                    _modbusRows[i][j].Data = data;
                 }
             }
 
             // Notify the UI of element updates
-            OnPropertyChanged(nameof(ModbusGrid)); // Might not be needed, since this is an ObservableCollection...
+            OnPropertyChanged(nameof(ModbusRows)); // Might not be needed, since this is an ObservableCollection...
         }
 
 

@@ -16,6 +16,16 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <Style TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}" />
+            <Setter Property="BorderThickness" Value="0,0,1,0" />
+            <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent4, UpdateSourceTrigger=PropertyChanged}" />
+        </Style>
+        <Style TargetType="{x:Type DataGridCell}">
+            <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}" />
+            <Setter Property="BorderThickness" Value="0,0,1,0" />
+            <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent4, UpdateSourceTrigger=PropertyChanged}" />
+        </Style>
         <Style TargetType="TextBlock">
             <Style.Triggers>
                 <Trigger Property="IsEnabled" Value="False">
@@ -362,18 +372,7 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="70"/>
-                            <ColumnDefinition Width="130"/>
-                            <ColumnDefinition Width="70"/>
-                            <ColumnDefinition Width="130"/>
-                            <ColumnDefinition Width="70"/>
-                            <ColumnDefinition Width="130"/>
-                            <ColumnDefinition Width="70"/>
-                            <ColumnDefinition Width="130"/>
-                            <ColumnDefinition Width="70"/>
-                            <ColumnDefinition Width="130"/>
-                            <ColumnDefinition Width="70"/>
-                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <!-- Shift column header + items -->
                         <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="21">
@@ -425,15 +424,66 @@
                         </Grid>
 
                         <!-- ItemsControl wrapped in ScrollViewer to mimic DataGrid scrolling -->
-                        <ScrollViewer Grid.Row="0" Grid.Column="1" Grid.RowSpan="21" Grid.ColumnSpan="12" VerticalScrollBarVisibility="Disabled">
+                        <ScrollViewer Grid.Row="0" Grid.Column="1" Grid.RowSpan="21" VerticalScrollBarVisibility="Disabled">
                             <StackPanel Orientation="Horizontal">
+                                <ItemsControl Visibility="{Binding ColsVis[0]}">
+                                    <DataGrid Name="ModbusDataGrid0" ItemsSource="{Binding ModbusRows[0]}" AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="21" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                            <DataGridTextColumn Header="Data" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </ItemsControl>
+                                <ItemsControl Visibility="{Binding ColsVis[1]}">
+                                    <DataGrid Name="ModbusDataGrid1" ItemsSource="{Binding ModbusRows[1]}" AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="21" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                            <DataGridTextColumn Header="Data" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </ItemsControl>
+                                <ItemsControl Visibility="{Binding ColsVis[2]}">
+                                    <DataGrid Name="ModbusDataGrid2" ItemsSource="{Binding ModbusRows[2]}" AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="21" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                            <DataGridTextColumn Header="Data" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </ItemsControl>
+                                <ItemsControl Visibility="{Binding ColsVis[3]}">
+                                    <DataGrid Name="ModbusDataGrid3" ItemsSource="{Binding ModbusRows[3]}" AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="21" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                            <DataGridTextColumn Header="Data" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </ItemsControl>
+                                <ItemsControl Visibility="{Binding ColsVis[4]}">
+                                    <DataGrid Name="ModbusDataGrid4" ItemsSource="{Binding ModbusRows[4]}" AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="21" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                            <DataGridTextColumn Header="Data" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </ItemsControl>
+                                <ItemsControl Visibility="{Binding ColsVis[5]}">
+                                    <DataGrid Name="ModbusDataGrid5" ItemsSource="{Binding ModbusRows[5]}" AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="21" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                            <DataGridTextColumn Header="Data" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </ItemsControl>
+
+
+                                <!--
                                 <ContentControl Grid.Row="0" Grid.Column="1" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[0]}"
                                         Content="{Binding Names[0]}"
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
                                 <ContentControl Grid.Row="0" Grid.Column="2" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[0]}"
-                                        Content="{Binding ModbusGrid[0]}"
+                                        Content="{Binding Data[0]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[0], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                 <ContentControl Grid.Row="0" Grid.Column="3" Grid.RowSpan="21"
@@ -442,7 +492,7 @@
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
                                 <ContentControl Grid.Row="0" Grid.Column="4" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[1]}"
-                                        Content="{Binding ModbusGrid[1]}"
+                                        Content="{Binding Data[1]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[1], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                 <ContentControl Grid.Row="0" Grid.Column="5" Grid.RowSpan="21"
@@ -451,7 +501,7 @@
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
                                 <ContentControl Grid.Row="0" Grid.Column="6" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[2]}"
-                                        Content="{Binding ModbusGrid[2]}"
+                                        Content="{Binding Data[2]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[2], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                 <ContentControl Grid.Row="0" Grid.Column="7" Grid.RowSpan="21"
@@ -460,7 +510,7 @@
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
                                 <ContentControl Grid.Row="0" Grid.Column="8" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[3]}"
-                                        Content="{Binding ModbusGrid[3]}"
+                                        Content="{Binding Data[3]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[3], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                 <ContentControl Grid.Row="0" Grid.Column="9" Grid.RowSpan="21"
@@ -469,7 +519,7 @@
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
                                 <ContentControl Grid.Row="0" Grid.Column="10" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[4]}"
-                                        Content="{Binding ModbusGrid[4]}"
+                                        Content="{Binding Data[4]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
                                         Tag="{Binding DataContext.AddressList[4], RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                 <ContentControl Grid.Row="0" Grid.Column="11" Grid.RowSpan="21"
@@ -478,9 +528,9 @@
                                         ContentTemplate="{StaticResource NamesColumnTemplate}" />
                                 <ContentControl Grid.Row="0" Grid.Column="12" Grid.RowSpan="21"
                                         Visibility="{Binding ColsVis[5]}"
-                                        Content="{Binding ModbusGrid[5]}"
+                                        Content="{Binding Data[5]}"
                                         ContentTemplate="{StaticResource ModbusColumnTemplate}"
-                                        Tag="{Binding DataContext.AddressList[5], RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                        Tag="{Binding DataContext.AddressList[5], RelativeSource={RelativeSource AncestorType=UserControl}}" /> -->
                             </StackPanel>
                         </ScrollViewer>
                     </Grid>

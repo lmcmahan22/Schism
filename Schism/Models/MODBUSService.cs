@@ -65,7 +65,7 @@ namespace Schism.Models
         private  ObservableCollection<string> _numericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary"}; // "Floating Point" removed for now, but gets added to the list once the user selects 32-Bit or 64-Bit Data Size!
 
         // ModbusData Collection
-        private ObservableCollection<StringWrapper> _modbusData = new ObservableCollection<StringWrapper>();
+        private ObservableCollection<string> _modbusData = new ObservableCollection<string>();
 
         // Properties for connection settings
         public string IPAddr
@@ -469,7 +469,7 @@ namespace Schism.Models
 
         // ModbusData ObservableCollection, which will have its data manipulated by this class.
         // This is the collection that the UI will bind to in order to display the received data. Whenever this collection is updated, the UI will automatically reflect those changes.
-        public ObservableCollection<StringWrapper> ModbusData => _modbusData;
+        public ObservableCollection<string> ModbusData => _modbusData;
 
         // Consutrctor
         private MODBUSService()
@@ -607,16 +607,16 @@ namespace Schism.Models
 
                         // Begin transforming data into a UI friendly data collection
                         ushort[] coilsConv = coils.Select(Convert.ToUInt16).ToArray();
-                        var newData = new ObservableCollection<StringWrapper>();
+                        var newData = new ObservableCollection<string>();
 
-                        // Loop through the received data and convert each piece into a StringWrapper, which is what the UI binds to.
+                        // Loop through the received data and convert each piece into a string, which is what the UI binds to.
                         for (int i = 0; i < coilsConv.Length; i++)
-                            newData.Add(new StringWrapper(coilsConv[i].ToString()));
+                            newData.Add(new string(coilsConv[i].ToString()));
 
                         // Update the ModbusData collection with the new data, which will automatically update the UI due to data binding.
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            _modbusData = new ObservableCollection<StringWrapper>(newData);
+                            _modbusData = new ObservableCollection<string>(newData);
                             OnPropertyChanged(nameof(ModbusData));
                         });
                     }
@@ -659,16 +659,16 @@ namespace Schism.Models
 
                         // Begin transforming data into a UI friendly data collection
                         ushort[] inputsConv = inputs.Select(Convert.ToUInt16).ToArray();
-                        var newData = new ObservableCollection<StringWrapper>();
+                        var newData = new ObservableCollection<string>();
 
-                        // Loop through the received data and convert each piece into a StringWrapper, which is what the UI binds to.
+                        // Loop through the received data and convert each piece into a string, which is what the UI binds to.
                         for (int i = 0; i < _dataLength; i++)
-                            newData.Add(new StringWrapper(inputsConv[i].ToString()));
+                            newData.Add(new string(inputsConv[i].ToString()));
 
                         // Update the ModbusData collection with the new data, which will automatically update the UI due to data binding.
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            _modbusData = new ObservableCollection<StringWrapper>(newData);
+                            _modbusData = new ObservableCollection<string>(newData);
                             OnPropertyChanged(nameof(ModbusData));
                         });
                     }
@@ -709,14 +709,14 @@ namespace Schism.Models
                             // Report a successful TCP response, now that we have the data
                             SuccessResp();
 
-                        // Convert registers to a parsed collection of StringWrappers using helper and update UI
+                        // Convert registers to a parsed collection of strings using helper and update UI
                         // This helper will handle endian transformation, numeric base formatting, and ASCII interpretation based on user settings.
-                        ObservableCollection<StringWrapper> newData = InterpetModbusData(holdingRegs);
+                        ObservableCollection<string> newData = InterpetModbusData(holdingRegs);
 
                         // On the UI thread, update the ModbusData collection with the new data, which will automatically update the UI due to data binding.
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            _modbusData = new ObservableCollection<StringWrapper>(newData);
+                            _modbusData = new ObservableCollection<string>(newData);
                             OnPropertyChanged(nameof(ModbusData));
                         });
                     }
@@ -757,14 +757,14 @@ namespace Schism.Models
                             // Report a successful TCP response, now that we have the data
                             SuccessResp();
 
-                        // Convert registers to a parsed collection of StringWrappers using helper and update UI
+                        // Convert registers to a parsed collection of strings using helper and update UI
                         // This helper will handle endian transformation, numeric base formatting, and ASCII interpretation based on user settings.
-                        ObservableCollection<StringWrapper> newData = InterpetModbusData(inputRegs);
+                        ObservableCollection<string> newData = InterpetModbusData(inputRegs);
 
                         // On the UI thread, update the ModbusData collection with the new data, which will automatically update the UI due to data binding.
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            _modbusData = new ObservableCollection<StringWrapper>(newData);
+                            _modbusData = new ObservableCollection<string>(newData);
                             OnPropertyChanged(nameof(ModbusData));
                         });
                     }
@@ -777,10 +777,10 @@ namespace Schism.Models
         }
 
         // Helper Methods
-        private ObservableCollection<StringWrapper> InterpetModbusData(ushort[] receivedRegisters)
+        private ObservableCollection<string> InterpetModbusData(ushort[] receivedRegisters)
         {
-            // Convert raw ushort registers into ObservableCollection<StringWrapper> for UI display, applying user-selected transformations for data size, numeric base, endianness, and ASCII interpretation.
-            var result = new ObservableCollection<StringWrapper>();
+            // Convert raw ushort registers into ObservableCollection<string> for UI display, applying user-selected transformations for data size, numeric base, endianness, and ASCII interpretation.
+            var result = new ObservableCollection<string>();
 
             // Determine how many 16-bit registers compose one displayed value
             int regsPerValue = _selectedDataSize switch
@@ -819,12 +819,12 @@ namespace Schism.Models
                 // Format value according to data size, numeric base, and ASCII enable selection (Hex only)
                 string formatted = FormatBytes(bytes.ToArray(), bitWidth, _selectedNumericBase, _asciiEnable);
 
-                // Add result to the collection as a StringWrapper, which the UI binds to for display
-                result.Add(new StringWrapper(formatted));
+                // Add result to the collection as a string, which the UI binds to for display
+                result.Add(new string(formatted));
 
                 // For multi-register values, add placeholder cells to keep display alignment
                 for (int pad = 1; pad < regsPerValue; pad++)
-                    result.Add(new StringWrapper(""));
+                    result.Add(new string(""));
             }
 
             return result;
