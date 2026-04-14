@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:Schism"
              xmlns:prism="http://prismlibrary.com/">
     <Application.Resources>
-         
+        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
+        <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
     </Application.Resources>
 </prism:PrismApplication>
