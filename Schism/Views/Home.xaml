@@ -4,6 +4,7 @@
              xmlns:prism="http://prismlibrary.com/"   
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewmodels="clr-namespace:Schism.ViewModels"
+             xmlns:local="clr-namespace:Schism.Helpers"
              prism:ViewModelLocator.AutoWireViewModel="True"
              Height="720" Width="1280"
              Background="{Binding TS.Main, UpdateSourceTrigger=PropertyChanged}">
@@ -15,16 +16,6 @@
                     <Setter Property="Opacity" Value="0.3" />
                 </Trigger>
             </Style.Triggers>
-        </Style>
-        <Style TargetType="{x:Type DataGridColumnHeader}">
-            <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}" />
-            <Setter Property="BorderThickness" Value="0,0,1,0" />
-            <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent4, UpdateSourceTrigger=PropertyChanged}" />
-        </Style>
-        <Style TargetType="{x:Type DataGridCell}">
-            <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}" />
-            <Setter Property="BorderThickness" Value="0,0,1,0" />
-            <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent4, UpdateSourceTrigger=PropertyChanged}" />
         </Style>
         <Style TargetType="TextBlock">
             <Style.Triggers>
@@ -40,128 +31,9 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
-        <CollectionViewSource x:Key="ShiftColumnView" Source="{Binding ShiftColumn}" />
-
-        <!-- Reusable template for MODBUS Columns to remove duplication -->
-        <DataTemplate x:Key="NamesColumnTemplate">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <!-- Header row: Name -->
-                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent1, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="70" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}" 
-                                BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent4, UpdateSourceTrigger=PropertyChanged}" >
-                            <TextBlock Text="Name" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"/>
-                        </Border>
-                    </Grid>
-                </Border>
-
-                <!-- ItemsControl with Name Columns -->
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False">
-                    <ItemsControl ItemsSource="{Binding}" AlternationCount="2">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Height="21">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="70" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent1, UpdateSourceTrigger=PropertyChanged}"
-                                            BorderThickness="0,0,1,1">
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <!-- Default if AlternationIndex not available -->
-                                                <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent2, UpdateSourceTrigger=PropertyChanged}" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Value="0">
-                                                        <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent2, UpdateSourceTrigger=PropertyChanged}" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Value="1">
-                                                        <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                        <TextBox Text="{Binding Value, Mode=TwoWay}" VerticalAlignment="Center" BorderBrush="Transparent"
-                                                 Background="Transparent"
-                                                 CaretBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.TextColor, UpdateSourceTrigger=PropertyChanged}"/>
-                                    </Border>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Grid>
-        </DataTemplate>
-
-        <DataTemplate x:Key="ModbusColumnTemplate">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <!-- Header row: Name + dynamic column header bound to the hosting ContentControl.Tag -->
-                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent1, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Grid.Row="0">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="130" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}"
-                            BorderThickness="0,0,1,0" Background="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent4, UpdateSourceTrigger=PropertyChanged}">
-                            <!-- Bind to the hosting ContentControl.Tag so each instance can supply its own address -->
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0" FontWeight="Bold"
-                                   Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}"/>
-                        </Border>
-                    </Grid>
-                </Border>
-
-                <!-- ItemsControl with alias + data columns.
-                 The DataTemplate's DataContext is the collection passed as Content. -->
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False">
-                    <ItemsControl ItemsSource="{Binding}" AlternationCount="2">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Height="21">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="130" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Border Padding="4,0" BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent1, UpdateSourceTrigger=PropertyChanged}"
-                                        BorderThickness="0,0,1,1">
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent2, UpdateSourceTrigger=PropertyChanged}" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Value="0">
-                                                        <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent2, UpdateSourceTrigger=PropertyChanged}" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Value="1">
-                                                        <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                        <TextBlock Text="{Binding Value}" VerticalAlignment="Center" Background="Transparent" />
-                                    </Border>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Grid>
-        </DataTemplate>
+        <local:BindingProxy x:Key="proxy" Data="{Binding}" />
     </UserControl.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20" />
@@ -344,197 +216,95 @@
         </Grid>
         <Grid Grid.Row="2">
             <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1">
-                <StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="30"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="21"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <!-- Shift column header + items -->
-                        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="21">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-
-                            <!-- Header -->
-                            <Border BorderBrush="{Binding TS.Accent1, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,1,1" Background="{Binding TS.Accent4, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0">
-                                <TextBlock Text="Shift" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" />
-                            </Border>
-
-                            <!-- ItemsControl wrapped in ScrollViewer to mimic DataGrid scrolling -->
-                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Disabled" CanContentScroll="False" HorizontalAlignment="Center">
-                                <ItemsControl ItemsSource="{Binding Source={StaticResource ShiftColumnView}}" AlternationCount="2">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="50" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="21"/>
-                                                </Grid.RowDefinitions>
-                                                <Border BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent1, UpdateSourceTrigger=PropertyChanged}"
-                                                        BorderThickness="0,0,1,1">
-                                                    <Border.Style>
-                                                        <Style TargetType="Border">
-                                                            <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}" />
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Value="0">
-                                                                    <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent3, UpdateSourceTrigger=PropertyChanged}" />
-                                                                </DataTrigger>
-                                                                <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Value="1">
-                                                                    <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TS.Accent4, UpdateSourceTrigger=PropertyChanged}" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </Border.Style>
-                                                    <TextBlock Text="{Binding Value}" VerticalAlignment="Center" />
-                                                </Border>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </ScrollViewer>
+                        <Grid Grid.Column="0">
+                            <ItemsControl>
+                                <DataGrid Name="ShiftCol" ItemsSource="{Binding ShiftColumn}" RowBackground="{Binding TS.Accent4}" AlternatingRowBackground="{Binding TS.Accent3}"  AlternationCount="2"
+                AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Shift" Binding="{Binding}" Width="50" MinWidth="50" MaxWidth="50" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
                         </Grid>
-
-                        <!-- ItemsControl wrapped in ScrollViewer to mimic DataGrid scrolling -->
-                        <ScrollViewer Grid.Row="0" Grid.Column="1" Grid.RowSpan="21" VerticalScrollBarVisibility="Disabled">
-                            <StackPanel Orientation="Horizontal">
-                                <ItemsControl Visibility="{Binding ColsVis[0]}">
-                                    <DataGrid Name="ModbusDataGrid0" ItemsSource="{Binding ModbusRows[0]}" AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="21" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
-                                            <DataGridTextColumn Header="Data" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </ItemsControl>
-                                <ItemsControl Visibility="{Binding ColsVis[1]}">
-                                    <DataGrid Name="ModbusDataGrid1" ItemsSource="{Binding ModbusRows[1]}" AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="21" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
-                                            <DataGridTextColumn Header="Data" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </ItemsControl>
-                                <ItemsControl Visibility="{Binding ColsVis[2]}">
-                                    <DataGrid Name="ModbusDataGrid2" ItemsSource="{Binding ModbusRows[2]}" AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="21" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
-                                            <DataGridTextColumn Header="Data" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </ItemsControl>
-                                <ItemsControl Visibility="{Binding ColsVis[3]}">
-                                    <DataGrid Name="ModbusDataGrid3" ItemsSource="{Binding ModbusRows[3]}" AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="21" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
-                                            <DataGridTextColumn Header="Data" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </ItemsControl>
-                                <ItemsControl Visibility="{Binding ColsVis[4]}">
-                                    <DataGrid Name="ModbusDataGrid4" ItemsSource="{Binding ModbusRows[4]}" AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="21" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
-                                            <DataGridTextColumn Header="Data" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </ItemsControl>
-                                <ItemsControl Visibility="{Binding ColsVis[5]}">
-                                    <DataGrid Name="ModbusDataGrid5" ItemsSource="{Binding ModbusRows[5]}" AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="21" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
-                                            <DataGridTextColumn Header="Data" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </ItemsControl>
-
-
-                                <!--
-                                <ContentControl Grid.Row="0" Grid.Column="1" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[0]}"
-                                        Content="{Binding Names[0]}"
-                                        ContentTemplate="{StaticResource NamesColumnTemplate}" />
-                                <ContentControl Grid.Row="0" Grid.Column="2" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[0]}"
-                                        Content="{Binding Data[0]}"
-                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
-                                        Tag="{Binding DataContext.AddressList[0], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                                <ContentControl Grid.Row="0" Grid.Column="3" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[1]}"
-                                        Content="{Binding Names[1]}"
-                                        ContentTemplate="{StaticResource NamesColumnTemplate}" />
-                                <ContentControl Grid.Row="0" Grid.Column="4" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[1]}"
-                                        Content="{Binding Data[1]}"
-                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
-                                        Tag="{Binding DataContext.AddressList[1], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                                <ContentControl Grid.Row="0" Grid.Column="5" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[2]}"
-                                        Content="{Binding Names[2]}"
-                                        ContentTemplate="{StaticResource NamesColumnTemplate}" />
-                                <ContentControl Grid.Row="0" Grid.Column="6" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[2]}"
-                                        Content="{Binding Data[2]}"
-                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
-                                        Tag="{Binding DataContext.AddressList[2], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                                <ContentControl Grid.Row="0" Grid.Column="7" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[3]}"
-                                        Content="{Binding Names[3]}"
-                                        ContentTemplate="{StaticResource NamesColumnTemplate}" />
-                                <ContentControl Grid.Row="0" Grid.Column="8" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[3]}"
-                                        Content="{Binding Data[3]}"
-                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
-                                        Tag="{Binding DataContext.AddressList[3], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                                <ContentControl Grid.Row="0" Grid.Column="9" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[4]}"
-                                        Content="{Binding Names[4]}"
-                                        ContentTemplate="{StaticResource NamesColumnTemplate}" />
-                                <ContentControl Grid.Row="0" Grid.Column="10" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[4]}"
-                                        Content="{Binding Data[4]}"
-                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
-                                        Tag="{Binding DataContext.AddressList[4], RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                                <ContentControl Grid.Row="0" Grid.Column="11" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[5]}"
-                                        Content="{Binding Names[5]}"
-                                        ContentTemplate="{StaticResource NamesColumnTemplate}" />
-                                <ContentControl Grid.Row="0" Grid.Column="12" Grid.RowSpan="21"
-                                        Visibility="{Binding ColsVis[5]}"
-                                        Content="{Binding Data[5]}"
-                                        ContentTemplate="{StaticResource ModbusColumnTemplate}"
-                                        Tag="{Binding DataContext.AddressList[5], RelativeSource={RelativeSource AncestorType=UserControl}}" /> -->
-                            </StackPanel>
-                        </ScrollViewer>
+                        <Grid Grid.Column="1">
+                            <ItemsControl Visibility="{Binding ColsVis[0]}">
+                                <DataGrid Name="ModbusDataGrid0" ItemsSource="{Binding ModbusRows[0]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                          AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="{Binding Data.AddressList[0], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <ItemsControl Visibility="{Binding ColsVis[1]}">
+                                <DataGrid Name="ModbusDataGrid1" ItemsSource="{Binding ModbusRows[1]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="{Binding Data.AddressList[1], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
+                        </Grid>
+                        <Grid Grid.Column="3">
+                            <ItemsControl Visibility="{Binding ColsVis[2]}">
+                                <DataGrid Name="ModbusDataGrid2" ItemsSource="{Binding ModbusRows[2]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="{Binding Data.AddressList[2], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
+                        </Grid>
+                        <Grid Grid.Column="4">
+                            <ItemsControl Visibility="{Binding ColsVis[3]}">
+                                <DataGrid Name="ModbusDataGrid3" ItemsSource="{Binding ModbusRows[3]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="{Binding Data.AddressList[3], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
+                        </Grid>
+                        <Grid Grid.Column="5">
+                            <ItemsControl Visibility="{Binding ColsVis[4]}">
+                                <DataGrid Name="ModbusDataGrid4" ItemsSource="{Binding ModbusRows[4]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="{Binding Data.AddressList[4], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
+                        </Grid>
+                        <Grid Grid.Column="6">
+                            <ItemsControl Visibility="{Binding ColsVis[5]}">
+                                <DataGrid Name="ModbusDataGrid5" ItemsSource="{Binding ModbusRows[5]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="{Binding Data.AddressList[5], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="250" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
+                        </Grid>
                     </Grid>
-                </StackPanel>
+                </ScrollViewer>
             </Border>
         </Grid>
         <Grid Grid.Row="3">
