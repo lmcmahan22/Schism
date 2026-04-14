@@ -2,7 +2,7 @@
 
 namespace Schism.ViewModels
 {
-    public class AboutViewModel: BindableBase
+    public class AboutViewModel : BindableBase
     {
         // INotifyPropertyChanged interface for ViewModels
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -10,14 +10,15 @@ namespace Schism.ViewModels
             RaisePropertyChanged(propertyName);
         }
 
-        // View Model properties
-        private string _title = "About";
-        private string _version = "Version: 1.0.0";
-        private string _buildDate = "Build Date: 04/01/2026";
-        private string _appName = "MODBUS TCP Client Simulator";
-        private string _copyright = "©2026 Precision Valve & Automation, Inc.";
-        private string _author = "Author: Liam McMahan (Product Development)";
+        // Private variables
+        private string _title;
+        private string _version;
+        private string _buildDate;
+        private string _appName;
+        private string _copyright;
+        private string _author;
 
+        // Public instances with getters/setters
         public string Title
         {
             get { return _title; }
@@ -54,30 +55,15 @@ namespace Schism.ViewModels
             set => SetProperty(ref _buildDate, value);
         }
 
+        // Constructor
         public AboutViewModel()
         {
-            // Empty, since we have already established what all of our variables are equal to. Everything here is View only, but we have a ViewModel just so we can easily control these variables outside of ViewModel code.
-            
+            _title = "About";
+            _version = "Version: 1.0.0";
+            _buildDate = "Build Date: 04/01/2026";
+            _appName = "MODBUS TCP Client Simulator";
+            _copyright = "©2026 Precision Valve & Automation, Inc.";
+            _author = "Author: Liam McMahan (Product Development)";
         }
-
-        // Event handler? Might not be needed anymore
-        // private event EventHandler CloseRequested;
-
-        //public DialogCloseListener RequestClose => throw new NotImplementedException();
-
-        //public bool CanCloseDialog()
-        //{
-        //    return true;
-        //}
-
-        //public void OnDialogClosed()
-        //{
-
-        //}
-
-        //public void OnDialogOpened(IDialogParameters parameters)
-        //{
-
-        //}
     }
 }

@@ -1,4 +1,4 @@
-﻿using Schism.Models;
+﻿using Schism.Services;
 using System.Runtime.CompilerServices;
 
 namespace Schism.ViewModels
@@ -12,14 +12,13 @@ namespace Schism.ViewModels
             RaisePropertyChanged(propertyName);
         }
 
-        // View Model properties
-        private string _title = "Connection Settings";
+        // Private variable
+        private string _title;
 
-        // Service Singletons (see App.xml, Themes isn't implemented yet)
-        // public ThemeService TS => ThemeService.Instance; // ThemeService is a singleton, so we access the instance directly
-        public MODBUSService MS => MODBUSService.Instance; // MODBUSService is a singleton, so we access the instance directly
+        // Service Singleton that gets passed up to View
+        public MODBUSService MS => MODBUSService.Instance;
 
-        // Public instances of the ViewModel for control in the View
+        // Public instance with getter/setter
         public string Title
         {
             get => _title;
@@ -29,27 +28,7 @@ namespace Schism.ViewModels
         // Constructor
         public ConnSettingsViewModel()
         {
-            // Empty, since all references to Model data will be referenced as "MS.X" in View
+            _title = "Connection Settings";
         }
-
-
-        // IDialogAware interface. Might not be needed!
-
-        //public DialogCloseListener RequestClose => throw new NotImplementedException();
-
-        //public bool CanCloseDialog()
-        //{
-        //    return true;
-        //}
-
-        //public void OnDialogClosed()
-        //{
-
-        //}
-
-        //public void OnDialogOpened(IDialogParameters parameters)
-        //{
-
-        //}
     }
 }

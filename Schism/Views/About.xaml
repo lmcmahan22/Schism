@@ -7,8 +7,7 @@
              xmlns:viewmodels="clr-namespace:Schism.ViewModels"
              prism:ViewModelLocator.AutoWireViewModel="True"
              Background="DarkGray">
-    <UserControl.Resources>
-    </UserControl.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -37,4 +36,5 @@
             </StackPanel>
         </Grid>
     </Grid>
+    
 </UserControl>

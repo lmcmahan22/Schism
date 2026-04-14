@@ -1,4 +1,4 @@
-﻿using Schism.Models;
+﻿using Schism.Services;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 
@@ -12,13 +12,13 @@ namespace Schism.ViewModels
             RaisePropertyChanged(propertyName);
         }
 
-        // View Model properties
-        private string _title = "Themes";
+        // Private variable
+        private string _title;
 
-        // Service Singleton (see App.xml)
-        public ThemeService TS => ThemeService.Instance; // ThemeService is a singleton, so we access the instance directly
+        // Service Singleton that gets passed up to View
+        public ThemeService TS => ThemeService.Instance;
 
-        // Public instances of the ViewModel for control in the View
+        // Public instance with getters/setters
         public string Title
         {
             get { return _title; }
@@ -28,24 +28,7 @@ namespace Schism.ViewModels
         // Constructor
         public ThemesViewModel()
         {
-            // Empty, since all references to Model data will be referenced as "TS.X" in View
+            _title = "Themes";
         }
-
-        // IDialogAware interface. Might not be needed!
-
-        //public bool CanCloseDialog()
-        //{
-        //    return true;
-        //}
-
-        //public void OnDialogClosed()
-        //{
-
-        //}
-
-        //public void OnDialogOpened(IDialogParameters parameters)
-        //{
-
-        //}
     }
 }

@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace Schism.Models
+namespace Schism.Services
 {
-    public class ThemeService : INotifyPropertyChanged
+    public class ThemeService : BindableBase
     {
-
-        // Singleton instance
-        public static ThemeService Instance { get; } = new();
 
         // INotifyPropertyChanged interface for Services
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -23,114 +15,91 @@ namespace Schism.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private ObservableCollection<string> _availableThemes = new ObservableCollection<string> { "Dark", "Light" }; // Example themes
-        private string _selectedTheme;
+        // Singleton instance
+        public static ThemeService Instance { get; } = new();
+
+        // Private variables
         private Brush _main;
         private Brush _accent1;
         private Brush _accent2;
         private Brush _accent3;
         private Brush _accent4;
         private Brush _textColor;
+        private Brush _errorColor;
 
-        // Do these need to call "OnPropertyChanged()"? I'm not so sure atm...
-        public ObservableCollection<string> AvailableThemes => _availableThemes;
+        // Dropdown selected variables
+        private string _selectedTheme;
 
-        public string SelectedTheme
-        {
-            get => _selectedTheme;
-            set
-            {
-                _selectedTheme = value;
-                UpdateTheme();
-            }
-        }
+        // dropdown contents (never change)
+        private readonly ObservableCollection<string> _availableThemes;
 
+        // Public properties with getters and setters that notify the UI of changes
         public Brush Main
         {
             get => _main;
-            set
-            {
-                if (_main != value)
-                {
-                    _main = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _main, value);
         }
 
         public Brush Accent1
         {
             get => _accent1;
-            set
-            {
-                if (_accent1 != value)
-                {
-                    _accent1 = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _accent1, value);
         }
 
-        public Brush Accent2 
+        public Brush Accent2
         {
             get => _accent2;
-            set
-            {
-                if (_accent2 != value)
-                {
-                    _accent2 = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _accent2, value);
         }
 
-        public Brush Accent3 
+        public Brush Accent3
         {
             get => _accent3;
-            set
-            {
-                if (_accent3 != value)
-                {
-                    _accent3 = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _accent3, value);
         }
 
         public Brush Accent4
         {
             get => _accent4;
-            set
-            {
-                if (_accent4 != value)
-                {
-                    _accent4 = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _accent4, value);
         }
 
-        public Brush TextColor 
+        public Brush TextColor
         {
             get => _textColor;
-            set
-            {
-                if (_textColor != value)
-                {
-                    _textColor = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _textColor, value);
         }
 
+        public Brush ErrorColor
+        {
+            get => _errorColor;
+            set => SetProperty(ref _errorColor, value);
+        }
+
+        public string SelectedTheme
+        {
+            get => _selectedTheme;
+            set => SetProperty(ref _selectedTheme, value);
+        }
+
+        // ObservableCollection public binding
+        public ObservableCollection<string> AvailableThemes => _availableThemes;
+
+        // Constructor
         public ThemeService()
         {
+            // Initialize available themes and set default theme
+            _availableThemes = new ObservableCollection<string> { "Dark", "Light" };
+            _selectedTheme = _availableThemes.First();
 
-            _selectedTheme = AvailableThemes.First();
+            // Initialize theme colors based on the default selected theme
+            UpdateTheme();
+
+            // Notify the UI of the initial theme selection
             OnPropertyChanged(nameof(SelectedTheme));
-            UpdateTheme(); // First call to set the initial theme colors
         }
 
+        // Method to update theme colors based on the selected theme
         private void UpdateTheme()
         {
             if(SelectedTheme == "Dark")
@@ -141,6 +110,7 @@ namespace Schism.Models
                 _accent3 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
                 _accent4 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
                 _textColor = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                _errorColor = new SolidColorBrush(Color.FromArgb(255, 120, 0, 0));
             }
             else
             {
@@ -150,6 +120,7 @@ namespace Schism.Models
                 _accent3 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
                 _accent4 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
                 _textColor = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                _errorColor = new SolidColorBrush(Color.FromArgb(255, 200, 0, 0));
             }
 
             OnPropertyChanged(nameof(Main));

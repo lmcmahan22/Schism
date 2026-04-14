@@ -1,4 +1,4 @@
-﻿using Schism.Models;
+﻿using Schism.Services;
 using Schism.ViewModels;
 using Schism.Views;
 using System.ComponentModel;
