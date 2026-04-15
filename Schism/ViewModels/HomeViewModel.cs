@@ -92,16 +92,8 @@ namespace Schism.ViewModels
             {
                 SetProperty(ref _selectedAddressConvention, value);
 
-                // Update ShiftColumn contents, since the values here will need to be modified as a result of the convention changing
-                _shiftColumn.Clear();
-                for (int i = 0; i < 20; i++)
-                {
-                    // This will print each index as i if counting from 0, or i+1 if counting from 1
-                    string content = $"+{(_selectedAddressConvention == "Register Address (starting from 0)" ? i : i + 1)}";
-                    _shiftColumn.Add(new string(content));
-                }
-
-                OnPropertyChanged(nameof(ShiftColumn));
+                // Update Shift Column, since we have changed how to express the information here
+                UpdateShiftColumn();
             }
         }
 
@@ -142,10 +134,15 @@ namespace Schism.ViewModels
             _shiftColumn = new ObservableCollection<string>();
             _modbusRows = new ObservableCollection<ModbusRow>[6];
 
+            UpdateShiftColumn(); // Build the initial shift column
+            UpdateModbusTable(); // Build the initial table based on default parameters in the Model
+
             // Logic for handling reactions to updates from the MODBUSService
             // NOTE: We don't need this for the ThemeService, because there's no logic that we need to perform in response to anything there. The View still gets access to everything in both services, even without this logic for the MS.
+            if (MS == null)
+                throw new Exception("MS is null");
+
             MS.PropertyChanged += MS_PropertyChanged;
-            UpdateModbusTable(); // Build the initial table based on default parameters in the Model
         }
 
         // React to MODBUSService updates, depending on what updated
@@ -338,6 +335,20 @@ namespace Schism.ViewModels
 
             // Notify the UI of element updates
             OnPropertyChanged(nameof(ModbusRows)); // Might not be needed, since this is an ObservableCollection...
+        }
+
+        private void UpdateShiftColumn()
+        {
+            // Update ShiftColumn contents, since the values here will need to be modified as a result of the convention changing
+            _shiftColumn.Clear();
+            for (int i = 0; i < 20; i++)
+            {
+                // This will print each index as i if counting from 0, or i+1 if counting from 1
+                string content = $"+{(_selectedAddressConvention == "Register Address (starting from 0)" ? i : i + 1)}";
+                _shiftColumn.Add(new string(content));
+            }
+
+            OnPropertyChanged(nameof(ShiftColumn));
         }
 
 

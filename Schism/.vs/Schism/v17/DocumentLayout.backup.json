@@ -3,44 +3,28 @@
   "WorkspaceRootPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|c:\\users\\lmcmahan\\github\\schism\\schism\\views\\home.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|solutionrelative:views\\home.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|c:\\users\\lmcmahan\\github\\schism\\schism\\views\\themes.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|solutionrelative:views\\themes.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|c:\\users\\lmcmahan\\github\\schism\\schism\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|solutionrelative:views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|c:\\users\\lmcmahan\\github\\schism\\schism\\views\\about.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|solutionrelative:views\\about.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|c:\\users\\lmcmahan\\github\\schism\\schism\\views\\connsettings.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|solutionrelative:views\\connsettings.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|c:\\users\\lmcmahan\\github\\schism\\schism\\viewmodels\\homeviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|solutionrelative:viewmodels\\homeviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|c:\\users\\lmcmahan\\github\\schism\\schism\\models\\savedata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|solutionrelative:models\\savedata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|c:\\users\\lmcmahan\\github\\schism\\schism\\services\\modbusservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|solutionrelative:services\\modbusservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|c:\\users\\lmcmahan\\github\\schism\\schism\\viewmodels\\aboutviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|solutionrelative:viewmodels\\aboutviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|c:\\users\\lmcmahan\\github\\schism\\schism\\viewmodels\\connsettingsviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|solutionrelative:viewmodels\\connsettingsviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|c:\\users\\lmcmahan\\github\\schism\\schism\\viewmodels\\aboutviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|solutionrelative:viewmodels\\aboutviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|c:\\users\\lmcmahan\\github\\schism\\schism\\views\\home.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|solutionrelative:views\\home.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|c:\\users\\lmcmahan\\github\\schism\\schism\\services\\themeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{515CD5DB-F93E-48B1-A7D8-DE40895E1073}|Schism.csproj|solutionrelative:services\\themeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -50,7 +34,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -62,149 +46,76 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Themes.xaml",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Views\\Themes.xaml",
-              "RelativeDocumentMoniker": "Views\\Themes.xaml",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Views\\Themes.xaml",
-              "RelativeToolTip": "Views\\Themes.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-14T20:54:07.208Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "MainWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Views\\MainWindow.xaml",
-              "RelativeDocumentMoniker": "Views\\MainWindow.xaml",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Views\\MainWindow.xaml",
-              "RelativeToolTip": "Views\\MainWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-14T20:53:57.698Z",
+              "Title": "AboutViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\ViewModels\\AboutViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\AboutViewModel.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\ViewModels\\AboutViewModel.cs",
+              "RelativeToolTip": "ViewModels\\AboutViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-15T20:30:34.856Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "HomeViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\ViewModels\\HomeViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\HomeViewModel.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\ViewModels\\HomeViewModel.cs",
+              "RelativeToolTip": "ViewModels\\HomeViewModel.cs",
+              "ViewState": "AgIAAHIAAAAAAAAAAAApwIgAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-15T20:26:26.667Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "ConnSettings.xaml",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Views\\ConnSettings.xaml",
-              "RelativeDocumentMoniker": "Views\\ConnSettings.xaml",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Views\\ConnSettings.xaml",
-              "RelativeToolTip": "Views\\ConnSettings.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-14T20:53:31.565Z",
+              "DocumentIndex": 5,
+              "Title": "ThemeService.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Services\\ThemeService.cs",
+              "RelativeDocumentMoniker": "Services\\ThemeService.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Services\\ThemeService.cs",
+              "RelativeToolTip": "Services\\ThemeService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-15T20:27:01.186Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MODBUSService.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Services\\MODBUSService.cs",
+              "RelativeDocumentMoniker": "Services\\MODBUSService.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Services\\MODBUSService.cs",
+              "RelativeToolTip": "Services\\MODBUSService.cs",
+              "ViewState": "AgIAADkAAAAAAAAAAAAAAFsAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-15T20:26:54.128Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "About.xaml",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Views\\About.xaml",
-              "RelativeDocumentMoniker": "Views\\About.xaml",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Views\\About.xaml",
-              "RelativeToolTip": "Views\\About.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-14T20:53:11.217Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "SaveData.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Models\\SaveData.cs",
-              "RelativeDocumentMoniker": "Models\\SaveData.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Models\\SaveData.cs",
-              "RelativeToolTip": "Models\\SaveData.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAACIAAAAbAAAAAAAAAA==",
+              "Title": "ConnSettingsViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\ViewModels\\ConnSettingsViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\ConnSettingsViewModel.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\ViewModels\\ConnSettingsViewModel.cs",
+              "RelativeToolTip": "ViewModels\\ConnSettingsViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-14T20:44:07.563Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-15T20:30:36.704Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 4,
               "Title": "Home.xaml",
               "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Views\\Home.xaml",
               "RelativeDocumentMoniker": "Views\\Home.xaml",
               "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Views\\Home.xaml",
               "RelativeToolTip": "Views\\Home.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-14T20:07:48.604Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "HomeViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\ViewModels\\HomeViewModel.cs",
-              "RelativeDocumentMoniker": "ViewModels\\HomeViewModel.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\ViewModels\\HomeViewModel.cs",
-              "RelativeToolTip": "ViewModels\\HomeViewModel.cs",
-              "ViewState": "AgIAAAcCAAAAAAAAAAApwC4CAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-14T19:48:05.802Z",
-              "EditorCaption": ""
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Orientation": 0,
-      "VerticalTabListWidth": 256,
-      "FloatingWindowState": {
-        "Id": "9b3c8b0d-8c7f-424e-a109-1de176b7028a",
-        "Display": 1,
-        "X": -165,
-        "Y": 422,
-        "Width": 1585,
-        "Height": 638,
-        "WindowState": 2
-      },
-      "DocumentGroups": [
-        {
-          "DockedWidth": 200,
-          "SelectedChildIndex": 0,
-          "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "MODBUSService.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Services\\MODBUSService.cs",
-              "RelativeDocumentMoniker": "Services\\MODBUSService.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Services\\MODBUSService.cs",
-              "RelativeToolTip": "Services\\MODBUSService.cs",
-              "ViewState": "AgIAABUBAAAAAAAAAAAUwFoBAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-14T19:50:58.299Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "ConnSettingsViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\ViewModels\\ConnSettingsViewModel.cs",
-              "RelativeDocumentMoniker": "ViewModels\\ConnSettingsViewModel.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\ViewModels\\ConnSettingsViewModel.cs",
-              "RelativeToolTip": "ViewModels\\ConnSettingsViewModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAaAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-14T19:49:05.294Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "AboutViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\ViewModels\\AboutViewModel.cs",
-              "RelativeDocumentMoniker": "ViewModels\\AboutViewModel.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\ViewModels\\AboutViewModel.cs",
-              "RelativeToolTip": "ViewModels\\AboutViewModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAbAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-14T19:42:49.002Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-14T20:07:48.604Z"
             }
           ]
         }
