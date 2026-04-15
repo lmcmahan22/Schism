@@ -11,7 +11,7 @@ using System.Windows;
 
 namespace Schism.Services
 {
-    public class MODBUSService : BindableBase
+    public class MODBUSService : INotifyPropertyChanged
     {
 
         // INotifyPropertyChanged interface for Services
@@ -62,49 +62,105 @@ namespace Schism.Services
         public string IPAddr
         {
             get => _ipAddr;
-            set => SetProperty(ref _ipAddr, value);
+            set
+            {
+                if (_ipAddr != value)
+                {
+                    _ipAddr = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int TCPPort
         {
             get => _tcpPort;
-            set => SetProperty(ref _tcpPort, value);
+            set
+            {
+                if (_tcpPort != value)
+                {
+                    _tcpPort = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int ScanRate
         {
             get => _scanRate;
-            set => SetProperty(ref _scanRate, value);
+            set
+            {
+                if (_scanRate != value)
+                {
+                    _scanRate = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int TCPTimeout
         {
             get => _tcpTimeout;
-            set => SetProperty(ref _tcpTimeout, value);
+            set
+            {
+                if (_tcpTimeout != value)
+                {
+                    _tcpTimeout = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int NumOKs
         {
             get => _numOKs;
-            set => SetProperty(ref _numOKs, value);
+            set
+            {
+                if (_numOKs != value)
+                {
+                    _numOKs = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int NumErrors
         {
             get => _numErrors;
-            set => SetProperty(ref _numErrors, value);
+            set
+            {
+                if (_numErrors != value)
+                {
+                    _numErrors = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int NumRequests
         {
             get => _numRequests;
-            set => SetProperty(ref _numRequests, value);
+            set
+            {
+                if (_numRequests != value)
+                {
+                    _numRequests = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public int NumResponses
         {
             get => _numResponses;
-            set => SetProperty(ref _numResponses, value);
+            set
+            {
+                if (_numResponses != value)
+                {
+                    _numResponses = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public byte DeviceId
@@ -115,7 +171,10 @@ namespace Schism.Services
                 // Min and Max boundaries on Device ID, according to MODBUS documentation
                 byte clamped = Math.Clamp(value, (byte)1, (byte)247);
                 if (_deviceId != clamped)
-                    SetProperty(ref _deviceId, clamped);
+                {
+                    _deviceId = clamped;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -129,7 +188,10 @@ namespace Schism.Services
                 ushort clampedDataLength = Math.Clamp(value, (ushort)1, maxLen);
 
                 if (_dataLength != clampedDataLength)
-                    SetProperty(ref _dataLength, clampedDataLength);
+                {
+                    _dataLength = clampedDataLength;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -143,13 +205,17 @@ namespace Schism.Services
 
                 if (_startAddress != clampedStart)
                 {
-                    SetProperty(ref _startAddress, clampedStart);
+                    _startAddress = clampedStart;
+                    OnPropertyChanged(nameof(StartAddress)); // notify StartAddress
 
                     ushort maxLen = GetMaxLengthForStartAddress();
                     ushort clampedDataLength = Math.Clamp(_dataLength, (ushort)1, maxLen);
 
                     if (_dataLength != clampedDataLength)
-                        SetProperty(ref _dataLength, clampedDataLength);
+                    {
+                        _dataLength = clampedDataLength;
+                        OnPropertyChanged(nameof(DataLength)); // notify DataLength
+                    }
                 }
             }
         }
@@ -157,66 +223,135 @@ namespace Schism.Services
         public bool AsciiEnable
         {
             get => _asciiEnable;
-            set => SetProperty(ref _asciiEnable, value);
+            set
+            {
+                if (_asciiEnable != value)
+                {
+                    _asciiEnable = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public bool ConnectEngage
         {
             get => _connectEngage;
-            set => SetProperty(ref _connectEngage, value);
+            set
+            {
+                if (_connectEngage != value)
+                {
+                    _connectEngage = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public bool IsConnected
         {
             get => _isConnected;
-            set => SetProperty(ref _isConnected, value);
+            set
+            {
+                if (_isConnected != value)
+                {
+                    _isConnected = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public string ErrMess
         {
             get => _errMess;
-            set => SetProperty(ref _errMess, value);
+            set
+            {
+                if (_errMess != value)
+                {
+                    _errMess = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public string SelectedDataType
         {
             get => _selectedDataType;
-            set => SetProperty(ref _selectedDataType, value);
+            set
+            {
+                if (_selectedDataType != value)
+                {
+                    _selectedDataType = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public string SelectedDataSize
         {
             get => _selectedDataSize;
-            set => SetProperty(ref _selectedDataSize, value);
+            set
+            {
+                if (_selectedDataSize != value)
+                {
+                    _selectedDataSize = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public string SelectedNumericBase
         {
             get => _selectedNumericBase;
-            set => SetProperty(ref _selectedNumericBase, value);
+            set
+            {
+                if (_selectedNumericBase != value)
+                {
+                    _selectedNumericBase = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public string SelectedEndian
         {
             get => _selectedEndian;
-            set => SetProperty(ref _selectedEndian, value);
+            set
+            {
+                if (_selectedEndian != value)
+                {
+                    _selectedEndian = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         // Make Observable Collections public. None of these need Getters/Setters, by nature of ObservableCollections
         public ObservableCollection<string> DataTypes => _dataTypes;
         public ObservableCollection<string> Endians => _endians;
 
-        // Modifiable ObservableCollections for dropdowns that can be changed by the user. This allows for dynamic updating of dropdown contents.
+        // Modifiable ObservableCollections for dropdowns that can be changed by the user. This allows for dynamic updating of dropdown contents if needed in the future, while still exposing them to the UI for binding.
         public ObservableCollection<string> DataSizes
         {
             get => _dataSizes;
-            set => SetProperty(ref _dataSizes, value);
+            set
+            {
+                if (_dataSizes != value)
+                {
+                    _dataSizes = value;
+                    OnPropertyChanged();
+                }
+            }
         }
-
         public ObservableCollection<string> NumericBases
         {
             get => _numericBases;
-            set => SetProperty(ref _numericBases, value);
+            set
+            {
+                if (_numericBases != value)
+                {
+                    _numericBases = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         // RawModbusData ObservableCollection

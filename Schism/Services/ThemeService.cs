@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace Schism.Services
 {
-    public class ThemeService : BindableBase
+    public class ThemeService : INotifyPropertyChanged
     {
 
         // INotifyPropertyChanged interface for Services
@@ -34,52 +34,105 @@ namespace Schism.Services
         private readonly ObservableCollection<string> _availableThemes;
 
         // Public properties with getters and setters that notify the UI of changes
+        public string SelectedTheme
+        {
+            get => _selectedTheme;
+            set
+            {
+                _selectedTheme = value;
+                UpdateTheme();
+            }
+        }
+
         public Brush Main
         {
             get => _main;
-            set => SetProperty(ref _main, value);
+            set
+            {
+                if (_main != value)
+                {
+                    _main = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public Brush Accent1
         {
             get => _accent1;
-            set => SetProperty(ref _accent1, value);
+            set
+            {
+                if (_accent1 != value)
+                {
+                    _accent1 = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public Brush Accent2
         {
             get => _accent2;
-            set => SetProperty(ref _accent2, value);
+            set
+            {
+                if (_accent2 != value)
+                {
+                    _accent2 = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public Brush Accent3
         {
             get => _accent3;
-            set => SetProperty(ref _accent3, value);
+            set
+            {
+                if (_accent3 != value)
+                {
+                    _accent3 = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public Brush Accent4
         {
             get => _accent4;
-            set => SetProperty(ref _accent4, value);
+            set
+            {
+                if (_accent4 != value)
+                {
+                    _accent4 = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public Brush TextColor
         {
             get => _textColor;
-            set => SetProperty(ref _textColor, value);
+            set
+            {
+                if (_textColor != value)
+                {
+                    _textColor = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public Brush ErrorColor
         {
             get => _errorColor;
-            set => SetProperty(ref _errorColor, value);
-        }
-
-        public string SelectedTheme
-        {
-            get => _selectedTheme;
-            set => SetProperty(ref _selectedTheme, value);
+            set
+            {
+                if (_errorColor != value)
+                {
+                    _errorColor = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         // ObservableCollection public binding
@@ -129,6 +182,7 @@ namespace Schism.Services
             OnPropertyChanged(nameof(Accent3));
             OnPropertyChanged(nameof(Accent4));
             OnPropertyChanged(nameof(TextColor));
+            OnPropertyChanged(nameof(ErrorColor));
         }
     }
 }
