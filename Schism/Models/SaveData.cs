@@ -7,7 +7,7 @@ namespace Schism.Models
 
         // private variables
         private ushort _saveLength;
-        private ushort _saveStartAddress;
+        private string _saveStartAddress;
         private byte _saveDeviceID;
         private string _saveDataType;
         private string _saveNumericBase;
@@ -17,7 +17,7 @@ namespace Schism.Models
         private string _saveAddressConv;
 
         // Constructor
-        public SaveData(ushort _sL, ushort _sSA, byte _sDID, string _sDT,
+        public SaveData(ushort _sL, string _sSA, byte _sDID, string _sDT,
             string _sNB, string _sDS, string _sE, bool _sAE, string _sAC)
         {
             _saveLength = _sL;
@@ -36,7 +36,7 @@ namespace Schism.Models
 
         // Simple getters and setters for each variable
         public ushort SaveLength { get => _saveLength; set => _saveLength = value; }
-        public ushort SaveStartAddress { get => _saveStartAddress; set => _saveStartAddress = value; }
+        public string SaveStartAddress { get => _saveStartAddress; set => _saveStartAddress = value; }
         public byte SaveDeviceId { get => _saveDeviceID; set => _saveDeviceID = value; }
         public string SaveDataType { get => _saveDataType; set => _saveDataType = value; }
         public string SaveNumericBase { get => _saveNumericBase; set => _saveNumericBase = value; }

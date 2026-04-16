@@ -1,4 +1,5 @@
 ﻿using NModbus;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -11,14 +12,53 @@ using System.Windows;
 
 namespace Schism.Services
 {
-    public class MODBUSService : INotifyPropertyChanged
+    public class MODBUSService : INotifyPropertyChanged, INotifyDataErrorInfo
     {
 
         // INotifyPropertyChanged interface for Services
         public event PropertyChangedEventHandler? PropertyChanged;
+
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        // INotifyDataErrorInfo for startAddress string
+        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+
+        protected void OnErrorsChanged(string propertyName)
+        {
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+        }
+
+        // Error control methods (Get, Add, and Clear) to support the INotifyDataErrorInfo interface
+        // Essentially, Errors are kept in a collection for easier tracking, if needed
+        public IEnumerable? GetErrors(string propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName))
+                return null;
+
+            return _errors.TryGetValue(propertyName, out var errors) ? errors : null;
+        }
+
+        protected void AddError(string propertyName, string error)
+        {
+            if (!_errors.ContainsKey(propertyName))
+                _errors[propertyName] = new List<string>();
+
+            if (!_errors[propertyName].Contains(error))
+            {
+                _errors[propertyName].Add(error);
+                OnErrorsChanged(propertyName);
+            }
+        }
+
+        protected void ClearErrors(string propertyName)
+        {
+            if (_errors.Remove(propertyName))
+            {
+                OnErrorsChanged(propertyName);
+            }
         }
 
         // Singleton instance
@@ -35,11 +75,16 @@ namespace Schism.Services
         private int _numResponses;
         private byte _deviceId;
         private ushort _dataLength;
-        private ushort _startAddress;
         private bool _asciiEnable;
         private bool _connectEngage;
         private bool _isConnected;
         private string _errMess;
+
+        // private _startAddress variable with custom string validation control
+        private string _startAddress;
+        private readonly Dictionary<string, List<string>> _errors = new();
+        public bool HasErrors => _errors.Count > 0;
+        private static readonly Regex StartAddressRegex = new(@"^(?:\d+[0-9]+|[0-9A-Fa-f]+h)$", RegexOptions.Compiled);
 
         // Dropdown selected variables
         private string _selectedDataType;
@@ -53,7 +98,7 @@ namespace Schism.Services
 
         // dropdown contents (can be changed)
         private ObservableCollection<string> _dataSizes = new ObservableCollection<string> { "16-Bit", "32-Bit", "64-Bit" };
-        private  ObservableCollection<string> _numericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary"}; // "Floating Point" removed for now, but gets added to the list once the user selects 32-Bit or 64-Bit Data Size!
+        private ObservableCollection<string> _numericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary" }; // "Floating Point" removed for now, but gets added to the list once the user selects 32-Bit or 64-Bit Data Size!
 
         // Raw MODBUS data collection
         private ObservableCollection<string> _rawModbusData = new ObservableCollection<string>();
@@ -195,17 +240,45 @@ namespace Schism.Services
             }
         }
 
-        public ushort StartAddress
+        public string StartAddress
         {
             get { return _startAddress; }
             set
             {
-                // Min and Max boundaries on Starting Address, according to MODBUS documentation
-                ushort clampedStart = Math.Clamp(value, (ushort)0, (ushort)65535);
 
-                if (_startAddress != clampedStart)
+                // Validate string with respect to custom rules. If we fail this check, don't set the StartAddress
+                ValidateStartAddress(value);
+
+                if (_errors.Count > 0)
                 {
-                    _startAddress = clampedStart;
+                    return; // Don't execute the remaining set logic, since we've identified an invalid string
+                    // since we don't update _startAddress, this simply reverts back to what the value was previously.
+                    // We need to do it this way, because otherwise the ViewModel, or even the code below could reference an invalid string.
+                }
+
+                // temp variable to help store the eventual new value to be updated into _startAddress
+                ushort decVal = 0;
+
+                // If the value contains "h"
+                if (value.Contains('h'))
+                {
+                    // Get rid of the "h" at the end ex. "Ah -> A"
+                    string trun = value.Substring(0, value.Length - 1);
+
+                    // convert hex string into a decimal int ex. "A -> 10"
+                    decVal = Convert.ToUInt16(trun, 16);
+                }
+                // If the value contains just numbers (no "h")
+                else
+                    decVal = Convert.ToUInt16(value);
+
+                // Min and Max boundaries on Starting Address, according to MODBUS documentation
+                ushort clampedStart = Math.Clamp(decVal, (ushort)0, (ushort)65535);
+
+                // If the numeric value represented by the current string can be updated, then do so.
+                if (Convert.ToUInt16(_startAddress) != clampedStart)
+                {
+                    _startAddress = clampedStart.ToString();
                     OnPropertyChanged(nameof(StartAddress)); // notify StartAddress
 
                     ushort maxLen = GetMaxLengthForStartAddress();
@@ -370,7 +443,7 @@ namespace Schism.Services
             _numErrors = 0;
             _deviceId = 1;
             _dataLength = 10;
-            _startAddress = 0;
+            _startAddress = "0";
             _asciiEnable = false;
             _errMess = "";
             _selectedDataType = DataTypes.First();
@@ -380,7 +453,7 @@ namespace Schism.Services
         }
 
         // Asynchronous method to run our MODBUS TCP connection off of the main UI thread
-        public async void Connection(){
+        public async void Connection() {
 
             _connectEngage = true;
             OnPropertyChanged(nameof(ConnectEngage));
@@ -394,7 +467,7 @@ namespace Schism.Services
             TcpClient masterTcpClient = new TcpClient();
             // Regex \b0+(\d+) finds leading zeros at word boundaries and keeps the remaining digits
             string cleanedIp = Regex.Replace(_ipAddr, @"\b0+(\d+)", "$1");
-            IPAddress address = IPAddress.Parse(cleanedIp);            
+            IPAddress address = IPAddress.Parse(cleanedIp);
             ModbusFactory factory = new ModbusFactory();
             IModbusMaster modbusMaster;
 
@@ -497,10 +570,11 @@ namespace Schism.Services
         {
 
             // Request data over TCP
-            bool[] coils = mM.ReadCoils(_deviceId, _startAddress, _dataLength);
+            ushort startAdd = Convert.ToUInt16(_startAddress);
+            bool[] coils = mM.ReadCoils(_deviceId, startAdd, _dataLength);
 
             // If the returned data is not what we expect, report an error
-            if(coils == null || coils.Length != _dataLength)
+            if (coils == null || coils.Length != _dataLength)
                 throw new Exception("Received null or inadequate response for coils.");
             else
                 // Report a successful TCP response, now that we have the data
@@ -521,7 +595,8 @@ namespace Schism.Services
         private ObservableCollection<string> ReadInputs(IModbusMaster mM, ObservableCollection<string> nD)
         {
             // Request data over TCP
-            bool[] inputs = mM.ReadInputs(_deviceId, _startAddress, _dataLength);
+            ushort startAdd = Convert.ToUInt16(_startAddress);
+            bool[] inputs = mM.ReadInputs(_deviceId, startAdd, _dataLength);
 
             // If the returned data is not what we expect, report an error
             if (inputs == null || inputs.Length != _dataLength)
@@ -545,7 +620,8 @@ namespace Schism.Services
         private ObservableCollection<string> ReadHoldingRegs(IModbusMaster mM, ObservableCollection<string> nD)
         {
             // Request data over TCP
-            ushort[] holdingRegs = mM.ReadHoldingRegisters(_deviceId, _startAddress, _dataLength);
+            ushort startAdd = Convert.ToUInt16(_startAddress);
+            ushort[] holdingRegs = mM.ReadHoldingRegisters(_deviceId, startAdd, _dataLength);
 
             // If the returned data is not what we expect, report an error
             if (holdingRegs == null || holdingRegs.Length != _dataLength)
@@ -563,7 +639,8 @@ namespace Schism.Services
         private ObservableCollection<string> ReadInputRegs(IModbusMaster mM, ObservableCollection<string> nD)
         {
             // Request data over TCP
-            ushort[] inputRegs = mM.ReadInputRegisters(_deviceId, _startAddress, _dataLength);
+            ushort startAdd = Convert.ToUInt16(_startAddress);
+            ushort[] inputRegs = mM.ReadInputRegisters(_deviceId, startAdd, _dataLength);
 
             // If the returned data is not what we expect, report an error
             if (inputRegs == null || inputRegs.Length != _dataLength)
@@ -807,8 +884,23 @@ namespace Schism.Services
         // Prevent user from prompting a data overflow simply due to configuring the length and starting address poorly
         private ushort GetMaxLengthForStartAddress()
         {
-            ushort cap = (ushort)(65535 - _startAddress); // inclusive cap
+            ushort startAdd = Convert.ToUInt16(_startAddress);
+            ushort cap = (ushort)(65535 - startAdd); // inclusive cap
             return Math.Min((ushort)120, cap);
+        }
+
+        private void ValidateStartAddress(string value) {
+
+            ClearErrors(nameof(StartAddress));
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                AddError(nameof(StartAddress), "Required");
+            }
+            else if (!StartAddressRegex.IsMatch(value))
+            {
+                AddError(nameof(StartAddress), "Must be decimal or hex (e.g. 1AFh)");
+            }
         }
     }
 }

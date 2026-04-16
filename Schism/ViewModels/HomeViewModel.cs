@@ -161,7 +161,8 @@ namespace Schism.ViewModels
                 // Update the address headers that sit above the data columns
                 for (int i = 0; i < _addressList.Length; i++)
                 {
-                    int addr = MS.StartAddress + (i * 20);
+                    ushort startAdd = Convert.ToUInt16(MS.StartAddress);
+                    int addr = startAdd + (i * 20);
                     _addressList[i] = addr.ToString();
                 }
 
