@@ -117,7 +117,7 @@ namespace Schism.ViewModels
         // ViewModel constructor
         public HomeViewModel(IDialogService dialogService)
         {
-            _title = "Schism Home Screen";
+            _title = "PVA MODBUS TCP Client";
             _addressList = [ "0", "20", "40", "60", "80", "100" ];
             _nonBoolData = false;
             _endianEnable = false;
@@ -212,11 +212,7 @@ namespace Schism.ViewModels
                     // Update the available numeric bases for non-16-Bit data sizes (all 5)
                     MS.NumericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary", "Floating Point" };
 
-                // Update selection availability, according to current settings (ex. allow ASCII display only when using Hex as the numeric base)
-                _hexData = (MS.SelectedDataType is "Holding Registers" or "Input Registers") && (MS.SelectedNumericBase is "Hexadecimal");
                 _endianEnable = (MS.SelectedDataType is "Holding Registers" or "Input Registers");
-
-                OnPropertyChanged(nameof(HexData));
                 OnPropertyChanged(nameof(EndianEnable));
 
                 // Update MODBUS table, since the shape of the names and data may have changed here
@@ -238,7 +234,14 @@ namespace Schism.ViewModels
                 // UpdateModbusTable(); (MIGHT NEED TO PUT THIS BACK IN)
             }
 
-            if (e.PropertyName is nameof(MS.RawModbusData))
+            if (e.PropertyName is nameof(MS.SelectedNumericBase))
+            {
+                // Update selection availability, according to current settings (ex. allow ASCII display only when using Hex as the numeric base)
+                _hexData = (MS.SelectedDataType is "Holding Registers" or "Input Registers") && (MS.SelectedNumericBase is "Hexadecimal");
+                OnPropertyChanged(nameof(HexData));
+            }
+
+                if (e.PropertyName is nameof(MS.RawModbusData))
             {
                 // Update MODBUS Data in the UI
                 // NOTE: since the RawModbusData updates via a loop on another thread, this method will get called constantly!

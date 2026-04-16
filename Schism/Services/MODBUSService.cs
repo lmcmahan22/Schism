@@ -360,7 +360,7 @@ namespace Schism.Services
         // Consutrctor
         private MODBUSService()
         {
-            _ipAddr = "165.165.165.11";
+            _ipAddr = "192.168.100.020";
             _tcpPort = 502;
             _scanRate = 500;
             _tcpTimeout = 5000;
@@ -392,7 +392,9 @@ namespace Schism.Services
         private void MODBUSComms()
         {
             TcpClient masterTcpClient = new TcpClient();
-            IPAddress address = IPAddress.Parse(_ipAddr);
+            // Regex \b0+(\d+) finds leading zeros at word boundaries and keeps the remaining digits
+            string cleanedIp = Regex.Replace(_ipAddr, @"\b0+(\d+)", "$1");
+            IPAddress address = IPAddress.Parse(cleanedIp);            
             ModbusFactory factory = new ModbusFactory();
             IModbusMaster modbusMaster;
 

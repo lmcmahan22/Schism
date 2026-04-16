@@ -18,7 +18,7 @@
         // Constructor
         public MainWindowViewModel()
         {
-            _title = "Schism Application";
+            _title = "PVA MODBUS TCP Client";
         }
     }
 }
