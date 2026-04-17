@@ -41,6 +41,11 @@ namespace Schism.Services
             return _errors.TryGetValue(propertyName, out var errors) ? errors : null;
         }
 
+        private bool ErrorPresent(string propertyName)
+        {
+            return _errors.TryGetValue(propertyName, out var list) && list.Count > 0;
+        }
+
         protected void AddError(string propertyName, string error)
         {
             if (!_errors.ContainsKey(propertyName))
@@ -74,7 +79,7 @@ namespace Schism.Services
         private int _numRequests;
         private int _numResponses;
         private byte _deviceId;
-        private ushort _dataLength;
+        private byte _dataLength;
         private bool _asciiEnable;
         private bool _connectEngage;
         private bool _isConnected;
@@ -84,7 +89,7 @@ namespace Schism.Services
         private string _startAddress;
         private readonly Dictionary<string, List<string>> _errors = new();
         public bool HasErrors => _errors.Count > 0;
-        private static readonly Regex StartAddressRegex = new(@"^(?:\d+[0-9]+|[0-9A-Fa-f]+h)$", RegexOptions.Compiled);
+        private static readonly Regex StartAddressRegex = new(@"^(?:\d+|[0-9A-Fa-f]+h)$", RegexOptions.Compiled);
 
         // Dropdown selected variables
         private string _selectedDataType;
@@ -213,28 +218,46 @@ namespace Schism.Services
             get { return _deviceId; }
             set
             {
-                // Min and Max boundaries on Device ID, according to MODBUS documentation
-                byte clamped = Math.Clamp(value, (byte)1, (byte)247);
-                if (_deviceId != clamped)
+                // Validate incoming byte with respect to valid range (1-247)
+                ValidateDevID(value);
+
+                // Store the error status after the above validation call
+                bool status = ErrorPresent(nameof(DeviceId));
+                if (status)
+                    return; // Don't execute the remaining set logic, since we've identified an invalid incoming byte
+
+                // We already verified that the value is within our desired boundaries, so we simply need to check for a difference.
+                if (_deviceId != value)
                 {
-                    _deviceId = clamped;
+                    _deviceId = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        public ushort DataLength
+        public byte DataLength
         {
             get { return _dataLength; }
             set
             {
-                // Min and Max boundaries on Value relative to current StartAddress
-                ushort maxLen = GetMaxLengthForStartAddress();
-                ushort clampedDataLength = Math.Clamp(value, (ushort)1, maxLen);
+                // Take the currently set Data Size into account
+                byte minLen = GetMinLengthForStartAddress();
 
-                if (_dataLength != clampedDataLength)
+                // Take the currently set StartingAddress into account
+                byte maxLen = GetMaxLengthForStartAddress();
+
+                // Validate incoming byte with respect to valid range (1-120)
+                ValidateLength(value, minLen, maxLen);
+
+                // Store the error status after the above validation call
+                bool status = ErrorPresent(nameof(DataLength));
+                if (status)
+                    return; // Don't execute the remaining set logic, since we've identified an invalid incoming byte
+
+                // We already verified that the value is within our desired boundaries, so we simply need to check for a difference.
+                if (_dataLength != value)
                 {
-                    _dataLength = clampedDataLength;
+                    _dataLength = value;
                     OnPropertyChanged();
                 }
             }
@@ -245,19 +268,16 @@ namespace Schism.Services
             get { return _startAddress; }
             set
             {
-
-                // Validate string with respect to custom rules. If we fail this check, don't set the StartAddress
+                // Validate incoming string with respect to our addressing regex (see method)
                 ValidateStartAddress(value);
 
-                if (_errors.Count > 0)
-                {
-                    return; // Don't execute the remaining set logic, since we've identified an invalid string
-                    // since we don't update _startAddress, this simply reverts back to what the value was previously.
-                    // We need to do it this way, because otherwise the ViewModel, or even the code below could reference an invalid string.
-                }
+                // Store the error status after the above validation call
+                bool status = ErrorPresent(nameof(StartAddress));
+                if (status)
+                    return; // Don't execute the remaining set logic, since we've identified an invalid incoming string
 
-                // temp variable to help store the eventual new value to be updated into _startAddress
-                ushort decVal = 0;
+                // temp variable to help store the incoming decimal value, after possible hex conversion
+                uint attemptDecVal = 0;
 
                 // If the value contains "h"
                 if (value.Contains('h'))
@@ -266,23 +286,32 @@ namespace Schism.Services
                     string trun = value.Substring(0, value.Length - 1);
 
                     // convert hex string into a decimal int ex. "A -> 10"
-                    decVal = Convert.ToUInt16(trun, 16);
+                    attemptDecVal = Convert.ToUInt32(trun, 16);
                 }
                 // If the value contains just numbers (no "h")
                 else
-                    decVal = Convert.ToUInt16(value);
+                    attemptDecVal = Convert.ToUInt32(value);
 
-                // Min and Max boundaries on Starting Address, according to MODBUS documentation
-                ushort clampedStart = Math.Clamp(decVal, (ushort)0, (ushort)65535);
+                // Validate converted decimal value with respect to valid range (0-65535)
+                ValidateStartAddressConv(attemptDecVal);
 
-                // If the numeric value represented by the current string can be updated, then do so.
-                if (Convert.ToUInt16(_startAddress) != clampedStart)
+                // Store the error status after the above validation call
+                bool convStatus = ErrorPresent(nameof(StartAddress));
+                if (convStatus)
+                    return; // Don't execute the remaining set logic, since we've identified an invalid incoming converted decimal value
+
+                // We can now confirm that the attempted decimal converted value is a short (1-65535), so we can type cast it!
+                ushort decVal = Convert.ToUInt16(attemptDecVal);
+
+                // Update approved value onto the _startAddress string
+                if (Convert.ToUInt16(_startAddress) != decVal)
                 {
-                    _startAddress = clampedStart.ToString();
-                    OnPropertyChanged(nameof(StartAddress)); // notify StartAddress
+                    _startAddress = decVal.ToString();
+                    OnPropertyChanged();
 
-                    ushort maxLen = GetMaxLengthForStartAddress();
-                    ushort clampedDataLength = Math.Clamp(_dataLength, (ushort)1, maxLen);
+                    // Adjust length to this newly accepted _startAddress, in the event that our original length is no longer compatible
+                    byte maxLen = GetMaxLengthForStartAddress();
+                    byte clampedDataLength = Math.Clamp(_dataLength, (byte)1, maxLen);
 
                     if (_dataLength != clampedDataLength)
                     {
@@ -367,6 +396,16 @@ namespace Schism.Services
                 {
                     _selectedDataSize = value;
                     OnPropertyChanged();
+
+                    // Adjust length to this newly accepted _startAddress, in the event that our original length is no longer compatible
+                    byte minLen = GetMinLengthForStartAddress();
+                    byte clampedDataLength = Math.Clamp(_dataLength, minLen, (byte) 120);
+
+                    if (_dataLength != clampedDataLength)
+                    {
+                        _dataLength = clampedDataLength;
+                        OnPropertyChanged(nameof(DataLength)); // notify DataLength
+                    }
                 }
             }
         }
@@ -901,12 +940,39 @@ namespace Schism.Services
             OnPropertyChanged(nameof(NumErrors));
         }
 
+        // Prevent user from prompting a data overflow simply due to configuring the length and data size poorly
+        private byte GetMinLengthForStartAddress()
+        {
+            return _selectedDataSize switch
+            {
+                "32-Bit" => 2,
+                "64-Bit" => 4,
+                _ => 1 // "16-Bit" or default
+            };
+        }
+
         // Prevent user from prompting a data overflow simply due to configuring the length and starting address poorly
-        private ushort GetMaxLengthForStartAddress()
+        private byte GetMaxLengthForStartAddress()
         {
             ushort startAdd = Convert.ToUInt16(_startAddress);
-            ushort cap = (ushort)(65535 - startAdd); // inclusive cap
-            return Math.Min((ushort)120, cap);
+            int cap = ((ushort.MaxValue - startAdd)+1); // inclusive cap (stroed as an int, because this could be 65536 in the event that the StartingAddress is curently 0. If so, that is okay, because 120 will end up being the minimum.
+            ushort clamped = (ushort) Math.Min(120, cap);
+            return (byte)clamped;
+        }
+
+        private void ValidateDevID(byte value)
+        {
+            ClearErrors(nameof(DeviceId));
+
+            if (string.IsNullOrWhiteSpace(value.ToString()))
+            {
+                AddError(nameof(DeviceId), "Value Required");
+            }
+            // Value doesn't satisfy validating condition
+            else if (value < 1 || value > 247)
+            {
+                AddError(nameof(DeviceId), "Must be between 1 and 247");
+            }
         }
 
         private void ValidateStartAddress(string value) {
@@ -915,11 +981,38 @@ namespace Schism.Services
 
             if (string.IsNullOrWhiteSpace(value))
             {
-                AddError(nameof(StartAddress), "Required");
+                AddError(nameof(StartAddress), "Value Required");
             }
             else if (!StartAddressRegex.IsMatch(value))
             {
-                AddError(nameof(StartAddress), "Must be decimal or hex (e.g. 1AFh)");
+                AddError(nameof(StartAddress), "Must be unsigned decimal or hex (e.g. \"1AFh\")");
+            }
+        }
+
+        private void ValidateStartAddressConv(uint value)
+        {
+
+            ClearErrors(nameof(StartAddress));
+
+            // Value doesn't satisfy validating condition
+            if (value < 0 || value > 65535)
+            {
+                AddError(nameof(StartAddress), "Must be between 0 and 65535 (after hex conversion)");
+            }
+        }
+
+        private void ValidateLength(byte value, byte min, byte max)
+        {
+            ClearErrors(nameof(DataLength));
+
+            if (string.IsNullOrWhiteSpace(value.ToString()))
+            {
+                AddError(nameof(DataLength), "Value Required");
+            }
+            // Value doesn't satisfy validating condition
+            else if (value < min || value > max)
+            {
+                AddError(nameof(DataLength), "Must be between 1 - 120 (or between fluid minimum and maximum, depending on Data Size and Starting Address parameters respectively)");
             }
         }
     }

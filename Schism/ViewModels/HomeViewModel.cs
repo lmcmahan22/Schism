@@ -179,12 +179,12 @@ namespace Schism.ViewModels
                 if (MS.SelectedDataType is "Holding Registers" or "Input Registers")
                 {
                     // If we're attempting to poll an odd number of registers while in a numeric base that requires an even number of registers, reduce the length until it is a multiple of 2 to ensure we don't exceed the length with our data display.
-                    if ((MS.SelectedDataSize == "32-Bit") && (MS.DataLength % 2 != 0))
-                        MS.DataLength = (ushort)(MS.DataLength - (MS.DataLength % 2));
+                    if ((MS.SelectedDataSize == "32-Bit") && (MS.DataLength % 2 != 0) && (MS.DataLength > 2))
+                        MS.DataLength = (byte)(MS.DataLength - (MS.DataLength % 2));
 
                     // If we're attempting to poll a number of registers that isn't a multiple of 4 while in a numeric base that requires a multiple of 4, reduce the length until it is a multiple of 4 to ensure we don't exceed the length with our data display.
-                    else if ((MS.SelectedDataSize == "64-Bit") && (MS.DataLength % 4 != 0))
-                        MS.DataLength = (ushort)(MS.DataLength - (MS.DataLength % 4));
+                    else if ((MS.SelectedDataSize == "64-Bit") && (MS.DataLength % 4 != 0) && (MS.DataLength > 4))
+                        MS.DataLength = (byte)(MS.DataLength - (MS.DataLength % 4));
                 }
 
                 if(MS.SelectedNumericBase is "Floating Point")
@@ -374,6 +374,7 @@ namespace Schism.ViewModels
                 sD.SaveLength,
                 sD.SaveDataType,
                 sD.SaveNumericBase,
+                sD.SaveDataSize,
                 sD.SaveEndian,
                 sD.SaveAsciiEnable,
                 sD.SaveAddressConv
