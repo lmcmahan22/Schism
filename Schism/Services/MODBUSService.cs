@@ -855,23 +855,43 @@ namespace Schism.Services
 
         private void FailResp(Exception e)
         {
-            // Error message for improved user clarity
-            if (e is IOException or SocketException)
+            // Error messages for user clarity
+            if (e is SlaveException se)
             {
-                _errMess = "Connection Failure: Verify Server Activity, DeviceID, and TCP settings.";
+                string details = "";
+                switch (se.SlaveExceptionCode)
+                {
+                    case SlaveExceptionCodes.IllegalFunction:
+                        details = "Illegal Function";
+                        break;
+
+                    case SlaveExceptionCodes.IllegalDataAddress:
+                        details = "Illegal Data Address";
+                        break;
+
+                    case SlaveExceptionCodes.IllegalDataValue:
+                        details = "Illegal Data Value";
+                        break;
+
+                    case SlaveExceptionCodes.SlaveDeviceFailure:
+                        details = "Server Device Failure";
+                        break;
+                    default:
+                        details = "Undefined Error";
+                        break;
+                }
+                _errMess = "Command Failure: Server did not accept the received MODBUS Command. Error Code: " + se.SlaveExceptionCode + " - \"" + details + "\"" ;
             }
+            else if (e is IOException or SocketException)
+                _errMess = "Connection Failure: Please verify Server activity, DeviceID, and TCP settings.";
             else if (e is TimeoutException)
-            {
-                _errMess = "Connection Failure: MODBUS Timeout.";
-            }
-            else if (e is SlaveException)
-            {
-                _errMess = "Connection Failure: Data Type and/or Query Length not compatible with Server.";
-            }
+                _errMess = "Timeout Failure: Please assess connection integrity.";
+            else if (e is InvalidModbusRequestException)
+                _errMess = "Command Failure: Sent MODBUS Command is not structurally sound.";
+            else if (e is NotImplementedException)
+                _errMess = "Command Failure: Function Code is incompatible with Transport Type and/or NModbus Library.";
             else
-            {
                 _errMess = "Unknown Error: " + e.Message;
-            }
 
             _numResponses++;
             _numErrors++;

@@ -60,7 +60,7 @@ namespace Schism.ViewModels
         {
             _title = "About";
             _version = "Version: 1.0.0";
-            _buildDate = "Build Date: 04/01/2026";
+            _buildDate = "Build Date: 04/20/2026";
             _appName = "MODBUS TCP Client Simulator";
             _copyright = "©2026 Precision Valve & Automation, Inc.";
             _author = "Author: Liam McMahan (Product Development)";
