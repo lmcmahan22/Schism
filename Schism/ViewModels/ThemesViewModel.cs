@@ -1,4 +1,8 @@
-﻿using Schism.Services;
+﻿// <copyright file="ThemesViewModel.cs" company="Precision Valve & Automation">
+// Copyright (c) PVA. All rights reserved.
+// </copyright>
+
+using Schism.Services;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 
@@ -13,7 +17,7 @@ namespace Schism.ViewModels
         }
 
         // Private variable
-        private string _title;
+        private string title;
 
         // Service Singleton that gets passed up to View
         public ThemeService TS => ThemeService.Instance;
@@ -21,14 +25,14 @@ namespace Schism.ViewModels
         // Public instance with getters/setters
         public string Title
         {
-            get { return _title; }
-            set { SetProperty(ref _title, value); }
+            get { return title; }
+            set { SetProperty(ref title, value); }
         }
 
         // Constructor
         public ThemesViewModel()
         {
-            _title = "Themes";
+            title = "Themes";
         }
     }
 }

@@ -1,43 +1,56 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿// <copyright file="ModbusRow.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace Schism.Models
 {
+    using System.ComponentModel;
+    using System.Runtime.CompilerServices;
+
     public class ModbusRow : INotifyPropertyChanged
     {
-        private string _name;
-        private string _data;
+        private string name;
+        private string data;
 
         public ModbusRow(string name, string data)
-        {   
-            _name = name;
-            _data = data;
+        {
+            this.name = name;
+            this.data = data;
         }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public string Name
         {
-            get => _name;
+            get => this.name;
             set
             {
-                if (_name == value) return;
-                _name = value;
-                OnPropertyChanged();
+                if (this.name == value)
+                {
+                    return;
+                }
+
+                this.name = value;
+                this.OnPropertyChanged();
             }
         }
 
         public string Data
         {
-            get => _data;
+            get => this.data;
             set
             {
-                if (_data == value) return;
-                _data = value;
-                OnPropertyChanged();
+                if (this.data == value)
+                {
+                    return;
+                }
+
+                this.data = value;
+                this.OnPropertyChanged();
             }
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

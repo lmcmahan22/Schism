@@ -1,188 +1,192 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Media;
+﻿// <copyright file="ThemeService.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace Schism.Services
 {
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Runtime.CompilerServices;
+    using System.Windows.Media;
+
     public class ThemeService : INotifyPropertyChanged
     {
+        // dropdown contents (never change)
+        private readonly ObservableCollection<string> availableThemes;
+
+        // Private variables
+        private Brush main;
+        private Brush accent1;
+        private Brush accent2;
+        private Brush accent3;
+        private Brush accent4;
+        private Brush textColor;
+        private Brush errorColor;
+
+        // Dropdown selected variables
+        private string selectedTheme;
+
+        // Constructor
+        public ThemeService()
+        {
+            // Initialize available themes and set default theme
+            this.availableThemes = new ObservableCollection<string> { "Dark", "Light" };
+            this.selectedTheme = this.availableThemes.First();
+
+            // Initialize theme colors based on the default selected theme
+            this.UpdateTheme();
+
+            // Notify the UI of the initial theme selection
+            this.OnPropertyChanged(nameof(this.SelectedTheme));
+        }
 
         // INotifyPropertyChanged interface for Services
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
 
         // Singleton instance
         public static ThemeService Instance { get; } = new();
 
-        // Private variables
-        private Brush _main;
-        private Brush _accent1;
-        private Brush _accent2;
-        private Brush _accent3;
-        private Brush _accent4;
-        private Brush _textColor;
-        private Brush _errorColor;
-
-        // Dropdown selected variables
-        private string _selectedTheme;
-
-        // dropdown contents (never change)
-        private readonly ObservableCollection<string> _availableThemes;
-
         // Public properties with getters and setters that notify the UI of changes
         public string SelectedTheme
         {
-            get => _selectedTheme;
+            get => this.selectedTheme;
             set
             {
-                _selectedTheme = value;
-                UpdateTheme();
+                this.selectedTheme = value;
+                this.UpdateTheme();
             }
         }
 
         public Brush Main
         {
-            get => _main;
+            get => this.main;
             set
             {
-                if (_main != value)
+                if (this.main != value)
                 {
-                    _main = value;
-                    OnPropertyChanged();
+                    this.main = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public Brush Accent1
         {
-            get => _accent1;
+            get => this.accent1;
             set
             {
-                if (_accent1 != value)
+                if (this.accent1 != value)
                 {
-                    _accent1 = value;
-                    OnPropertyChanged();
+                    this.accent1 = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public Brush Accent2
         {
-            get => _accent2;
+            get => this.accent2;
             set
             {
-                if (_accent2 != value)
+                if (this.accent2 != value)
                 {
-                    _accent2 = value;
-                    OnPropertyChanged();
+                    this.accent2 = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public Brush Accent3
         {
-            get => _accent3;
+            get => this.accent3;
             set
             {
-                if (_accent3 != value)
+                if (this.accent3 != value)
                 {
-                    _accent3 = value;
-                    OnPropertyChanged();
+                    this.accent3 = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public Brush Accent4
         {
-            get => _accent4;
+            get => this.accent4;
             set
             {
-                if (_accent4 != value)
+                if (this.accent4 != value)
                 {
-                    _accent4 = value;
-                    OnPropertyChanged();
+                    this.accent4 = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public Brush TextColor
         {
-            get => _textColor;
+            get => this.textColor;
             set
             {
-                if (_textColor != value)
+                if (this.textColor != value)
                 {
-                    _textColor = value;
-                    OnPropertyChanged();
+                    this.textColor = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public Brush ErrorColor
         {
-            get => _errorColor;
+            get => this.errorColor;
             set
             {
-                if (_errorColor != value)
+                if (this.errorColor != value)
                 {
-                    _errorColor = value;
-                    OnPropertyChanged();
+                    this.errorColor = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         // ObservableCollection public binding
-        public ObservableCollection<string> AvailableThemes => _availableThemes;
+        public ObservableCollection<string> AvailableThemes => this.availableThemes;
 
-        // Constructor
-        public ThemeService()
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            // Initialize available themes and set default theme
-            _availableThemes = new ObservableCollection<string> { "Dark", "Light" };
-            _selectedTheme = _availableThemes.First();
-
-            // Initialize theme colors based on the default selected theme
-            UpdateTheme();
-
-            // Notify the UI of the initial theme selection
-            OnPropertyChanged(nameof(SelectedTheme));
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         // Method to update theme colors based on the selected theme
         private void UpdateTheme()
         {
-            if(SelectedTheme == "Dark")
+            if (this.SelectedTheme == "Dark")
             {
-                _main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
-                _accent1 = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
-                _accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
-                _accent3 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
-                _accent4 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
-                _textColor = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                _errorColor = new SolidColorBrush(Color.FromArgb(255, 120, 0, 0));
+                this.main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
+                this.accent1 = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
+                this.accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
+                this.accent3 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
+                this.accent4 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+                this.textColor = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                this.errorColor = new SolidColorBrush(Color.FromArgb(255, 120, 0, 0));
             }
             else
             {
-                _main = new SolidColorBrush(Color.FromArgb(255, 250, 250, 250));
-                _accent1 = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
-                _accent2 = new SolidColorBrush(Color.FromArgb(255, 220, 220, 220));
-                _accent3 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
-                _accent4 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
-                _textColor = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
-                _errorColor = new SolidColorBrush(Color.FromArgb(255, 200, 0, 0));
+                this.main = new SolidColorBrush(Color.FromArgb(255, 250, 250, 250));
+                this.accent1 = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
+                this.accent2 = new SolidColorBrush(Color.FromArgb(255, 220, 220, 220));
+                this.accent3 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+                this.accent4 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
+                this.textColor = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                this.errorColor = new SolidColorBrush(Color.FromArgb(255, 200, 0, 0));
             }
 
-            OnPropertyChanged(nameof(Main));
-            OnPropertyChanged(nameof(Accent1));
-            OnPropertyChanged(nameof(Accent2));
-            OnPropertyChanged(nameof(Accent3));
-            OnPropertyChanged(nameof(Accent4));
-            OnPropertyChanged(nameof(TextColor));
-            OnPropertyChanged(nameof(ErrorColor));
+            this.OnPropertyChanged(nameof(this.Main));
+            this.OnPropertyChanged(nameof(this.Accent1));
+            this.OnPropertyChanged(nameof(this.Accent2));
+            this.OnPropertyChanged(nameof(this.Accent3));
+            this.OnPropertyChanged(nameof(this.Accent4));
+            this.OnPropertyChanged(nameof(this.TextColor));
+            this.OnPropertyChanged(nameof(this.ErrorColor));
         }
     }
 }

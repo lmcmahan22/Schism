@@ -1,69 +1,73 @@
-﻿using System.Runtime.CompilerServices;
+﻿// <copyright file="AboutViewModel.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace Schism.ViewModels
 {
+    using System.Runtime.CompilerServices;
+
     public class AboutViewModel : BindableBase
     {
-        // INotifyPropertyChanged interface for ViewModels
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            RaisePropertyChanged(propertyName);
-        }
-
         // Private variables
-        private string _title;
-        private string _version;
-        private string _buildDate;
-        private string _appName;
-        private string _copyright;
-        private string _author;
-
-        // Public instances with getters/setters
-        public string Title
-        {
-            get { return _title; }
-            set { SetProperty(ref _title, value); }
-        }
-
-        public string Version
-        {
-            get => _version;
-            set => SetProperty(ref _version, value);
-        }
-
-        public string AppName
-        {
-            get => _appName;
-            set => SetProperty(ref _appName, value);
-        }
-
-        public string Copyright
-        {
-            get => _copyright;
-            set => SetProperty(ref _copyright, value);
-        }
-
-        public string Author
-        {
-            get => _author;
-            set => SetProperty(ref _author, value);
-        }
-
-        public string BuildDate
-        {
-            get => _buildDate;
-            set => SetProperty(ref _buildDate, value);
-        }
+        private string title;
+        private string version;
+        private string buildDate;
+        private string appName;
+        private string copyright;
+        private string author;
 
         // Constructor
         public AboutViewModel()
         {
-            _title = "About";
-            _version = "Version: 1.0.0";
-            _buildDate = "Build Date: 04/20/2026";
-            _appName = "MODBUS TCP Client Simulator";
-            _copyright = "©2026 Precision Valve & Automation, Inc.";
-            _author = "Author: Liam McMahan (Product Development)";
+            this.title = "About";
+            this.version = "Version: 1.0.0";
+            this.buildDate = "Build Date: 04/20/2026";
+            this.appName = "MODBUS TCP Client Simulator";
+            this.copyright = "©2026 Precision Valve & Automation, Inc.";
+            this.author = "Author: Liam McMahan (Product Development)";
+        }
+
+        // Public instances with getters/setters
+        public string Title
+        {
+            get { return this.title; }
+            set { this.SetProperty(ref this.title, value); }
+        }
+
+        public string Version
+        {
+            get => this.version;
+            set => this.SetProperty(ref this.version, value);
+        }
+
+        public string AppName
+        {
+            get => this.appName;
+            set => this.SetProperty(ref this.appName, value);
+        }
+
+        public string Copyright
+        {
+            get => this.copyright;
+            set => this.SetProperty(ref this.copyright, value);
+        }
+
+        public string Author
+        {
+            get => this.author;
+            set => this.SetProperty(ref this.author, value);
+        }
+
+        public string BuildDate
+        {
+            get => this.buildDate;
+            set => this.SetProperty(ref this.buildDate, value);
+        }
+
+        // INotifyPropertyChanged interface for ViewModels
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            this.RaisePropertyChanged(propertyName);
         }
     }
 }

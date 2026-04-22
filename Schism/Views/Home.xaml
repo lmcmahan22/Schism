@@ -64,22 +64,22 @@
         <!-- Row 1: Top Header -->
         <Grid Grid.Row="0">
             <Menu DockPanel.Dock="Top" Background="LightGray">
-                <MenuItem Header="_File">
-                    <MenuItem Header="_Save Config" Command="{Binding Save_Click}"/>
-                    <MenuItem Header="_Load Config" Command="{Binding Load_Click}"/>
+                <MenuItem Header="File">
+                    <MenuItem Header="Save Config" Command="{Binding SaveClick}"/>
+                    <MenuItem Header="Load Config" Command="{Binding LoadClick}"/>
                     <Separator Background="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}"/>
-                    <MenuItem Header="_Exit App" Command="{Binding Exit_Click}"/>
+                    <MenuItem Header="Exit App" Command="{Binding ExitClick}"/>
                 </MenuItem>
-                <MenuItem Header="_Connection">
-                    <MenuItem Header="_Toggle" Command="{Binding Conn_Click}"/>
+                <MenuItem Header="Connection">
+                    <MenuItem Header="Toggle" Command="{Binding ConnClick}"/>
                     <Separator Background="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}"/>
-                    <MenuItem Header="_Settings" Command="{Binding Sett_Click}"/>
+                    <MenuItem Header="Settings" Command="{Binding SettClick}"/>
                 </MenuItem>
-                <MenuItem Header="_Customize">
-                    <MenuItem Header="_Themes" Command="{Binding Themes_Click}"/>
+                <MenuItem Header="Customize">
+                    <MenuItem Header="Themes" Command="{Binding ThemesClick}"/>
                 </MenuItem>
-                <MenuItem Header="_Help">
-                    <MenuItem Header="_About" Command="{Binding About_Click}"/>
+                <MenuItem Header="Help">
+                    <MenuItem Header="About" Command="{Binding AboutClick}"/>
                 </MenuItem>
             </Menu>
         </Grid>
@@ -103,14 +103,14 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Row="0">
-                        <Button Name="Save" ToolTip="Save Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="10,5,0,5" Command="{Binding Save_Click}">
+                        <Button Name="Save" ToolTip="Save Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="10,5,0,5" Command="{Binding SaveClick}">
                             <Image Source="/Images/Save.png" />
                         </Button>
-                        <Button Name="Load" ToolTip="Load Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="55,5,0,5" Command="{Binding Load_Click}">
+                        <Button Name="Load" ToolTip="Load Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="55,5,0,5" Command="{Binding LoadClick}">
                             <Image Source="/Images/Load.png" />
                         </Button>
                         <Separator Background="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="100,5,0,5" VerticalAlignment="Center" HorizontalAlignment="Left" Width="2" Height="25"/>
-                        <Button ToolTip="Connect" HorizontalAlignment="Left" Width="40" Margin="107,5,0,5" Command="{Binding Conn_Click}">
+                        <Button ToolTip="Connect" HorizontalAlignment="Left" Width="40" Margin="107,5,0,5" Command="{Binding ConnClick}">
                             <Image>
                                 <Image.Style>
                                     <Style TargetType="Image">
@@ -135,7 +135,7 @@
                                 </Image.Style>
                             </Image>
                         </Button>
-                        <Button Name="Settings" ToolTip="Settings" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="152,5,0,5" Command="{Binding Sett_Click}">
+                        <Button Name="Settings" ToolTip="Settings" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="152,5,0,5" Command="{Binding SettClick}">
                             <Image Source="/Images/Settings.png" />
                         </Button>
                     </Grid>

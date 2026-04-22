@@ -1,19 +1,22 @@
-﻿using Schism.Services;
-using System.Runtime.CompilerServices;
+﻿// <copyright file="ConnSettingsViewModel.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace Schism.ViewModels
 {
+    using System.Runtime.CompilerServices;
+    using Schism.Services;
+
     public class ConnSettingsViewModel : BindableBase
     {
-
-        // INotifyPropertyChanged interface for ViewModels
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            RaisePropertyChanged(propertyName);
-        }
-
         // Private variable
-        private string _title;
+        private string title;
+
+        // Constructor
+        public ConnSettingsViewModel()
+        {
+            this.title = "Connection Settings";
+        }
 
         // Service Singleton that gets passed up to View
         public MODBUSService MS => MODBUSService.Instance;
@@ -21,14 +24,14 @@ namespace Schism.ViewModels
         // Public instance with getter/setter
         public string Title
         {
-            get => _title;
-            set => SetProperty(ref _title, value);
+            get => this.title;
+            set => this.SetProperty(ref this.title, value);
         }
 
-        // Constructor
-        public ConnSettingsViewModel()
+        // INotifyPropertyChanged interface for ViewModels
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            _title = "Connection Settings";
+            this.RaisePropertyChanged(propertyName);
         }
     }
 }

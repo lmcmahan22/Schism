@@ -13,7 +13,7 @@ namespace Schism.Views
             InitializeComponent();
         }
 
-        private void BaseSystem_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void BaseSystemSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }

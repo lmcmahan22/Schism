@@ -1,280 +1,268 @@
-﻿using NModbus;
-using System.Collections;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Net;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows;
+﻿// <copyright file="MODBUSService.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace Schism.Services
 {
+    using System.Collections;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.IO;
+    using System.Net;
+    using System.Net.Sockets;
+    using System.Runtime.CompilerServices;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using System.Windows;
+    using NModbus;
+
     public class MODBUSService : INotifyPropertyChanged, INotifyDataErrorInfo
     {
+        private static readonly Regex StartAddressRegex = new(@"^(?:\d+|[0-9A-Fa-f]+h)$", RegexOptions.Compiled);
+        private readonly Dictionary<string, List<string>> errors = new();
+
+        // dropdown contents (never change)
+        private readonly ObservableCollection<string> dataTypes = new ObservableCollection<string> { "Coil Status", "Input Status", "Holding Registers", "Input Registers" };
+        private readonly ObservableCollection<string> endians = new ObservableCollection<string> { "Big Endian", "Little Endian", "Big Endian (Byte-Swap)", "Little Endian (Byte-Swap)" };
+
+        // Private variables
+        private string ipAddr;
+        private int tcpPort;
+        private int scanRate;
+        private int tcpTimeout;
+        private int numOKs;
+        private int numErrors;
+        private int numRequests;
+        private int numResponses;
+        private byte deviceId;
+        private byte dataLength;
+        private bool asciiEnable;
+        private bool connectEngage;
+        private bool isConnected;
+        private string errMess;
+
+        // private startAddress variable with custom string validation control
+        private string startAddress;
+
+        // Dropdown selected variables
+        private string selectedDataType;
+        private string selectedDataSize;
+        private string selectedNumericBase;
+        private string selectedEndian;
+
+        // dropdown contents (can be changed)
+        private ObservableCollection<string> dataSizes = new ObservableCollection<string> { "16-Bit", "32-Bit", "64-Bit" };
+        private ObservableCollection<string> numericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary" }; // "Floating Point" removed for now, but gets added to the list once the user selects 32-Bit or 64-Bit Data Size!
+
+        // Raw MODBUS data collection
+        private ObservableCollection<string> rawModbusData = new ObservableCollection<string>();
+
+        // Consutrctor
+        private MODBUSService()
+        {
+            this.ipAddr = "192.168.100.020";
+            this.tcpPort = 502;
+            this.scanRate = 500;
+            this.tcpTimeout = 5000;
+            this.numRequests = 0;
+            this.numResponses = 0;
+            this.numOKs = 0;
+            this.numErrors = 0;
+            this.deviceId = 1;
+            this.dataLength = 10;
+            this.startAddress = "0";
+            this.asciiEnable = false;
+            this.errMess = string.Empty;
+            this.selectedDataType = this.DataTypes.First();
+            this.selectedDataSize = this.DataSizes.First();
+            this.selectedNumericBase = this.NumericBases.First();
+            this.selectedEndian = this.Endians.First();
+        }
 
         // INotifyPropertyChanged interface for Services
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         // INotifyDataErrorInfo for startAddress string
         public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
-
-        protected void OnErrorsChanged(string propertyName)
-        {
-            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
-        }
-
-        // Error control methods (Get, Add, and Clear) to support the INotifyDataErrorInfo interface
-        // Essentially, Errors are kept in a collection for easier tracking, if needed
-        public IEnumerable? GetErrors(string propertyName)
-        {
-            if (string.IsNullOrEmpty(propertyName))
-                return null;
-
-            return _errors.TryGetValue(propertyName, out var errors) ? errors : null;
-        }
-
-        private bool ErrorPresent(string propertyName)
-        {
-            return _errors.TryGetValue(propertyName, out var list) && list.Count > 0;
-        }
-
-        protected void AddError(string propertyName, string error)
-        {
-            if (!_errors.ContainsKey(propertyName))
-                _errors[propertyName] = new List<string>();
-
-            if (!_errors[propertyName].Contains(error))
-            {
-                _errors[propertyName].Add(error);
-                OnErrorsChanged(propertyName);
-            }
-        }
-
-        protected void ClearErrors(string propertyName)
-        {
-            if (_errors.Remove(propertyName))
-            {
-                OnErrorsChanged(propertyName);
-            }
-        }
 
         // Singleton instance
         public static MODBUSService Instance { get; } = new();
 
-        // Private variables
-        private string _ipAddr;
-        private int _tcpPort;
-        private int _scanRate;
-        private int _tcpTimeout;
-        private int _numOKs;
-        private int _numErrors;
-        private int _numRequests;
-        private int _numResponses;
-        private byte _deviceId;
-        private byte _dataLength;
-        private bool _asciiEnable;
-        private bool _connectEngage;
-        private bool _isConnected;
-        private string _errMess;
-
-        // private _startAddress variable with custom string validation control
-        private string _startAddress;
-        private readonly Dictionary<string, List<string>> _errors = new();
-        public bool HasErrors => _errors.Count > 0;
-        private static readonly Regex StartAddressRegex = new(@"^(?:\d+|[0-9A-Fa-f]+h)$", RegexOptions.Compiled);
-
-        // Dropdown selected variables
-        private string _selectedDataType;
-        private string _selectedDataSize;
-        private string _selectedNumericBase;
-        private string _selectedEndian;
-
-        // dropdown contents (never change)
-        private readonly ObservableCollection<string> _dataTypes = new ObservableCollection<string> { "Coil Status", "Input Status", "Holding Registers", "Input Registers" };
-        private readonly ObservableCollection<string> _endians = new ObservableCollection<string> { "Big Endian", "Little Endian", "Big Endian (Byte-Swap)", "Little Endian (Byte-Swap)" };
-
-        // dropdown contents (can be changed)
-        private ObservableCollection<string> _dataSizes = new ObservableCollection<string> { "16-Bit", "32-Bit", "64-Bit" };
-        private ObservableCollection<string> _numericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary" }; // "Floating Point" removed for now, but gets added to the list once the user selects 32-Bit or 64-Bit Data Size!
-
-        // Raw MODBUS data collection
-        private ObservableCollection<string> _rawModbusData = new ObservableCollection<string>();
+        public bool HasErrors => this.errors.Count > 0;
 
         // Properties for connection settings
         public string IPAddr
         {
-            get => _ipAddr;
+            get => this.ipAddr;
             set
             {
-                if (_ipAddr != value)
+                if (this.ipAddr != value)
                 {
-                    _ipAddr = value;
-                    OnPropertyChanged();
+                    this.ipAddr = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public int TCPPort
         {
-            get => _tcpPort;
+            get => this.tcpPort;
             set
             {
-                if (_tcpPort != value)
+                if (this.tcpPort != value)
                 {
-                    _tcpPort = value;
-                    OnPropertyChanged();
+                    this.tcpPort = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public int ScanRate
         {
-            get => _scanRate;
+            get => this.scanRate;
             set
             {
-                if (_scanRate != value)
+                if (this.scanRate != value)
                 {
-                    _scanRate = value;
-                    OnPropertyChanged();
+                    this.scanRate = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public int TCPTimeout
         {
-            get => _tcpTimeout;
+            get => this.tcpTimeout;
             set
             {
-                if (_tcpTimeout != value)
+                if (this.tcpTimeout != value)
                 {
-                    _tcpTimeout = value;
-                    OnPropertyChanged();
+                    this.tcpTimeout = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public int NumOKs
         {
-            get => _numOKs;
+            get => this.numOKs;
             set
             {
-                if (_numOKs != value)
+                if (this.numOKs != value)
                 {
-                    _numOKs = value;
-                    OnPropertyChanged();
+                    this.numOKs = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public int NumErrors
         {
-            get => _numErrors;
+            get => this.numErrors;
             set
             {
-                if (_numErrors != value)
+                if (this.numErrors != value)
                 {
-                    _numErrors = value;
-                    OnPropertyChanged();
+                    this.numErrors = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public int NumRequests
         {
-            get => _numRequests;
+            get => this.numRequests;
             set
             {
-                if (_numRequests != value)
+                if (this.numRequests != value)
                 {
-                    _numRequests = value;
-                    OnPropertyChanged();
+                    this.numRequests = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public int NumResponses
         {
-            get => _numResponses;
+            get => this.numResponses;
             set
             {
-                if (_numResponses != value)
+                if (this.numResponses != value)
                 {
-                    _numResponses = value;
-                    OnPropertyChanged();
+                    this.numResponses = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public byte DeviceId
         {
-            get { return _deviceId; }
+            get => this.deviceId;
             set
             {
                 // Validate incoming byte with respect to valid range (1-247)
-                ValidateDevID(value);
+                this.ValidateDevID(value);
 
                 // Store the error status after the above validation call
-                bool status = ErrorPresent(nameof(DeviceId));
+                bool status = this.ErrorPresent(nameof(this.DeviceId));
                 if (status)
+                {
                     return; // Don't execute the remaining set logic, since we've identified an invalid incoming byte
+                }
 
                 // We already verified that the value is within our desired boundaries, so we simply need to check for a difference.
-                if (_deviceId != value)
+                if (this.deviceId != value)
                 {
-                    _deviceId = value;
-                    OnPropertyChanged();
+                    this.deviceId = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public byte DataLength
         {
-            get { return _dataLength; }
+            get => this.dataLength;
             set
             {
                 // Take the currently set Data Size into account
-                byte minLen = GetMinLengthForStartAddress();
+                byte minLen = this.GetMinLengthForStartAddress();
 
                 // Take the currently set StartingAddress into account
-                byte maxLen = GetMaxLengthForStartAddress();
+                byte maxLen = this.GetMaxLengthForStartAddress();
 
                 // Validate incoming byte with respect to valid range (1-120)
-                ValidateLength(value, minLen, maxLen);
+                this.ValidateLength(value, minLen, maxLen);
 
                 // Store the error status after the above validation call
-                bool status = ErrorPresent(nameof(DataLength));
+                bool status = this.ErrorPresent(nameof(this.DataLength));
                 if (status)
+                {
                     return; // Don't execute the remaining set logic, since we've identified an invalid incoming byte
+                }
 
                 // We already verified that the value is within our desired boundaries, so we simply need to check for a difference.
-                if (_dataLength != value)
+                if (this.dataLength != value)
                 {
-                    _dataLength = value;
-                    OnPropertyChanged();
+                    this.dataLength = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public string StartAddress
         {
-            get { return _startAddress; }
+            get => this.startAddress;
             set
             {
                 // Validate incoming string with respect to our addressing regex (see method)
-                ValidateStartAddress(value);
+                this.ValidateStartAddress(value);
 
                 // Store the error status after the above validation call
-                bool status = ErrorPresent(nameof(StartAddress));
+                bool status = this.ErrorPresent(nameof(this.StartAddress));
                 if (status)
+                {
                     return; // Don't execute the remaining set logic, since we've identified an invalid incoming string
+                }
 
                 // temp variable to help store the incoming decimal value, after possible hex conversion
                 uint attemptDecVal = 0;
@@ -288,35 +276,40 @@ namespace Schism.Services
                     // convert hex string into a decimal int ex. "A -> 10"
                     attemptDecVal = Convert.ToUInt32(trun, 16);
                 }
+
                 // If the value contains just numbers (no "h")
                 else
+                {
                     attemptDecVal = Convert.ToUInt32(value);
+                }
 
                 // Validate converted decimal value with respect to valid range (0-65535)
-                ValidateStartAddressConv(attemptDecVal);
+                this.ValidateStartAddressConv(attemptDecVal);
 
                 // Store the error status after the above validation call
-                bool convStatus = ErrorPresent(nameof(StartAddress));
+                bool convStatus = this.ErrorPresent(nameof(this.StartAddress));
                 if (convStatus)
+                {
                     return; // Don't execute the remaining set logic, since we've identified an invalid incoming converted decimal value
+                }
 
                 // We can now confirm that the attempted decimal converted value is a short (1-65535), so we can type cast it!
                 ushort decVal = Convert.ToUInt16(attemptDecVal);
 
-                // Update approved value onto the _startAddress string
-                if (Convert.ToUInt16(_startAddress) != decVal)
+                // Update approved value onto the startAddress string
+                if (Convert.ToUInt16(this.startAddress) != decVal)
                 {
-                    _startAddress = decVal.ToString();
-                    OnPropertyChanged();
+                    this.startAddress = decVal.ToString();
+                    this.OnPropertyChanged();
 
-                    // Adjust length to this newly accepted _startAddress, in the event that our original length is no longer compatible
-                    byte maxLen = GetMaxLengthForStartAddress();
-                    byte clampedDataLength = Math.Clamp(_dataLength, (byte)1, maxLen);
+                    // Adjust length to this newly accepted startAddress, in the event that our original length is no longer compatible
+                    byte maxLen = this.GetMaxLengthForStartAddress();
+                    byte clampedDataLength = Math.Clamp(this.dataLength, (byte)1, maxLen);
 
-                    if (_dataLength != clampedDataLength)
+                    if (this.dataLength != clampedDataLength)
                     {
-                        _dataLength = clampedDataLength;
-                        OnPropertyChanged(nameof(DataLength)); // notify DataLength
+                        this.dataLength = clampedDataLength;
+                        this.OnPropertyChanged(nameof(this.DataLength)); // notify DataLength
                     }
                 }
             }
@@ -324,87 +317,87 @@ namespace Schism.Services
 
         public bool AsciiEnable
         {
-            get => _asciiEnable;
+            get => this.asciiEnable;
             set
             {
-                if (_asciiEnable != value)
+                if (this.asciiEnable != value)
                 {
-                    _asciiEnable = value;
-                    OnPropertyChanged();
+                    this.asciiEnable = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public bool ConnectEngage
         {
-            get => _connectEngage;
+            get => this.connectEngage;
             set
             {
-                if (_connectEngage != value)
+                if (this.connectEngage != value)
                 {
-                    _connectEngage = value;
-                    OnPropertyChanged();
+                    this.connectEngage = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public bool IsConnected
         {
-            get => _isConnected;
+            get => this.isConnected;
             set
             {
-                if (_isConnected != value)
+                if (this.isConnected != value)
                 {
-                    _isConnected = value;
-                    OnPropertyChanged();
+                    this.isConnected = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public string ErrMess
         {
-            get => _errMess;
+            get => this.errMess;
             set
             {
-                if (_errMess != value)
+                if (this.errMess != value)
                 {
-                    _errMess = value;
-                    OnPropertyChanged();
+                    this.errMess = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public string SelectedDataType
         {
-            get => _selectedDataType;
+            get => this.selectedDataType;
             set
             {
-                if (_selectedDataType != value)
+                if (this.selectedDataType != value)
                 {
-                    _selectedDataType = value;
-                    OnPropertyChanged();
+                    this.selectedDataType = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public string SelectedDataSize
         {
-            get => _selectedDataSize;
+            get => this.selectedDataSize;
             set
             {
-                if (_selectedDataSize != value)
+                if (this.selectedDataSize != value)
                 {
-                    _selectedDataSize = value;
-                    OnPropertyChanged();
+                    this.selectedDataSize = value;
+                    this.OnPropertyChanged();
 
-                    // Adjust length to this newly accepted _startAddress, in the event that our original length is no longer compatible
-                    byte minLen = GetMinLengthForStartAddress();
-                    byte clampedDataLength = Math.Clamp(_dataLength, minLen, (byte) 120);
+                    // Adjust length to this newly accepted startAddress, in the event that our original length is no longer compatible
+                    byte minLen = this.GetMinLengthForStartAddress();
+                    byte clampedDataLength = Math.Clamp(this.dataLength, minLen, (byte)120);
 
-                    if (_dataLength != clampedDataLength)
+                    if (this.dataLength != clampedDataLength)
                     {
-                        _dataLength = clampedDataLength;
-                        OnPropertyChanged(nameof(DataLength)); // notify DataLength
+                        this.dataLength = clampedDataLength;
+                        this.OnPropertyChanged(nameof(this.DataLength)); // notify DataLength
                     }
                 }
             }
@@ -412,186 +405,219 @@ namespace Schism.Services
 
         public string SelectedNumericBase
         {
-            get => _selectedNumericBase;
+            get => this.selectedNumericBase;
             set
             {
-                if (_selectedNumericBase != value)
+                if (this.selectedNumericBase != value)
                 {
-                    _selectedNumericBase = value;
-                    OnPropertyChanged();
+                    this.selectedNumericBase = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         public string SelectedEndian
         {
-            get => _selectedEndian;
+            get => this.selectedEndian;
             set
             {
-                if (_selectedEndian != value)
+                if (this.selectedEndian != value)
                 {
-                    _selectedEndian = value;
-                    OnPropertyChanged();
+                    this.selectedEndian = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         // Make Observable Collections public. None of these need Getters/Setters, by nature of ObservableCollections
-        public ObservableCollection<string> DataTypes => _dataTypes;
-        public ObservableCollection<string> Endians => _endians;
+        public ObservableCollection<string> DataTypes => this.dataTypes;
+
+        public ObservableCollection<string> Endians => this.endians;
 
         // Modifiable ObservableCollections for dropdowns that can be changed by the user. This allows for dynamic updating of dropdown contents if needed in the future, while still exposing them to the UI for binding.
         public ObservableCollection<string> DataSizes
         {
-            get => _dataSizes;
+            get => this.dataSizes;
             set
             {
-                if (_dataSizes != value)
+                if (this.dataSizes != value)
                 {
-                    _dataSizes = value;
-                    OnPropertyChanged();
+                    this.dataSizes = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
+
         public ObservableCollection<string> NumericBases
         {
-            get => _numericBases;
+            get => this.numericBases;
             set
             {
-                if (_numericBases != value)
+                if (this.numericBases != value)
                 {
-                    _numericBases = value;
-                    OnPropertyChanged();
+                    this.numericBases = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
         // RawModbusData ObservableCollection
-        public ObservableCollection<string> RawModbusData => _rawModbusData;
-
-        // Consutrctor
-        private MODBUSService()
-        {
-            _ipAddr = "192.168.100.020";
-            _tcpPort = 502;
-            _scanRate = 500;
-            _tcpTimeout = 5000;
-            _numRequests = 0;
-            _numResponses = 0;
-            _numOKs = 0;
-            _numErrors = 0;
-            _deviceId = 1;
-            _dataLength = 10;
-            _startAddress = "0";
-            _asciiEnable = false;
-            _errMess = "";
-            _selectedDataType = DataTypes.First();
-            _selectedDataSize = DataSizes.First();
-            _selectedNumericBase = NumericBases.First();
-            _selectedEndian = Endians.First();
-        }
+        public ObservableCollection<string> RawModbusData => this.rawModbusData;
 
         // Asynchronous method to run our MODBUS TCP connection off of the main UI thread
-        public async void Connection() {
+        public async void Connection()
+        {
+            this.connectEngage = true;
+            this.OnPropertyChanged(nameof(this.ConnectEngage));
 
-            _connectEngage = true;
-            OnPropertyChanged(nameof(ConnectEngage));
+            await Task.Run(() => this.MODBUSComms());
+        }
 
-            await Task.Run(() => MODBUSComms());
+        // Error control methods (Get, Add, and Clear) to support the INotifyDataErrorInfo interface
+        // Essentially, Errors are kept in a collection for easier tracking, if needed
+        public IEnumerable? GetErrors(string propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                return null;
+            }
+
+            return errors.TryGetValue(propertyName, out var errors) ? errors : null;
+        }
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected void OnErrorsChanged(string propertyName)
+        {
+            this.ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+        }
+
+        protected void AddError(string propertyName, string error)
+        {
+            if (!this.errors.ContainsKey(propertyName))
+            {
+                this.errors[propertyName] = new List<string>();
+            }
+
+            if (!this.errors[propertyName].Contains(error))
+            {
+                this.errors[propertyName].Add(error);
+                this.OnErrorsChanged(propertyName);
+            }
+        }
+
+        protected void ClearErrors(string propertyName)
+        {
+            if (this.errors.Remove(propertyName))
+            {
+                this.OnErrorsChanged(propertyName);
+            }
+        }
+
+        private bool ErrorPresent(string propertyName)
+        {
+            return this.errors.TryGetValue(propertyName, out var list) && list.Count > 0;
         }
 
         // MODBUS TCP connection logic, which works according to entered user parameters
         private void MODBUSComms()
         {
             TcpClient masterTcpClient = new TcpClient();
+
             // Regex \b0+(\d+) finds leading zeros at word boundaries and keeps the remaining digits
-            string cleanedIp = Regex.Replace(_ipAddr, @"\b0+(\d+)", "$1");
+            string cleanedIp = Regex.Replace(this.ipAddr, @"\b0+(\d+)", "$1");
             IPAddress address = IPAddress.Parse(cleanedIp);
             ModbusFactory factory = new ModbusFactory();
             IModbusMaster modbusMaster;
 
             // Only attempt a connection while the user has prompted to do so (toggle the connection button)
-            while (_connectEngage)
+            while (this.connectEngage)
             {
                 try
                 {
                     // Increment the number of requests sent (connection request)
-                    RequestInc();
+                    this.RequestInc();
 
                     // Connection Request
-                    masterTcpClient = new TcpClient(address.ToString(), _tcpPort);
-                    masterTcpClient.ReceiveTimeout = _tcpTimeout;
-                    masterTcpClient.SendTimeout = _tcpTimeout;
+                    masterTcpClient = new TcpClient(address.ToString(), this.tcpPort);
+                    masterTcpClient.ReceiveTimeout = this.tcpTimeout;
+                    masterTcpClient.SendTimeout = this.tcpTimeout;
 
                     // MODBUS connection details
                     modbusMaster = new ModbusFactory().CreateMaster(masterTcpClient);
-                    modbusMaster.Transport.ReadTimeout = _tcpTimeout;
-                    modbusMaster.Transport.WriteTimeout = _tcpTimeout;
+                    modbusMaster.Transport.ReadTimeout = this.tcpTimeout;
+                    modbusMaster.Transport.WriteTimeout = this.tcpTimeout;
                     modbusMaster.Transport.Retries = 0; // The connection attempt will retry by nature of this while loop, so we don't need retries here as well
 
                     // Call back to the main UI thread to update successful connection status
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        _isConnected = true;
-                        OnPropertyChanged(nameof(IsConnected));
+                        this.isConnected = true;
+                        this.OnPropertyChanged(nameof(this.IsConnected));
                     });
 
                     // Works like a Try/Finally, but with the added benefit that the "Finally" contains a close function for the TCPClient object
                     using (masterTcpClient)
                     {
                         // Loop only while we're attempting to connect and actively connected
-                        while (_connectEngage && _isConnected)
+                        while (this.connectEngage && this.isConnected)
                         {
                             // Polling rate
-                            Thread.Sleep(_scanRate);
+                            Thread.Sleep(this.scanRate);
 
                             try
                             {
                                 // Confirm that we haven't lost the connection since the last data poll. If we have, break out of this loop with an error
                                 if (!masterTcpClient.Connected)
                                 {
-                                    _isConnected = false;
-                                    OnPropertyChanged(nameof(IsConnected));
+                                    this.isConnected = false;
+                                    this.OnPropertyChanged(nameof(this.IsConnected));
                                     throw new Exception($"Lost connection during data reading.");
                                 }
 
                                 // Increment the number of requests sent (data request)
-                                RequestInc();
+                                this.RequestInc();
 
                                 // Prepare ObservableCollection that will replace the existing data collection, once populated
                                 var newData = new ObservableCollection<string>();
 
                                 // Hop into one of several individual polling methods, according to selectedDataType
-                                switch (_selectedDataType)
+                                switch (this.selectedDataType)
                                 {
                                     case "Input Status":
-                                        newData = ReadInputs(modbusMaster, newData);
+                                        newData = this.ReadInputs(modbusMaster, newData);
                                         break;
                                     case "Holding Registers":
-                                        newData = ReadHoldingRegs(modbusMaster, newData);
+                                        newData = this.ReadHoldingRegs(modbusMaster, newData);
                                         break;
                                     case "Input Registers":
-                                        newData = ReadInputRegs(modbusMaster, newData);
+                                        newData = this.ReadInputRegs(modbusMaster, newData);
                                         break;
                                     default:
                                         // Coils
-                                        newData = ReadCoils(modbusMaster, newData);
+                                        newData = this.ReadCoils(modbusMaster, newData);
                                         break;
                                 }
 
                                 // Update the RawModbusData collection with the new data on the main UI thread
                                 Application.Current.Dispatcher.Invoke(() =>
                                 {
-                                    _rawModbusData.Clear();
+                                    this.rawModbusData.Clear();
                                     foreach (var item in newData)
-                                        _rawModbusData.Add(item);
-                                    OnPropertyChanged(nameof(RawModbusData));
+                                    {
+                                        this.rawModbusData.Add(item);
+                                    }
+
+                                    this.OnPropertyChanged(nameof(this.RawModbusData));
                                 });
                             }
                             catch (Exception e)
                             {
                                 // Increment the number of failed responses (data request)
-                                FailResp(e);
+                                this.FailResp(e);
                             }
                         }
                     }
@@ -599,7 +625,7 @@ namespace Schism.Services
                 catch (Exception e)
                 {
                     // Increment the number of fail responses (connection request)
-                    FailResp(e);
+                    this.FailResp(e);
                 }
             }
         }
@@ -607,24 +633,29 @@ namespace Schism.Services
         // Read Coils attempt
         private ObservableCollection<string> ReadCoils(IModbusMaster mM, ObservableCollection<string> nD)
         {
-
             // Request data over TCP
-            ushort startAdd = Convert.ToUInt16(_startAddress);
-            bool[] coils = mM.ReadCoils(_deviceId, startAdd, _dataLength);
+            ushort startAdd = Convert.ToUInt16(this.startAddress);
+            bool[] coils = mM.ReadCoils(this.deviceId, startAdd, this.dataLength);
 
             // If the returned data is not what we expect, report an error
-            if (coils == null || coils.Length != _dataLength)
+            if (coils == null || coils.Length != this.dataLength)
+            {
                 throw new Exception("Received null or inadequate response for coils.");
+            }
             else
+            {
                 // Report a successful TCP response, now that we have the data
-                SuccessResp();
+                this.SuccessResp();
+            }
 
             // Begin transforming data into an ObservableCollection
             ushort[] coilsConv = coils.Select(Convert.ToUInt16).ToArray();
 
             // Loop through the received data and convert each piece into a string, for easier UI implementation
             for (int i = 0; i < coilsConv.Length; i++)
+            {
                 nD.Add(coilsConv[i].ToString());
+            }
 
             // Return this collection so it can be forwarded up to the ViewModel
             return nD;
@@ -634,22 +665,28 @@ namespace Schism.Services
         private ObservableCollection<string> ReadInputs(IModbusMaster mM, ObservableCollection<string> nD)
         {
             // Request data over TCP
-            ushort startAdd = Convert.ToUInt16(_startAddress);
-            bool[] inputs = mM.ReadInputs(_deviceId, startAdd, _dataLength);
+            ushort startAdd = Convert.ToUInt16(this.startAddress);
+            bool[] inputs = mM.ReadInputs(this.deviceId, startAdd, this.dataLength);
 
             // If the returned data is not what we expect, report an error
-            if (inputs == null || inputs.Length != _dataLength)
+            if (inputs == null || inputs.Length != this.dataLength)
+            {
                 throw new Exception("Received null or inadequate response for inputs.");
+            }
             else
+            {
                 // Report a successful TCP response, now that we have the data
-                SuccessResp();
+                this.SuccessResp();
+            }
 
             // Begin transforming data into a UI friendly data collection
             ushort[] inputsConv = inputs.Select(Convert.ToUInt16).ToArray();
 
             // Loop through the received data and convert each piece into a string, for easier UI implementation
-            for (int i = 0; i < _dataLength; i++)
+            for (int i = 0; i < this.dataLength; i++)
+            {
                 nD.Add(inputsConv[i].ToString());
+            }
 
             // Return this collection so it can be forwarded up to the ViewModel
             return nD;
@@ -659,38 +696,46 @@ namespace Schism.Services
         private ObservableCollection<string> ReadHoldingRegs(IModbusMaster mM, ObservableCollection<string> nD)
         {
             // Request data over TCP
-            ushort startAdd = Convert.ToUInt16(_startAddress);
-            ushort[] holdingRegs = mM.ReadHoldingRegisters(_deviceId, startAdd, _dataLength);
+            ushort startAdd = Convert.ToUInt16(this.startAddress);
+            ushort[] holdingRegs = mM.ReadHoldingRegisters(this.deviceId, startAdd, this.dataLength);
 
             // If the returned data is not what we expect, report an error
-            if (holdingRegs == null || holdingRegs.Length != _dataLength)
+            if (holdingRegs == null || holdingRegs.Length != this.dataLength)
+            {
                 throw new Exception("Received null or inadequate response for holding registers.");
+            }
             else
+            {
                 // Report a successful TCP response, now that we have the data
-                SuccessResp();
+                this.SuccessResp();
+            }
 
             // Convert registers to a parsed Observablecollection of strings using several helper methods
             // This helper will handle endian transformation, numeric base formatting, and ASCII interpretation based on user settings.
-            return InterpetModbusData(holdingRegs);
+            return this.InterpetModbusData(holdingRegs);
         }
 
         // Read Input Registers attempt
         private ObservableCollection<string> ReadInputRegs(IModbusMaster mM, ObservableCollection<string> nD)
         {
             // Request data over TCP
-            ushort startAdd = Convert.ToUInt16(_startAddress);
-            ushort[] inputRegs = mM.ReadInputRegisters(_deviceId, startAdd, _dataLength);
+            ushort startAdd = Convert.ToUInt16(this.startAddress);
+            ushort[] inputRegs = mM.ReadInputRegisters(this.deviceId, startAdd, this.dataLength);
 
             // If the returned data is not what we expect, report an error
-            if (inputRegs == null || inputRegs.Length != _dataLength)
+            if (inputRegs == null || inputRegs.Length != this.dataLength)
+            {
                 throw new Exception("Received null or inadequate response for input registers.");
+            }
             else
+            {
                 // Report a successful TCP response, now that we have the data
-                SuccessResp();
+                this.SuccessResp();
+            }
 
             // Convert registers to a parsed collection of strings using helper and update UI
             // This helper will handle endian transformation, numeric base formatting, and ASCII interpretation based on user settings.
-            return InterpetModbusData(inputRegs);
+            return this.InterpetModbusData(inputRegs);
         }
 
         // Helper Methods
@@ -700,24 +745,26 @@ namespace Schism.Services
             var result = new ObservableCollection<string>();
 
             // Determine how many 16-bit registers compose one displayed value
-            int regsPerValue = _selectedDataSize switch
+            int regsPerValue = this.selectedDataSize switch
             {
                 "32-Bit" => 2,
                 "64-Bit" => 4,
-                _ => 1 // "16-Bit" or default
+                _ => 1, // "16-Bit" or default
             };
 
             // Calculate total bit width for formatting purposes (16, 32, 64)
             int bitWidth = regsPerValue * 16;
 
             // Loop through the registers in chunks corresponding to the selected data size (1 register for 16-bit, 2 for 32-bit, 4 for 64-bit)
-            for (int i = 0; i < _dataLength; i += regsPerValue)
+            for (int i = 0; i < this.dataLength; i += regsPerValue)
             {
                 if (i + regsPerValue - 1 >= receivedRegisters.Length)
+                {
                     break; // not enough registers remaining, scaled based on registers per value
+                }
 
                 // Break the current chunk of registers into bytes in MSB-first order (per register).
-                // For example if we're using 32-bit values (2 registers per value) [reg0, reg1], we get [reg0_hi, reg0_lo, reg1_hi, reg1_lo] for 4 total bytes.
+                // For example if we're using 32-bit values (2 registers per value) [reg0, reg1], we get [reg0hi, reg0lo, reg1hi, reg1lo] for 4 total bytes.
                 // The same occurs for 16-bit and 64-bit, just with different byte counts, 2 and 8 respectively.
                 List<byte> bytes = new List<byte>(regsPerValue * 2);
                 for (int j = 0; j < regsPerValue; j++)
@@ -731,17 +778,19 @@ namespace Schism.Services
                 }
 
                 // Apply endian transformation to the series of bytes acquired, based on the selected endian option.
-                ApplyEndianTransformation(bytes);
+                this.ApplyEndianTransformation(bytes);
 
                 // Format value according to data size, numeric base, and ASCII enable selection (Hex only)
-                string formatted = FormatBytes(bytes.ToArray(), bitWidth, _selectedNumericBase, _asciiEnable);
+                string formatted = this.FormatBytes(bytes.ToArray(), bitWidth, this.selectedNumericBase, this.asciiEnable);
 
                 // Add result to the collection as a string, which the UI binds to for display
                 result.Add(new string(formatted));
 
                 // For multi-register values, add placeholder cells to keep display alignment
                 for (int pad = 1; pad < regsPerValue; pad++)
-                    result.Add(new string(""));
+                {
+                    result.Add(new string(string.Empty));
+                }
             }
 
             return result;
@@ -749,10 +798,9 @@ namespace Schism.Services
 
         private void ApplyEndianTransformation(List<byte> bytes)
         {
-            // bytes currently MSB-first per register: [reg0_hi, reg0_lo, reg1_hi, reg1_lo, ...]
+            // bytes currently MSB-first per register: [reg0hi, reg0lo, reg1hi, reg1lo, ...]
             // Handle selected endian options.
-
-            switch (_selectedEndian)
+            switch (this.selectedEndian)
             {
                 case "Little Endian":
                     // Reverse full array: [a,b,c,d] -> [d,c,b,a]
@@ -760,12 +808,12 @@ namespace Schism.Services
                     break;
                 case "Big Endian (Byte-Swap)":
                     // Swap bytes within each 16-bit word: [a,b,c,d] -> [b,a,d,c]
-                    SwapBytesWithinWords(bytes);
+                    this.SwapBytesWithinWords(bytes);
                     break;
                 case "Little Endian (Byte-Swap)":
                     // Reverse full array then swap within each word: [a,b,c,d] -> [d,c,b,a] -> [c,d,a,b]
                     bytes.Reverse();
-                    SwapBytesWithinWords(bytes);
+                    this.SwapBytesWithinWords(bytes);
                     break;
                 default:
                     // "Big Endian" -> keep as-is
@@ -773,7 +821,7 @@ namespace Schism.Services
             }
         }
 
-        private static void SwapBytesWithinWords(List<byte> bytes)
+        private void SwapBytesWithinWords(List<byte> bytes)
         {
             // Swap bytes within each 16-bit word: [a,b,c,d] -> [b,a,d,c]
             for (int j = 0; j + 1 < bytes.Count; j += 2)
@@ -799,18 +847,18 @@ namespace Schism.Services
                     {
                         32 => BitConverter.ToInt32(le, 0).ToString(),
                         64 => BitConverter.ToInt64(le, 0).ToString(),
-                        _ => BitConverter.ToInt16(le, 0).ToString() // "16-Bit" or default
+                        _ => BitConverter.ToInt16(le, 0).ToString(), // "16-Bit" or default
                     };
 
                 case "Hexadecimal":
                     {
                         // Convert byte array to an unsigned long for hex formatting, since hex is typically used for raw values regardless of signedness.
-                        ulong unsigned = ToUnsigned(bytes);
+                        ulong unsigned = this.ToUnsigned(bytes);
                         string hex = bitWidth switch
                         {
                             32 => "0x" + unsigned.ToString("X8"),
                             64 => "0x" + unsigned.ToString("X16"),
-                            _ => "0x" + unsigned.ToString("X4") // "16-Bit" or default
+                            _ => "0x" + unsigned.ToString("X4"), // "16-Bit" or default
                         };
 
                         // Append ASCII contents, if enabled by user.
@@ -828,7 +876,7 @@ namespace Schism.Services
                 case "Binary":
                     {
                         // Convert byte array to an unsigned long for binary formatting, since binary is typically used for raw values regardless of signedness.
-                        ulong unsigned = ToUnsigned(bytes);
+                        ulong unsigned = this.ToUnsigned(bytes);
 
                         // Format binary with leading zeros based on bit width, and add spaces every 4 bits for readability.
                         string bin = Convert.ToString((long)unsigned, 2).PadLeft(bitWidth, '0');
@@ -857,11 +905,11 @@ namespace Schism.Services
                     }
 
                 default: // Decimal (unsigned)
-                    return ToUnsigned(bytes).ToString();
+                    return this.ToUnsigned(bytes).ToString();
             }
         }
 
-        private static ulong ToUnsigned(byte[] bytes)
+        private ulong ToUnsigned(byte[] bytes)
         {
             // Build unsigned integer from byte array
             ulong value = 0;
@@ -870,26 +918,27 @@ namespace Schism.Services
                 // Shift existing value left by 8 bits and add the next byte, effectively concatenating the bytes together in MSB-first order, now that we know we have the bytes in the order that we want for display.
                 value = value << 8 | b;
             }
+
             return value;
         }
 
         private void RequestInc()
         {
-            _numRequests++;
-            OnPropertyChanged(nameof(NumRequests));
+            this.numRequests++;
+            this.OnPropertyChanged(nameof(this.NumRequests));
         }
 
         private void SuccessResp()
         {
-            _numResponses++;
-            _numOKs++;
+            this.numResponses++;
+            this.numOKs++;
 
             // Clear error message, since we are now in a functional state
-            _errMess = "";
+            this.errMess = string.Empty;
 
-            OnPropertyChanged(nameof(NumResponses));
-            OnPropertyChanged(nameof(NumOKs));
-            OnPropertyChanged(nameof(ErrMess));
+            this.OnPropertyChanged(nameof(this.NumResponses));
+            this.OnPropertyChanged(nameof(this.NumOKs));
+            this.OnPropertyChanged(nameof(this.ErrMess));
         }
 
         private void FailResp(Exception e)
@@ -897,7 +946,7 @@ namespace Schism.Services
             // Error messages for user clarity
             if (e is SlaveException se)
             {
-                string details = "";
+                string details = string.Empty;
                 switch (se.SlaveExceptionCode)
                 {
                     case SlaveExceptionCodes.IllegalFunction:
@@ -919,100 +968,112 @@ namespace Schism.Services
                         details = "Undefined Error";
                         break;
                 }
-                _errMess = "Command Failure: Server did not accept the received MODBUS Command. Error Code: " + se.SlaveExceptionCode + " - \"" + details + "\"" ;
+
+                this.errMess = "Command Failure: Server did not accept the received MODBUS Command. Error Code: " + se.SlaveExceptionCode + " - \"" + details + "\"";
             }
             else if (e is IOException or SocketException)
-                _errMess = "Connection Failure: Please verify Server activity, DeviceID, and TCP settings.";
+            {
+                this.errMess = "Connection Failure: Please verify Server activity, DeviceID, and TCP settings.";
+            }
             else if (e is TimeoutException)
-                _errMess = "Timeout Failure: Please assess connection integrity.";
+            {
+                this.errMess = "Timeout Failure: Please assess connection integrity.";
+            }
             else if (e is InvalidModbusRequestException)
-                _errMess = "Command Failure: Sent MODBUS Command is not structurally sound.";
+            {
+                this.errMess = "Command Failure: Sent MODBUS Command is not structurally sound.";
+            }
             else if (e is NotImplementedException)
-                _errMess = "Command Failure: Function Code is incompatible with Transport Type and/or NModbus Library.";
+            {
+                this.errMess = "Command Failure: Function Code is incompatible with Transport Type and/or NModbus Library.";
+            }
             else
-                _errMess = "Unknown Error: " + e.Message;
+            {
+                this.errMess = "Unknown Error: " + e.Message;
+            }
 
-            _numResponses++;
-            _numErrors++;
+            this.numResponses++;
+            this.numErrors++;
 
-            OnPropertyChanged(nameof(ErrMess));
-            OnPropertyChanged(nameof(NumResponses));
-            OnPropertyChanged(nameof(NumErrors));
+            this.OnPropertyChanged(nameof(this.ErrMess));
+            this.OnPropertyChanged(nameof(this.NumResponses));
+            this.OnPropertyChanged(nameof(this.NumErrors));
         }
 
         // Prevent user from prompting a data overflow simply due to configuring the length and data size poorly
         private byte GetMinLengthForStartAddress()
         {
-            return _selectedDataSize switch
+            return this.selectedDataSize switch
             {
                 "32-Bit" => 2,
                 "64-Bit" => 4,
-                _ => 1 // "16-Bit" or default
+                _ => 1, // "16-Bit" or default
             };
         }
 
         // Prevent user from prompting a data overflow simply due to configuring the length and starting address poorly
         private byte GetMaxLengthForStartAddress()
         {
-            ushort startAdd = Convert.ToUInt16(_startAddress);
-            int cap = ((ushort.MaxValue - startAdd)+1); // inclusive cap (stroed as an int, because this could be 65536 in the event that the StartingAddress is curently 0. If so, that is okay, because 120 will end up being the minimum.
-            ushort clamped = (ushort) Math.Min(120, cap);
+            ushort startAdd = Convert.ToUInt16(this.startAddress);
+            int cap = (ushort.MaxValue - startAdd) + 1; // inclusive cap (stroed as an int, because this could be 65536 in the event that the StartingAddress is curently 0. If so, that is okay, because 120 will end up being the minimum.
+            ushort clamped = (ushort)Math.Min(120, cap);
             return (byte)clamped;
         }
 
         private void ValidateDevID(byte value)
         {
-            ClearErrors(nameof(DeviceId));
+            this.ClearErrors(nameof(this.DeviceId));
 
             if (string.IsNullOrWhiteSpace(value.ToString()))
             {
-                AddError(nameof(DeviceId), "Value Required");
+                this.AddError(nameof(this.DeviceId), "Value Required");
             }
+
             // Value doesn't satisfy validating condition
             else if (value < 1 || value > 247)
             {
-                AddError(nameof(DeviceId), "Must be between 1 and 247");
+                this.AddError(nameof(this.DeviceId), "Must be between 1 and 247");
             }
         }
 
-        private void ValidateStartAddress(string value) {
-
-            ClearErrors(nameof(StartAddress));
+        private void ValidateStartAddress(string value)
+        {
+            this.ClearErrors(nameof(this.StartAddress));
 
             if (string.IsNullOrWhiteSpace(value))
             {
-                AddError(nameof(StartAddress), "Value Required");
+                this.AddError(nameof(this.StartAddress), "Value Required");
             }
             else if (!StartAddressRegex.IsMatch(value))
             {
-                AddError(nameof(StartAddress), "Must be unsigned decimal or hex (e.g. \"1AFh\")");
+                this.AddError(nameof(this.StartAddress), "Must be unsigned decimal or hex (e.g. \"1AFh\")");
             }
         }
 
         private void ValidateStartAddressConv(uint value)
         {
-
-            ClearErrors(nameof(StartAddress));
+            this.ClearErrors(nameof(this.StartAddress));
 
             // Value doesn't satisfy validating condition
             if (value < 0 || value > 65535)
             {
-                AddError(nameof(StartAddress), "Must be between 0 and 65535 (after hex conversion)");
+                this.AddError(nameof(this.StartAddress), "Must be between 0 and 65535 (after hex conversion)");
             }
         }
 
         private void ValidateLength(byte value, byte min, byte max)
         {
-            ClearErrors(nameof(DataLength));
+            this.ClearErrors(nameof(this.DataLength));
 
             if (string.IsNullOrWhiteSpace(value.ToString()))
             {
-                AddError(nameof(DataLength), "Value Required");
+                this.AddError(nameof(this.DataLength), "Value Required");
             }
+
             // Value doesn't satisfy validating condition
             else if (value < min || value > max)
             {
-                AddError(nameof(DataLength), "Must be between 1 - 120 (or between fluid minimum and maximum, depending on Data Size and Starting Address parameters respectively)");
+                this.AddError(nameof(this.DataLength), "Must be between 1 - 120 (or between fluid minimum and maximum, depending on Data Size and Starting Address parameters respectively)");
             }
         }
     }

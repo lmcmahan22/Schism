@@ -165,6 +165,9 @@
           "Microsoft.WindowsDesktop.App.WPF"
         ]
       },
+      "StyleCop.Analyzers.Unstable/1.2.0.556": {
+        "type": "package"
+      },
       "System.Runtime.CompilerServices.Unsafe/4.5.2": {
         "type": "package",
         "compile": {
@@ -453,6 +456,32 @@
         "prism.wpf.nuspec"
       ]
     },
+    "StyleCop.Analyzers.Unstable/1.2.0.556": {
+      "sha512": "zvn9Mqs/ox/83cpYPignI8hJEM2A93s2HkHs8HYMOAQW0PkampyoErAiIyKxgTLqbbad29HX/shv/6LGSjPJNQ==",
+      "type": "package",
+      "path": "stylecop.analyzers.unstable/1.2.0.556",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "THIRD-PARTY-NOTICES.txt",
+        "analyzers/dotnet/cs/StyleCop.Analyzers.CodeFixes.dll",
+        "analyzers/dotnet/cs/StyleCop.Analyzers.dll",
+        "analyzers/dotnet/cs/de-DE/StyleCop.Analyzers.resources.dll",
+        "analyzers/dotnet/cs/en-GB/StyleCop.Analyzers.resources.dll",
+        "analyzers/dotnet/cs/es-MX/StyleCop.Analyzers.resources.dll",
+        "analyzers/dotnet/cs/fr-FR/StyleCop.Analyzers.resources.dll",
+        "analyzers/dotnet/cs/pl-PL/StyleCop.Analyzers.resources.dll",
+        "analyzers/dotnet/cs/pt-BR/StyleCop.Analyzers.resources.dll",
+        "analyzers/dotnet/cs/ru-RU/StyleCop.Analyzers.resources.dll",
+        "rulesets/StyleCopAnalyzersDefault.ruleset",
+        "stylecop.analyzers.unstable.1.2.0.556.nupkg.sha512",
+        "stylecop.analyzers.unstable.nuspec",
+        "tools/install.ps1",
+        "tools/uninstall.ps1"
+      ]
+    },
     "System.Runtime.CompilerServices.Unsafe/4.5.2": {
       "sha512": "wprSFgext8cwqymChhrBLu62LMg/1u92bU+VOwyfBimSPVFXtsNqEWC92Pf9ofzJFlk4IHmJA75EDJn1b2goAQ==",
       "type": "package",
@@ -581,7 +610,8 @@
       "NModbus >= 3.0.81",
       "Prism.Core >= 9.0.537",
       "Prism.Unity >= 9.0.537",
-      "Prism.Wpf >= 9.0.537"
+      "Prism.Wpf >= 9.0.537",
+      "StyleCop.Analyzers.Unstable >= 1.2.0.556"
     ]
   },
   "packageFolders": {
@@ -649,6 +679,12 @@
           "Prism.Wpf": {
             "target": "Package",
             "version": "[9.0.537, )"
+          },
+          "StyleCop.Analyzers.Unstable": {
+            "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+            "suppressParent": "All",
+            "target": "Package",
+            "version": "[1.2.0.556, )"
           }
         },
         "imports": [
@@ -670,7 +706,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.106/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.107/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

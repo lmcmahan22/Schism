@@ -1,4 +1,8 @@
-﻿namespace Schism.ViewModels
+﻿// <copyright file="MainWindowViewModel.cs" company="Precision Valve & Automation">
+// Copyright (c) PVA. All rights reserved.
+// </copyright>
+
+namespace Schism.ViewModels
 {
     // The MainWindowViewModel class is a view model for the main window of the application.
     // It inherits from BindableBase, which provides support for property change notifications, allowing the view to update when properties in the view model change.
@@ -6,19 +10,19 @@
     {
 
         // Private variable 
-        private string _title;
+        private string title;
 
         // Public instance with getter/setter
         public string Title
         {
-            get { return _title; }
-            set { SetProperty(ref _title, value); }
+            get { return title; }
+            set { SetProperty(ref title, value); }
         }
 
         // Constructor
         public MainWindowViewModel()
         {
-            _title = "PVA MODBUS TCP Client";
+            title = "PVA MODBUS TCP Client";
         }
     }
 }

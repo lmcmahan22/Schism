@@ -65,6 +65,12 @@
             "Prism.Wpf": {
               "target": "Package",
               "version": "[9.0.537, )"
+            },
+            "StyleCop.Analyzers.Unstable": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.2.0.556, )"
             }
           },
           "imports": [
@@ -86,7 +92,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.106/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.107/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
