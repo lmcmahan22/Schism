@@ -37,7 +37,7 @@ namespace Schism.ViewModels
 
         // ViewModel grid elements
         private ObservableCollection<string> _shiftColumn;
-        private ObservableCollection<ModbusRow>[] _modbusRows;
+        private ObservableCollection<ModbusRow> _modbusRows;
 
         // ViewModel Commands
         private DelegateCommand? _saveClick;
@@ -105,7 +105,7 @@ namespace Schism.ViewModels
 
         // Grid collections
         public ObservableCollection<string> ShiftColumn => _shiftColumn;
-        public ObservableCollection<ModbusRow>[] ModbusRows => _modbusRows;
+        public ObservableCollection<ModbusRow> ModbusRows => _modbusRows;
 
         // View Model Visibility element bases from Model boolean! :D
         public Visibility ErrorContents
@@ -132,7 +132,7 @@ namespace Schism.ViewModels
 
             // ViewModel grid elements
             _shiftColumn = new ObservableCollection<string>();
-            _modbusRows = new ObservableCollection<ModbusRow>[6];
+            _modbusRows = new ObservableCollection<ModbusRow>();
 
             UpdateShiftColumn(); // Build the initial shift column
             UpdateModbusTable(); // Build the initial table based on default parameters in the Model
@@ -266,51 +266,31 @@ namespace Schism.ViewModels
                 namesCache[i] = ""; // Initialize the cache with empty strings to avoid null issues
 
             // Retrieve the current names from every existing row of MODBUS data for the cache
-            for (int i = 0; i < _modbusRows.Length; i++)
+            for (int i = 0; i < _modbusRows.Count; i++)
             {
-                // Prevent null issues on the first run (should probably be put in the constructor tbh...
-                if(_modbusRows[i] == null)
-                    _modbusRows[i] = new ObservableCollection<ModbusRow>();
-
-                for (int j = 0; j < _modbusRows[i].Count; j++)
+                // Only save this name for the new display if we know that we'll see it in the new length.
+                // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
+                if (i < MS.DataLength)
                 {
-                    int idx = (i * 20) + j; // Calculate the overall index based on column and row
-
-                    // Only save this name for the new display if we know that we'll see it in the new length.
-                    // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
-                    if (idx < MS.DataLength)
-                    {
-                        string? temp = _modbusRows[i][j].Name;
-                        if (temp == null)
-                            namesCache[idx] = "";
-                        else
-                            namesCache[idx] = temp;
-                    }
-                }
-                _modbusRows[i].Clear();
-            }
-
-            // Calculate how many columns we need based on the lengthm which may have changed (integer division)
-            var reqCols = ((MS.DataLength - 1) / 20) + 1;
-
-            // Add new MODBUS rows for the configured length with the names cache
-            for (int i = 0; i < reqCols; i++)
-            {
-                // Calculate how many rows we need in each column, ensuring we don't exceed the total length
-                var reqRows = Math.Min((MS.DataLength - 20 * i), 20);
-
-                // Add the new names and data iteratively to the new table
-                for (int j = 0; j < reqRows; j++) {
-                    int idx = (i * 20) + j; // Calculate the overall index based on column and row
-                    _modbusRows[i].Add(new ModbusRow(namesCache[idx], "")); // Populate the name, data remains empty for now
+                    string? temp = _modbusRows[i].Name;
+                    if (temp == null)
+                        namesCache[i] = "";
+                    else
+                        namesCache[i] = temp;
                 }
             }
+            _modbusRows.Clear();
+
+            // Add new MODBUS rows for the configured length with the names cache, data remains empty for now
+            for (int i = 0; i < MS.DataLength; i++)
+                _modbusRows.Add(new ModbusRow(namesCache[i], ""));
 
             // Determine which columns should be visible, based on the provided length of the data
             _colsVis.Clear();
             for (int i = 0; i < 6; i++)
                 _colsVis.Add(MS.DataLength > (i * 20) ? Visibility.Visible : Visibility.Collapsed);
 
+            // Notify the UI of element updates
             OnPropertyChanged(nameof(ModbusRows));
         }
 
@@ -318,27 +298,22 @@ namespace Schism.ViewModels
         private void UpdateModbusData()
         {
             // Loop through all 6 column pairs of MODBUS names and data
-            for (int i = 0; i < _modbusRows.Length; i++)
+            for (int i = 0; i < _modbusRows.Count; i++)
             {
-                // Loop through each of the twenty rows
-                for (int j = 0; j < _modbusRows[i].Count; j++)
-                {
-                    int idx = (i * 20) + j; // Calculate the overall index based on current  column and row
-
-                    // Only try to take the MODBUS data if we have a connection and if the index is within the bounds of the current length.
-                    // i.e. the user can change the desired data length prior to connecting, so we don't necessarily want to try reading data here (it may not exist yet)
-                    string data;
-                    if (MS.IsConnected && idx < MS.DataLength)
-                        // Retrieve existing item if present; otherwise create one instance
-                        data = MS.RawModbusData[idx].ToString() ?? new string("");
-                    else
-                        data = new string("");
-                    _modbusRows[i][j].Data = data;
-                }
+                // Only try to take the MODBUS data if we have a connection and if the index is within the bounds of the current length.
+                // i.e. the user can change the desired data length prior to connecting, so we don't necessarily want to try reading data here (it may not exist yet)
+                string data;
+                if (MS.IsConnected && i < MS.DataLength)
+                    // Retrieve existing item
+                    data = MS.RawModbusData[i].ToString();
+                else
+                    // Otherwise, just create an empty string
+                    data = new string("");
+                _modbusRows[i].Data = data;
             }
 
             // Notify the UI of element updates
-            OnPropertyChanged(nameof(ModbusRows)); // Might not be needed, since this is an ObservableCollection...
+            OnPropertyChanged(nameof(ModbusRows));
         }
 
         private void UpdateShiftColumn()

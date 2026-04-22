@@ -236,21 +236,105 @@
         <!-- Row 3: MODBUS Data (I'd like to simplify this eventually, such that we don't need An overall Grid of 7 columns, 7 ItemControls, and 7 DataGrids -->
         <Grid Grid.Row="2">
             <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1">
-                <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <!--
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        -->
+                    </Grid.ColumnDefinitions>
+                    <!--
+                    <Grid Grid.Column="0">
+                        <ItemsControl>
+                            <DataGrid Name="ShiftCol" ItemsSource="{Binding ShiftColumn}" RowBackground="{Binding TS.Accent4}" AlternatingRowBackground="{Binding TS.Accent3}"  AlternationCount="2"
+                                          AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Shift" Binding="{Binding}" Width="50" MinWidth="50" MaxWidth="50" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ItemsControl>
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <ItemsControl Visibility="{Binding ColsVis[0]}">
+                            <DataGrid Name="ModbusDataGrid0" ItemsSource="{Binding ModbusRows[0]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                          AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                    <DataGridTextColumn Header="{Binding Data.AddressList[0], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ItemsControl>
+                    </Grid>
+                    <Grid Grid.Column="2">
+                        <ItemsControl Visibility="{Binding ColsVis[1]}">
+                            <DataGrid Name="ModbusDataGrid1" ItemsSource="{Binding ModbusRows[1]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                    <DataGridTextColumn Header="{Binding Data.AddressList[1], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ItemsControl>
+                    </Grid>
+                    <Grid Grid.Column="3">
+                        <ItemsControl Visibility="{Binding ColsVis[2]}">
+                            <DataGrid Name="ModbusDataGrid2" ItemsSource="{Binding ModbusRows[2]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                    <DataGridTextColumn Header="{Binding Data.AddressList[2], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ItemsControl>
+                    </Grid>
+                    <Grid Grid.Column="4">
+                        <ItemsControl Visibility="{Binding ColsVis[3]}">
+                            <DataGrid Name="ModbusDataGrid3" ItemsSource="{Binding ModbusRows[3]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                    <DataGridTextColumn Header="{Binding Data.AddressList[3], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ItemsControl>
+                    </Grid>
+                    <Grid Grid.Column="5">
+                        <ItemsControl Visibility="{Binding ColsVis[4]}">
+                            <DataGrid Name="ModbusDataGrid4" ItemsSource="{Binding ModbusRows[4]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                    <DataGridTextColumn Header="{Binding Data.AddressList[4], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ItemsControl>
+                    </Grid>
+                    <Grid Grid.Column="6">
+                        <ItemsControl Visibility="{Binding ColsVis[5]}">
+                            <DataGrid Name="ModbusDataGrid5" ItemsSource="{Binding ModbusRows[5]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                    <DataGridTextColumn Header="{Binding Data.AddressList[5], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ItemsControl>
+                    </Grid>
+                    -->
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0">
                             <ItemsControl>
                                 <DataGrid Name="ShiftCol" ItemsSource="{Binding ShiftColumn}" RowBackground="{Binding TS.Accent4}" AlternatingRowBackground="{Binding TS.Accent3}"  AlternationCount="2"
-                                          AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Shift" Binding="{Binding}" Width="50" MinWidth="50" MaxWidth="50" IsReadOnly="True"/>
                                     </DataGrid.Columns>
@@ -258,73 +342,31 @@
                             </ItemsControl>
                         </Grid>
                         <Grid Grid.Column="1">
-                            <ItemsControl Visibility="{Binding ColsVis[0]}">
-                                <DataGrid Name="ModbusDataGrid0" ItemsSource="{Binding ModbusRows[0]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
-                                          AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="{Binding Data.AddressList[0], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </ItemsControl>
-                        </Grid>
-                        <Grid Grid.Column="2">
-                            <ItemsControl Visibility="{Binding ColsVis[1]}">
-                                <DataGrid Name="ModbusDataGrid1" ItemsSource="{Binding ModbusRows[1]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
-                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="{Binding Data.AddressList[1], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </ItemsControl>
-                        </Grid>
-                        <Grid Grid.Column="3">
-                            <ItemsControl Visibility="{Binding ColsVis[2]}">
-                                <DataGrid Name="ModbusDataGrid2" ItemsSource="{Binding ModbusRows[2]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
-                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="{Binding Data.AddressList[2], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </ItemsControl>
-                        </Grid>
-                        <Grid Grid.Column="4">
-                            <ItemsControl Visibility="{Binding ColsVis[3]}">
-                                <DataGrid Name="ModbusDataGrid3" ItemsSource="{Binding ModbusRows[3]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
-                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="{Binding Data.AddressList[3], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </ItemsControl>
-                        </Grid>
-                        <Grid Grid.Column="5">
-                            <ItemsControl Visibility="{Binding ColsVis[4]}">
-                                <DataGrid Name="ModbusDataGrid4" ItemsSource="{Binding ModbusRows[4]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
-                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="{Binding Data.AddressList[4], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </ItemsControl>
-                        </Grid>
-                        <Grid Grid.Column="6">
-                            <ItemsControl Visibility="{Binding ColsVis[5]}">
-                                <DataGrid Name="ModbusDataGrid5" ItemsSource="{Binding ModbusRows[5]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
-                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="{Binding Data.AddressList[5], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </ItemsControl>
+                            <DataGrid ItemsSource="{Binding ModbusRows}" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                      AutoGenerateColumns="False" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False"
+                                      VerticalAlignment="Top"  MaxWidth="1200" Height="450">
+                                <DataGrid.Resources>
+                                    <DataTemplate x:Key="NameTemplate">
+                                        <TextBox x:Name="Name" Text="{Binding Path=Name}" Width="70" MinWidth="50" MaxWidth="150" Background="Transparent" BorderBrush="Transparent"/>
+                                    </DataTemplate>
+                                    <DataTemplate x:Key="DataTemplate">
+                                        <TextBlock x:Name="Data" Text="{Binding Path=Data}" Width="130" MinWidth="50" MaxWidth="500"/>
+                                    </DataTemplate>
+                                </DataGrid.Resources>
+                                <DataGrid.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Vertical"/>
+                                    </ItemsPanelTemplate>
+                                </DataGrid.ItemsPanel>
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn CellTemplate="{StaticResource NameTemplate}" Header="Name" IsReadOnly="False"/>
+                                    <DataGridTemplateColumn CellTemplate="{StaticResource DataTemplate}" Header="{Binding Data.AddressList, Source={StaticResource proxy}}" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
                         </Grid>
                     </Grid>
-                </ScrollViewer>
+                </Grid>
             </Border>
         </Grid>
 
