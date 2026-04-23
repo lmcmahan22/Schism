@@ -1,9 +1,11 @@
-﻿// <copyright file="SaveData.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
+﻿// <copyright file="SaveData.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
 namespace Schism.Models
 {
+    using System.Runtime.Intrinsics.X86;
+
     public class SaveData
     {
         // private variables
@@ -34,6 +36,15 @@ namespace Schism.Models
         // Empty Constructor (for loading data)
         public SaveData()
         {
+            this.saveLength = 0;
+            this.saveStartAddress = string.Empty;
+            this.saveDeviceID = 0;
+            this.saveDataType = string.Empty;
+            this.saveNumericBase = string.Empty;
+            this.saveDataSize = string.Empty;
+            this.saveEndian = string.Empty;
+            this.saveASCIIEnable = false;
+            this.saveAddressConv = string.Empty;
         }
 
         // Simple getters and setters for each variable

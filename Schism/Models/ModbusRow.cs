@@ -1,5 +1,5 @@
-﻿// <copyright file="ModbusRow.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
+﻿// <copyright file="ModbusRow.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
 namespace Schism.Models

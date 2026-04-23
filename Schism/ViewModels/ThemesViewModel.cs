@@ -1,23 +1,23 @@
-﻿// <copyright file="ThemesViewModel.cs" company="Precision Valve & Automation">
-// Copyright (c) PVA. All rights reserved.
+﻿// <copyright file="ThemesViewModel.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
-
-using Schism.Services;
-using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
 
 namespace Schism.ViewModels
 {
+    using System.Collections.ObjectModel;
+    using System.Runtime.CompilerServices;
+    using Schism.Services;
+
     public class ThemesViewModel : BindableBase
     {
-        // INotifyPropertyChanged interface for ViewModels
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            RaisePropertyChanged(propertyName);
-        }
-
         // Private variable
         private string title;
+
+        // Constructor
+        public ThemesViewModel()
+        {
+            this.title = "Themes";
+        }
 
         // Service Singleton that gets passed up to View
         public ThemeService TS => ThemeService.Instance;
@@ -25,14 +25,14 @@ namespace Schism.ViewModels
         // Public instance with getters/setters
         public string Title
         {
-            get { return title; }
-            set { SetProperty(ref title, value); }
+            get { return this.title; }
+            set { this.SetProperty(ref this.title, value); }
         }
 
-        // Constructor
-        public ThemesViewModel()
+        // INotifyPropertyChanged interface for ViewModels
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
-            title = "Themes";
+            this.RaisePropertyChanged(propertyName);
         }
     }
 }

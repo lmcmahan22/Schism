@@ -19,6 +19,7 @@
     <None Remove="Images\PVALogo.png" />
     <None Remove="Images\Save.png" />
     <None Remove="Images\Settings.png" />
+	<AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>

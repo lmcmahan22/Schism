@@ -1,5 +1,5 @@
-﻿// <copyright file="ThemeService.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
+﻿// <copyright file="ThemeService.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
 namespace Schism.Services
@@ -33,8 +33,14 @@ namespace Schism.Services
             this.availableThemes = new ObservableCollection<string> { "Dark", "Light" };
             this.selectedTheme = this.availableThemes.First();
 
-            // Initialize theme colors based on the default selected theme
-            this.UpdateTheme();
+            // Initialize theme colors based on the default selected theme (dark)
+            this.main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
+            this.accent1 = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
+            this.accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
+            this.accent3 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
+            this.accent4 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+            this.textColor = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+            this.errorColor = new SolidColorBrush(Color.FromArgb(255, 120, 0, 0));
 
             // Notify the UI of the initial theme selection
             this.OnPropertyChanged(nameof(this.SelectedTheme));
@@ -151,7 +157,7 @@ namespace Schism.Services
         // ObservableCollection public binding
         public ObservableCollection<string> AvailableThemes => this.availableThemes;
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

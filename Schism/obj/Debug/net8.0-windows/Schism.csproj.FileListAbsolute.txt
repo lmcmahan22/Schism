@@ -42,6 +42,18 @@ C:\Users\lmcmahan\OneDrive - Precision Valve and Automation\Desktop\Visual Studi
 C:\Users\lmcmahan\OneDrive - Precision Valve and Automation\Desktop\Visual Studio Projects\Projects\Schism\obj\Debug\net8.0-windows\Schism.pdb
 C:\Users\lmcmahan\OneDrive - Precision Valve and Automation\Desktop\Visual Studio Projects\Projects\Schism\obj\Debug\net8.0-windows\Schism.genruntimeconfig.cache
 C:\Users\lmcmahan\OneDrive - Precision Valve and Automation\Desktop\Visual Studio Projects\Projects\Schism\obj\Debug\net8.0-windows\ref\Schism.dll
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Schism.csproj.AssemblyReference.cache
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\MainWindow.baml
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\About.g.cs
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\ConnSettings.g.cs
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\Home.g.cs
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\MainWindow.g.cs
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\Themes.g.cs
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\App.g.cs
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Schism_Content.g.cs
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Schism_MarkupCompile.cache
+C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Schism_MarkupCompile.lref
 C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Images\Connecting.png
 C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Images\Connected.png
 C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Images\Copy.png
@@ -68,18 +80,6 @@ C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Prism.Unity.Wpf.
 C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Prism.Wpf.dll
 C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Unity.Abstractions.dll
 C:\Users\lmcmahan\Github\Schism\Schism\bin\Debug\net8.0-windows\Unity.Container.dll
-C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Schism.csproj.AssemblyReference.cache
-C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\MainWindow.baml
-C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\About.g.cs
-C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\ConnSettings.g.cs
-C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\Home.g.cs
-C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\MainWindow.g.cs
-C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\Themes.g.cs
-C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\App.g.cs
-C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Schism_Content.g.cs
-C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
-C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Schism_MarkupCompile.cache
-C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Schism_MarkupCompile.lref
 C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\App.baml
 C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\About.baml
 C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\Views\ConnSettings.baml

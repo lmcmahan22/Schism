@@ -1,5 +1,5 @@
-﻿// <copyright file="AboutViewModel.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
+﻿// <copyright file="AboutViewModel.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
 namespace Schism.ViewModels
@@ -65,7 +65,7 @@ namespace Schism.ViewModels
         }
 
         // INotifyPropertyChanged interface for ViewModels
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             this.RaisePropertyChanged(propertyName);
         }

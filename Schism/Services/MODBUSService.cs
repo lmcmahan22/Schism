@@ -1,5 +1,5 @@
-﻿// <copyright file="MODBUSService.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
+﻿// <copyright file="MODBUSService.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
 namespace Schism.Services
@@ -482,10 +482,10 @@ namespace Schism.Services
                 return null;
             }
 
-            return errors.TryGetValue(propertyName, out var errors) ? errors : null;
+            return this.errors.TryGetValue(propertyName, out var errors) ? errors : null;
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -648,14 +648,17 @@ namespace Schism.Services
                 this.SuccessResp();
             }
 
-            // Begin transforming data into an ObservableCollection
-            ushort[] coilsConv = coils.Select(Convert.ToUInt16).ToArray();
+            //// Begin transforming data into an ObservableCollection
+            // ushort[] coilsConv = coils.Select(Convert.ToUInt16).ToArray();
 
-            // Loop through the received data and convert each piece into a string, for easier UI implementation
-            for (int i = 0; i < coilsConv.Length; i++)
-            {
-                nD.Add(coilsConv[i].ToString());
-            }
+            //// Loop through the received data and convert each piece into a string, for easier UI implementation
+            // for (int i = 0; i < coilsConv.Length; i++)
+            // {
+            //    nD.Add(coilsConv[i].ToString());
+            // }
+
+            // New approach
+            nD = [.. coils.Select(x => Convert.ToInt16(x).ToString())];
 
             // Return this collection so it can be forwarded up to the ViewModel
             return nD;

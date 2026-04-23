@@ -1,9 +1,13 @@
-﻿using System.Windows;
+﻿// <copyright file="MainWindow.xaml.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
+// </copyright>
 
 namespace Schism.Views
 {
+    using System.Windows;
+
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainWindow.xaml.
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -11,10 +15,9 @@ namespace Schism.Views
 
         // NOTE: This code here is known as the "Code-Behind". This is essentially logic needed to control the View, but ideally, we want all of that managed in the ViewModel classes.
         // Keep this class small!
-
         public MainWindow()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

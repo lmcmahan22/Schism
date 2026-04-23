@@ -1,5 +1,5 @@
-﻿// <copyright file="HomeViewModel.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
+﻿// <copyright file="HomeViewModel.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
 namespace Schism.ViewModels
@@ -83,12 +83,6 @@ namespace Schism.ViewModels
 
         public MODBUSService MS => MODBUSService.Instance;
 
-        // INotifyPropertyChanged interface for ViewModels
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            this.RaisePropertyChanged(propertyName);
-        }
-
         // Public instances of the ViewModel for control in the View
         public string Title
         {
@@ -147,28 +141,138 @@ namespace Schism.ViewModels
 
         // Public Command properties
         public DelegateCommand SaveClick =>
-            this.saveClick ??= new DelegateCommand(this.ExecutesaveClick);
+            this.saveClick ??= new DelegateCommand(this.ExecuteSaveClick);
 
         public DelegateCommand LoadClick =>
-            loadClick ??= new DelegateCommand(this.ExecuteLoadClick);
+            this.loadClick ??= new DelegateCommand(this.ExecuteLoadClick);
 
         public DelegateCommand ExitClick =>
-            exitClick ??= new DelegateCommand(this.ExecuteExitClick);
+            this.exitClick ??= new DelegateCommand(this.ExecuteExitClick);
 
         public DelegateCommand ConnClick =>
-            connClick ??= new DelegateCommand(this.ExecuteConnClick);
+            this.connClick ??= new DelegateCommand(this.ExecuteConnClick);
 
         public DelegateCommand SettClick =>
-            settClick ??= new DelegateCommand(this.ExecuteSettClick);
+            this.settClick ??= new DelegateCommand(this.ExecuteSettClick);
 
         public DelegateCommand ThemesClick =>
-            themesClick ??= new DelegateCommand(this.ExecuteThemesClick);
+            this.themesClick ??= new DelegateCommand(this.ExecuteThemesClick);
+
+        public DelegateCommand AboutClick =>
+            this.aboutClick ??= new DelegateCommand(this.ExecuteAboutClick);
 
         // View Model Visibility element bases from Model boolean! :D
         public Visibility ErrorContents
         {
             // Use IsNullOrEmpty for safety (handles null and empty)
             get => string.IsNullOrEmpty(this.MS.ErrMess) ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        public void ExecuteSaveClick()
+        {
+            // Create a SaveData object with the current state of the ViewModel
+            SaveData sD = new SaveData
+            {
+                SaveDeviceId = this.MS.DeviceId,
+                SaveStartAddress = this.MS.StartAddress,
+                SaveLength = this.MS.DataLength,
+                SaveDataType = this.MS.SelectedDataType,
+                SaveNumericBase = this.MS.SelectedNumericBase,
+                SaveDataSize = this.MS.SelectedDataSize,
+                SaveEndian = this.MS.SelectedEndian,
+                SaveAsciiEnable = this.MS.AsciiEnable,
+
+                SaveAddressConv = this.selectedAddressConvention,
+            };
+            this.Save(sD);
+        }
+
+        public void ExecuteLoadClick()
+        {
+            SaveData lD = this.Load();
+
+            // Update ViewModel properties with loaded data
+            // NOTE: Setting the public instances of variables runs the logic in the setters implicitly! ;)
+            this.MS.DeviceId = lD.SaveDeviceId;
+            this.MS.DataLength = lD.SaveLength;
+            this.MS.StartAddress = lD.SaveStartAddress;
+            this.MS.SelectedDataType = lD.SaveDataType;
+            this.MS.SelectedNumericBase = lD.SaveNumericBase;
+            this.MS.SelectedDataSize = lD.SaveDataSize;
+            this.MS.SelectedEndian = lD.SaveEndian;
+            this.MS.AsciiEnable = lD.SaveAsciiEnable;
+
+            // ViewModel specific save parameter
+            this.selectedAddressConvention = lD.SaveAddressConv;
+
+            this.OnPropertyChanged(nameof(this.SelectedAddressConvention));
+
+            // Since you're updating these parameters in the Service, your subscription from the constructor will catch this and update the UI automatically.
+            // Load --> Update Service --> Subscription pings --> Table is rebuilt
+        }
+
+        public void ExecuteExitClick()
+        {
+            // Close the app!
+            Application.Current.Shutdown();
+        }
+
+        public void ExecuteConnClick()
+        {
+            // Looks a bit strange, but effectively works as a toggle! Press it once to connect (false case), press it again to stop (true case).
+            if (this.MS.ConnectEngage)
+            {
+                this.MS.ConnectEngage = false;
+            }
+            else
+            {
+                this.MS.Connection();
+            }
+        }
+
+        public void ExecuteSettClick()
+        {
+            // Create the Connection Settings window
+            Window connSettings = new Window
+            {
+                // Open the window
+                Content = new ConnSettings(),
+                SizeToContent = SizeToContent.WidthAndHeight,
+                Topmost = true,
+            };
+            connSettings.ShowDialog();
+        }
+
+        public void ExecuteThemesClick()
+        {
+            // Create the About window
+            Window themes = new Window
+            {
+                // Open the window
+                Content = new Themes(),
+                SizeToContent = SizeToContent.WidthAndHeight,
+                Topmost = true,
+            };
+            themes.ShowDialog();
+        }
+
+        public void ExecuteAboutClick()
+        {
+            // Create the About window
+            Window about = new Window
+            {
+                // Open the window
+                Content = new About(),
+                SizeToContent = SizeToContent.WidthAndHeight,
+                Topmost = true,
+            };
+            about.ShowDialog();
+        }
+
+        // INotifyPropertyChanged interface for ViewModels
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            this.RaisePropertyChanged(propertyName);
         }
 
         // React to MODBUSService updates, depending on what updated
@@ -512,106 +616,6 @@ namespace Schism.ViewModels
                 // return empty data (i.e. nothing is loaded for the user)
                 return new SaveData();
             }
-        }
-
-        void ExecutesaveClick()
-        {
-            // Create a SaveData object with the current state of the ViewModel
-            SaveData sD = new SaveData
-            {
-                SaveDeviceId = MS.DeviceId,
-                SaveStartAddress = MS.StartAddress,
-                SaveLength = MS.DataLength,
-                SaveDataType = MS.SelectedDataType,
-                SaveNumericBase = MS.SelectedNumericBase,
-                SaveDataSize = MS.SelectedDataSize,
-                SaveEndian = MS.SelectedEndian,
-                SaveAsciiEnable = MS.AsciiEnable,
-
-                SaveAddressConv = selectedAddressConvention
-            };
-            Save(sD);
-        }
-
-        void ExecuteLoadClick()
-        {
-            SaveData lD = Load();
-
-            // Update ViewModel properties with loaded data
-            // NOTE: Setting the public instances of variables runs the logic in the setters implicitly! ;)
-            MS.DeviceId = lD.SaveDeviceId;
-            MS.DataLength = lD.SaveLength;
-            MS.StartAddress = lD.SaveStartAddress;
-            MS.SelectedDataType = lD.SaveDataType;
-            MS.SelectedNumericBase = lD.SaveNumericBase;
-            MS.SelectedDataSize = lD.SaveDataSize;
-            MS.SelectedEndian = lD.SaveEndian;
-            MS.AsciiEnable = lD.SaveAsciiEnable;
-
-            // ViewModel specific save parameter
-            selectedAddressConvention = lD.SaveAddressConv;
-
-            OnPropertyChanged(nameof(SelectedAddressConvention));
-
-            // Since you're updating these parameters in the Service, your subscription from the constructor will catch this and update the UI automatically.
-            // Load --> Update Service --> Subscription pings --> Table is rebuilt
-        }
-
-        void ExecuteExitClick()
-        {
-            // Close the app!
-            Application.Current.Shutdown();
-        }
-
-        void ExecuteConnClick()
-        {
-            // Looks a bit strange, but effectively works as a toggle! Press it once to connect (false case), press it again to stop (true case).
-            if (MS.ConnectEngage)
-                MS.ConnectEngage = false;
-            else
-                MS.Connection();
-        }
-
-        void ExecuteSettClick()
-        {
-            // Create the Connection Settings window
-            Window connSettings = new Window
-            {
-                // Open the window
-                Content = new ConnSettings(),
-                SizeToContent = SizeToContent.WidthAndHeight,
-                Topmost = true
-            };
-            connSettings.ShowDialog();
-        }
-
-        void ExecuteThemesClick()
-        {
-            // Create the About window
-            Window themes = new Window
-            {
-                // Open the window
-                Content = new Themes(),
-                SizeToContent = SizeToContent.WidthAndHeight,
-                Topmost = true
-            };
-            themes.ShowDialog();
-        }
-
-        public DelegateCommand AboutClick =>
-            aboutClick ??= new DelegateCommand(ExecuteAboutClick);
-
-        void ExecuteAboutClick()
-        {
-            // Create the About window
-            Window about = new Window
-            {
-                // Open the window
-                Content = new About(),
-                SizeToContent = SizeToContent.WidthAndHeight,
-                Topmost = true
-            };
-            about.ShowDialog();
         }
     }
 }
