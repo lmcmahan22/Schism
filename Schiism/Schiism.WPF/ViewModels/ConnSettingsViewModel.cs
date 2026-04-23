@@ -2,10 +2,10 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schism.ViewModels
+namespace Schiism.ViewModels
 {
     using System.Runtime.CompilerServices;
-    using Schism.Services;
+    using Schiism.Services;
 
     public class ConnSettingsViewModel : BindableBase
     {
@@ -17,9 +17,6 @@ namespace Schism.ViewModels
         {
             this.title = "Connection Settings";
         }
-
-        // Service Singleton that gets passed up to View
-        public MODBUSService MS => MODBUSService.Instance;
 
         // Public instance with getter/setter
         public string Title

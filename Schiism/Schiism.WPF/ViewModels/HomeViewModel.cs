@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schism.ViewModels
+namespace Schiism.ViewModels
 {
     using System.Collections.ObjectModel;
     using System.ComponentModel;
@@ -12,9 +12,9 @@ namespace Schism.ViewModels
     using System.Text.Json.Serialization;
     using System.Windows;
     using Microsoft.Win32;
-    using Schism.Models;
-    using Schism.Services;
-    using Schism.Views;
+    using Schiism.Models;
+    using Schiism.Services;
+    using Schiism.Views;
 
     public class HomeViewModel : BindableBase, INotifyPropertyChanged
     {
@@ -81,7 +81,7 @@ namespace Schism.ViewModels
         // Service Singleton instances
         public ThemeService TS => ThemeService.Instance;
 
-        public MODBUSService MS => MODBUSService.Instance;
+        // public MODBUSService MS => MODBUSService.Instance;
 
         // Public instances of the ViewModel for control in the View
         public string Title
@@ -519,7 +519,7 @@ namespace Schism.ViewModels
         private void Save(SaveData sD)
         {
             // Specify the saving directory upon pop up. If it doesn't exist, create it!
-            string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Schism");
+            string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Schiism");
             if (!Directory.Exists(appDataFolder))
             {
                 Directory.CreateDirectory(appDataFolder);
@@ -545,7 +545,7 @@ namespace Schism.ViewModels
             saveFileDialog.DefaultExt = ".sav"; // Default file extension
 
             // Filter files by extension. The format is "Description|Pattern"
-            saveFileDialog.Filter = "Schism Save File (.sav)|*.sav|All files (*.*)|*.*";
+            saveFileDialog.Filter = "Schiism Save File (.sav)|*.sav|All files (*.*)|*.*";
             saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
             // Show save file dialog box
@@ -581,7 +581,7 @@ namespace Schism.ViewModels
             // Optional: Configure the dialog box
             openFileDialog.FileName = "userData"; // Default file name
             openFileDialog.DefaultExt = ".sav"; // Default file extension
-            openFileDialog.Filter = "Schism Save File (.sav)|*.sav|All files (*.*)|*.*";
+            openFileDialog.Filter = "Schiism Save File (.sav)|*.sav|All files (*.*)|*.*";
             openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); // Initial Directory
 
             // Show open file dialog box

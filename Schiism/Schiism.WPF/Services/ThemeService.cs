@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schism.Services
+namespace Schiism.Services
 {
     using System.Collections.ObjectModel;
     using System.ComponentModel;
@@ -71,7 +71,7 @@ namespace Schism.Services
                 if (this.main != value)
                 {
                     this.main = value;
-                    this.OnPropertyChanged();
+                    
                 }
             }
         }
@@ -84,7 +84,7 @@ namespace Schism.Services
                 if (this.accent1 != value)
                 {
                     this.accent1 = value;
-                    this.OnPropertyChanged();
+                    
                 }
             }
         }
@@ -97,7 +97,7 @@ namespace Schism.Services
                 if (this.accent2 != value)
                 {
                     this.accent2 = value;
-                    this.OnPropertyChanged();
+                    
                 }
             }
         }
@@ -110,7 +110,7 @@ namespace Schism.Services
                 if (this.accent3 != value)
                 {
                     this.accent3 = value;
-                    this.OnPropertyChanged();
+                    
                 }
             }
         }
@@ -123,7 +123,7 @@ namespace Schism.Services
                 if (this.accent4 != value)
                 {
                     this.accent4 = value;
-                    this.OnPropertyChanged();
+                    
                 }
             }
         }
@@ -136,7 +136,7 @@ namespace Schism.Services
                 if (this.textColor != value)
                 {
                     this.textColor = value;
-                    this.OnPropertyChanged();
+                    
                 }
             }
         }
@@ -149,7 +149,7 @@ namespace Schism.Services
                 if (this.errorColor != value)
                 {
                     this.errorColor = value;
-                    this.OnPropertyChanged();
+                    
                 }
             }
         }

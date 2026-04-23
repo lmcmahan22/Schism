@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schism.Views
+namespace Schiism.Views
 {
     using System.Windows;
 

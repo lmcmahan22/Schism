@@ -3,20 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\modbusenginecore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\modbusenginecore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6861D542-2E4C-474C-97FD-40E4CD79230D}|Schiism.Cli\\Schiism.Cli.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.cli\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6861D542-2E4C-474C-97FD-40E4CD79230D}|Schiism.Cli\\Schiism.Cli.csproj|solutionrelative:schiism.cli\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\modbusengineoriginal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\modbusengineoriginal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2C74361C-B26D-435E-A03E-CF79B426230E}|..\\Schiism.Service\\Schiism.Service.csproj|C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\schiism.service\\service1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{2C74361C-B26D-435E-A03E-CF79B426230E}|..\\Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\service1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\models\\modbusdeviceconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\models\\modbusdeviceconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -39,52 +35,62 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\MainWindow.xaml.cs",
-              "RelativeDocumentMoniker": "Schiism.WPF\\MainWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\MainWindow.xaml.cs",
-              "RelativeToolTip": "Schiism.WPF\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAABAAAAAAAAAA==",
+              "Title": "ModbusEngineCore.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\ModbusEngineCore.cs",
+              "RelativeDocumentMoniker": "Schiism.Core\\ModbusEngineCore.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\ModbusEngineCore.cs",
+              "RelativeToolTip": "Schiism.Core\\ModbusEngineCore.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAA5AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-23T18:25:44.121Z",
+              "WhenOpened": "2026-04-23T20:11:22.514Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\Program.cs",
-              "RelativeDocumentMoniker": "Schiism.Cli\\Program.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\Program.cs",
-              "RelativeToolTip": "Schiism.Cli\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA==",
+              "Title": "ModbusEngineOriginal.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\ModbusEngineOriginal.cs",
+              "RelativeDocumentMoniker": "Schiism.Core\\ModbusEngineOriginal.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\ModbusEngineOriginal.cs",
+              "RelativeToolTip": "Schiism.Core\\ModbusEngineOriginal.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-23T18:12:56.602Z",
+              "WhenOpened": "2026-04-23T19:33:58.063Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Class1.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Class1.cs",
-              "RelativeDocumentMoniker": "Schiism.Core\\Class1.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Class1.cs",
-              "RelativeToolTip": "Schiism.Core\\Class1.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-23T18:12:01.426Z",
-              "EditorCaption": ""
-            },
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "FloatingWindowState": {
+        "Id": "ab510fe9-823f-4652-9597-789e8f195071",
+        "Display": 1,
+        "X": 125,
+        "Y": 384,
+        "Width": 1573,
+        "Height": 613,
+        "WindowState": 0
+      },
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "Service1.cs [Design]",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Service1.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Service1.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Service1.cs [Design]",
-              "RelativeToolTip": "Schiism.Service\\Service1.cs [Design]",
+              "Title": "ModbusDeviceConfig.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Models\\ModbusDeviceConfig.cs",
+              "RelativeDocumentMoniker": "Schiism.Core\\Models\\ModbusDeviceConfig.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Models\\ModbusDeviceConfig.cs",
+              "RelativeToolTip": "Schiism.Core\\Models\\ModbusDeviceConfig.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-23T18:11:19.074Z"
+              "WhenOpened": "2026-04-23T19:38:17.501Z",
+              "EditorCaption": ""
             }
           ]
         }

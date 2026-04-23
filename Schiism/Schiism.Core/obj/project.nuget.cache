@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "cGU35m+bgS0=",
+  "dgSpecHash": "1zDPmgT1NNg=",
   "success": true,
   "projectFilePath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Schiism.Core.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\lmcmahan\\.nuget\\packages\\nmodbus\\3.0.81\\nmodbus.3.0.81.nupkg.sha512",
+    "C:\\Users\\lmcmahan\\.nuget\\packages\\stylecop.analyzers.unstable\\1.2.0.556\\stylecop.analyzers.unstable.1.2.0.556.nupkg.sha512"
+  ],
   "logs": []
 }

@@ -2,11 +2,11 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schism.ViewModels
+namespace Schiism.ViewModels
 {
     using System.Collections.ObjectModel;
     using System.Runtime.CompilerServices;
-    using Schism.Services;
+    using Schiism.Services;
 
     public class ThemesViewModel : BindableBase
     {

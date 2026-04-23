@@ -6,4 +6,22 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NModbus" Version="3.0.81" />
+    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.556">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Application\DTOs\" />
+    <Folder Include="Application\Events\" />
+    <Folder Include="Application\Services\" />
+  </ItemGroup>
+
 </Project>

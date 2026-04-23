@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="Schism.Views.ConnSettings"
+﻿<UserControl x:Class="Schiism.Views.ConnSettings"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"   
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:viewmodels="clr-namespace:Schism.ViewModels"
+             xmlns:viewmodels="clr-namespace:Schiism.ViewModels"
              prism:ViewModelLocator.AutoWireViewModel="True"
              Width="500" Height="170"
              Background="DarkGray">

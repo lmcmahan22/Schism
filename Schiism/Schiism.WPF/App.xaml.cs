@@ -2,15 +2,15 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schism
+namespace Schiism
 {
     using System.ComponentModel;
     using System.Configuration;
     using System.Data;
     using System.Windows;
-    using Schism.Services;
-    using Schism.ViewModels;
-    using Schism.Views;
+    using Schiism.Services;
+    using Schiism.ViewModels;
+    using Schiism.Views;
 
     public partial class App
     {

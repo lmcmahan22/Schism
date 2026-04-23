@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schism.Models
+namespace Schiism.Models
 {
     using System.ComponentModel;
     using System.Runtime.CompilerServices;
@@ -31,7 +31,7 @@ namespace Schism.Models
                 }
 
                 this.name = value;
-                this.OnPropertyChanged();
+                
             }
         }
 
@@ -46,7 +46,7 @@ namespace Schism.Models
                 }
 
                 this.data = value;
-                this.OnPropertyChanged();
+                
             }
         }
 

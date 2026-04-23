@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schism
+namespace Schiism
 {
     using System;
     using System.Collections.Generic;
@@ -14,8 +14,8 @@ namespace Schism
     using Prism.Modularity;
     using Prism.Navigation.Regions;
     using Prism.Unity;
-    using Schism.ViewModels;
-    using Schism.Views;
+    using Schiism.ViewModels;
+    using Schiism.Views;
 
     // Implements the IModule interface, which is a contract for modules in a Prism application. This class is responsible for initializing the module and registering any types or services that the module provides.
     public class MainModule : IModule
