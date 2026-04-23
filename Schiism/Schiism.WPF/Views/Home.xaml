@@ -1,0 +1,377 @@
+﻿<UserControl x:Class="Schism.Views.Home"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"   
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:viewmodels="clr-namespace:Schism.ViewModels"
+             xmlns:helpers="clr-namespace:Schism.Helpers"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             Background="{Binding TS.Main, UpdateSourceTrigger=PropertyChanged}">
+
+    <!-- Top level resources for use across the entire XAML file -->
+    <!-- Includes style manipulations and proxy class instance (from "Helpers" directory) -->
+    <UserControl.Resources>
+        <Style TargetType="ComboBox">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.3" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.3" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.3" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBox">
+            <Style.Triggers>
+                <!-- Triggers when ViewModel reports an error via INotifyDataErrorInfo -->
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" 
+                            Value="{Binding Path=(Validation.Errors)[0].ErrorContent, 
+                                    RelativeSource={RelativeSource Self}}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Proxy for DataGrid column visibility control -->
+        <helpers:BindingProxy x:Key="proxy" Data="{Binding}" />
+    
+    </UserControl.Resources>
+
+    <!-- Row 1: Top Header, Row 2: General Settings and Buttons, Row 3: MODBUS Data, Row 4: Connection Details-->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="130" />
+            <RowDefinition Height="460" />
+            <RowDefinition Height="70" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Row 1: Top Header -->
+        <Grid Grid.Row="0">
+            <Menu DockPanel.Dock="Top" Background="LightGray">
+                <MenuItem Header="File">
+                    <MenuItem Header="Save Config" Command="{Binding SaveClick}"/>
+                    <MenuItem Header="Load Config" Command="{Binding LoadClick}"/>
+                    <Separator Background="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}"/>
+                    <MenuItem Header="Exit App" Command="{Binding ExitClick}"/>
+                </MenuItem>
+                <MenuItem Header="Connection">
+                    <MenuItem Header="Toggle" Command="{Binding ConnClick}"/>
+                    <Separator Background="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}"/>
+                    <MenuItem Header="Settings" Command="{Binding SettClick}"/>
+                </MenuItem>
+                <MenuItem Header="Customize">
+                    <MenuItem Header="Themes" Command="{Binding ThemesClick}"/>
+                </MenuItem>
+                <MenuItem Header="Help">
+                    <MenuItem Header="About" Command="{Binding AboutClick}"/>
+                </MenuItem>
+            </Menu>
+        </Grid>
+
+        <!-- Row 2: General Settings and Buttons -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="95"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Row="0">
+                        <Button Name="Save" ToolTip="Save Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="10,5,0,5" Command="{Binding SaveClick}">
+                            <Image Source="/Images/Save.png" />
+                        </Button>
+                        <Button Name="Load" ToolTip="Load Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="55,5,0,5" Command="{Binding LoadClick}">
+                            <Image Source="/Images/Load.png" />
+                        </Button>
+                        <Separator Background="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="100,5,0,5" VerticalAlignment="Center" HorizontalAlignment="Left" Width="2" Height="25"/>
+                        <Button ToolTip="Connect" HorizontalAlignment="Left" Width="40" Margin="107,5,0,5" Command="{Binding ConnClick}">
+                            <Image>
+                                <Image.Style>
+                                    <Style TargetType="Image">
+                                        <Setter Property="Source" Value="/Images/Disconnect.png"/>
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding MS.ConnectEngage}" Value="True" />
+                                                    <Condition Binding="{Binding MS.IsConnected}" Value="False" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Source" Value="/Images/Connecting.png"/>
+                                            </MultiDataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding MS.ConnectEngage}" Value="True" />
+                                                    <Condition Binding="{Binding MS.IsConnected}" Value="True" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Source" Value="/Images/Connected.png"/>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                        </Button>
+                        <Button Name="Settings" ToolTip="Settings" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="152,5,0,5" Command="{Binding SettClick}">
+                            <Image Source="/Images/Settings.png" />
+                        </Button>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,0,5,5" Background="{Binding TS.Accent2, UpdateSourceTrigger=PropertyChanged}">
+                            <StackPanel>
+                                <TextBlock Text="Device Settings" FontSize="16" FontWeight="Bold"/>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30" />
+                                        <RowDefinition Height="30" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Row="0" Grid.Column="0">
+                                        <TextBlock Text="Device ID" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                        <TextBox Text="{Binding MS.DeviceId, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}" Margin="70,0,0,2" Width="60" Height="26" MaxLength="3" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14"/>
+                                    </Grid>
+                                    <Grid Grid.Row="0" Grid.Column="1">
+                                        <TextBlock Text="Length" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                        <TextBox Text="{Binding MS.DataLength, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}" Margin="80,0,5,0" Width="65" Height="25" MaxLength="3" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                    </Grid>
+                                    <Grid Grid.Row="1" Grid.Column="0">
+                                        <TextBlock Text="Address" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                        <TextBox Text="{Binding MS.StartAddress, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True,
+                                                        NotifyOnValidationError=True}" Margin="70,0,5,0" Width="60" Height="25" MaxLength="5" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                    </Grid>
+                                    <Grid Grid.Row="1" Grid.Column="1">
+                                        <TextBlock Text="Data Type" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                                        <ComboBox Name="DataType" ItemsSource="{Binding MS.DataTypes, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding MS.SelectedDataType}" Margin="80,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="26" FontSize="14" Grid.ColumnSpan="2"/>
+                                    </Grid>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding TS.Accent2, UpdateSourceTrigger=PropertyChanged}">
+                    <StackPanel>
+                        <TextBlock Text="Display Options" FontSize="16" FontWeight="Bold"/>
+                        <Grid Margin="5,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Row="0" Grid.Column="0">
+                                <TextBlock Text="Numeric Base" Margin="2,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding NonBoolData}" HorizontalAlignment="Left" FontSize="14"/>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="1">
+                                <ComboBox Name="BaseSystem" ItemsSource="{Binding MS.NumericBases, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding MS.SelectedNumericBase, Mode=TwoWay}" IsEnabled="{Binding NonBoolData}" Margin="10,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120" Height="25" FontSize="14"/>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="2">
+                                <TextBlock Text="ASCII Display" Margin="10,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding HexData}" HorizontalAlignment="Left" FontSize="14"/>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="3">
+                                <CheckBox IsChecked="{Binding MS.AsciiEnable, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HexData}" Content="Enable" Margin="10,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="0">
+                                <TextBlock Text="Data Size" Margin="2,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding NonBoolData}" HorizontalAlignment="Left" FontSize="14"/>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="1">
+                                <ComboBox Name="DataSize" ItemsSource="{Binding MS.DataSizes, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding MS.SelectedDataSize, Mode=TwoWay}" IsEnabled="{Binding NonBoolData}" Margin="10,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120" Height="25" FontSize="14"/>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="2">
+                                <TextBlock Text="Endian" Margin="10,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding EndianEnable}" HorizontalAlignment="Left" FontSize="14"/>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="3">
+                                <ComboBox Name="Endian" ItemsSource="{Binding MS.Endians, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding MS.SelectedEndian, Mode=TwoWay}" IsEnabled="{Binding EndianEnable}" Margin="10,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14"/>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="0">
+                                <TextBlock Text="Address Conv." Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3">
+                                <ComboBox Name="AddressConv" ItemsSource="{Binding AddressConventions, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedAddressConvention, Mode=TwoWay}" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="417" Height="25" FontSize="14"/>
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            <Grid Grid.Column="2">
+                <Image Source="/Images/PVALogo.png" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,25,0" Width="160"/>
+            </Grid>
+        </Grid>
+
+        <!-- Row 3: MODBUS Data (I'd like to simplify this eventually, such that we don't need An overall Grid of 7 columns, 7 ItemControls, and 7 DataGrids -->
+        <Grid Grid.Row="2">
+            <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1">
+                <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <ItemsControl>
+                                <DataGrid Name="ShiftCol" ItemsSource="{Binding ShiftColumn}" RowBackground="{Binding TS.Accent4}" AlternatingRowBackground="{Binding TS.Accent3}"  AlternationCount="2"
+                                          AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Shift" Binding="{Binding}" Width="50" MinWidth="50" MaxWidth="50" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
+                        </Grid>
+                        <Grid Grid.Column="1">
+                            <ItemsControl Visibility="{Binding ColsVis[0]}">
+                                <DataGrid Name="ModbusDataGrid0" ItemsSource="{Binding ModbusRows[0]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                          AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="{Binding Data.AddressList[0], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <ItemsControl Visibility="{Binding ColsVis[1]}">
+                                <DataGrid Name="ModbusDataGrid1" ItemsSource="{Binding ModbusRows[1]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="{Binding Data.AddressList[1], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
+                        </Grid>
+                        <Grid Grid.Column="3">
+                            <ItemsControl Visibility="{Binding ColsVis[2]}">
+                                <DataGrid Name="ModbusDataGrid2" ItemsSource="{Binding ModbusRows[2]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="{Binding Data.AddressList[2], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
+                        </Grid>
+                        <Grid Grid.Column="4">
+                            <ItemsControl Visibility="{Binding ColsVis[3]}">
+                                <DataGrid Name="ModbusDataGrid3" ItemsSource="{Binding ModbusRows[3]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="{Binding Data.AddressList[3], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
+                        </Grid>
+                        <Grid Grid.Column="5">
+                            <ItemsControl Visibility="{Binding ColsVis[4]}">
+                                <DataGrid Name="ModbusDataGrid4" ItemsSource="{Binding ModbusRows[4]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="{Binding Data.AddressList[4], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
+                        </Grid>
+                        <Grid Grid.Column="6">
+                            <ItemsControl Visibility="{Binding ColsVis[5]}">
+                                <DataGrid Name="ModbusDataGrid5" ItemsSource="{Binding ModbusRows[5]}" RowBackground="{Binding TS.Accent3}" AlternatingRowBackground="{Binding TS.Accent2}"
+                                      AutoGenerateColumns="False" RowHeaderWidth="0" RowHeight="20" ColumnHeaderHeight="30" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="70" MinWidth="50" MaxWidth="150" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="{Binding Data.AddressList[5], Source={StaticResource proxy}}" Binding="{Binding Data}" Width="130" MinWidth="50" MaxWidth="500" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ItemsControl>
+                        </Grid>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- Row 4: Connection Details -->
+        <Grid Grid.Row="3">
+            <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,10" CornerRadius="1" Background="{Binding TS.Accent2, UpdateSourceTrigger=PropertyChanged}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Row="0" Grid.Column="0">
+                            <TextBlock Text="Error Message:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16" Visibility="{Binding ErrorContents}" Foreground="{Binding TS.ErrorColor}" FontWeight="Bold"/>
+                        </Grid>
+                        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8">
+                            <TextBlock Text="{Binding MS.ErrMess}" Margin="10,0,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14" Visibility="{Binding ErrorContents}" Foreground="{Binding TS.ErrorColor}"/>
+                        </Grid>
+                        <Grid Grid.Row="0" Grid.Column="4">
+                            <TextBlock Text="Requests:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock Text="{Binding MS.NumRequests}" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                        </Grid>
+                        <Grid Grid.Row="0" Grid.Column="5">
+                            <TextBlock Text="Responses:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock Text="{Binding MS.NumResponses}" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                        </Grid>
+                        <Grid Grid.Row="0" Grid.Column="6">
+                            <TextBlock Text="OK:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock Text="{Binding MS.NumOKs}" Margin="50,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                        </Grid>
+                        <Grid Grid.Row="0" Grid.Column="7">
+                            <TextBlock Text="Errors:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock Text="{Binding MS.NumErrors}" Margin="70,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
+                        </Grid>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
