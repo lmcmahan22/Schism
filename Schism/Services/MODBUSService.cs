@@ -588,17 +588,17 @@ namespace Schism.Services
                                 switch (this.selectedDataType)
                                 {
                                     case "Input Status":
-                                        newData = this.ReadInputs(modbusMaster, newData);
+                                        newData = this.ReadDigital(modbusMaster, true);
                                         break;
                                     case "Holding Registers":
-                                        newData = this.ReadHoldingRegs(modbusMaster, newData);
+                                        newData = this.ReadHoldingRegs(modbusMaster);
                                         break;
                                     case "Input Registers":
-                                        newData = this.ReadInputRegs(modbusMaster, newData);
+                                        newData = this.ReadInputRegs(modbusMaster);
                                         break;
                                     default:
                                         // Coils
-                                        newData = this.ReadCoils(modbusMaster, newData);
+                                        newData = this.ReadDigital(modbusMaster, false);
                                         break;
                                 }
 
@@ -631,16 +631,40 @@ namespace Schism.Services
         }
 
         // Read Coils attempt
-        private ObservableCollection<string> ReadCoils(IModbusMaster mM, ObservableCollection<string> nD)
+        private ObservableCollection<string> ReadDigital(IModbusMaster mM, bool isInputs)
         {
-            // Request data over TCP
-            ushort startAdd = Convert.ToUInt16(this.startAddress);
-            bool[] coils = mM.ReadCoils(this.deviceId, startAdd, this.dataLength);
+
+            List<bool> rawData = new List<bool>();
+
+            ushort start = Convert.ToUInt16(this.startAddress);
+
+            // "Select" is a LINQ based method on C# array tro transform the elements to a new form.
+            // Select transforms the data in a simple manner, but it does not return the set of the data implictly, therefore the results either get converted to an array, or they get spanned into an ObservableCollection via the syntax below.
+            // [.. set.Select(...)] is unique and relatively new C# syntactic sugar for spanning your Select result onto an ObservableCollection.
+            // ".." is the spread operator, meaning "Insert all elements from this sequence into the left side of the equal sign".
+            // This is different from just an = sign, because we aren't assigning nD to equal this set, we are ADDING each of these elements iteratively to this set!
+            // "(...)" is the collection expression, which contains the a lambda expression:
+            // The lambda expression defines the transformation applied to each element in a sequence, used as a part of LINQ
+            // x is the input parameter (one element of coils at a time)
+            // => is the lambda operator in C#, effectively meaning "maps to"
+            // Convert.ToInt16(x).ToString()) is the output expression, describing what needs to be done to x.
+            // Think of lambda expressions like F(x) = x functions, where the syntax is instead: x => f(x)!
+            // Note that the collection expression doesn't need to specify a data type (ObservableCollection<string>), because it already interprets this from the datatype of the object on the lefthand side of the equal sign, ObservableCollection<string> nD.
+
+            // retrive the raw data from either of these NModbus calls, depending on the received bool
+            var source = isInputs
+                ? mM.ReadInputs(this.deviceId, start, this.dataLength)
+                : mM.ReadCoils(this.deviceId, start, this.dataLength);
+
+            // LINQ statement with the received raw data, now as a List<bool> instead of a bool[]
+            rawData = [.. source];
+
+
 
             // If the returned data is not what we expect, report an error
-            if (coils == null || coils.Length != this.dataLength)
+            if (rawData == null || rawData.Count != this.dataLength)
             {
-                throw new Exception("Received null or inadequate response for coils.");
+                throw new Exception("Received null or inadequate response when polling digital data.");
             }
             else
             {
@@ -648,55 +672,12 @@ namespace Schism.Services
                 this.SuccessResp();
             }
 
-            //// Begin transforming data into an ObservableCollection
-            // ushort[] coilsConv = coils.Select(Convert.ToUInt16).ToArray();
-
-            //// Loop through the received data and convert each piece into a string, for easier UI implementation
-            // for (int i = 0; i < coilsConv.Length; i++)
-            // {
-            //    nD.Add(coilsConv[i].ToString());
-            // }
-
-            // New approach
-            nD = [.. coils.Select(x => Convert.ToInt16(x).ToString())];
-
-            // Return this collection so it can be forwarded up to the ViewModel
-            return nD;
-        }
-
-        // Read Inputs attempt
-        private ObservableCollection<string> ReadInputs(IModbusMaster mM, ObservableCollection<string> nD)
-        {
-            // Request data over TCP
-            ushort startAdd = Convert.ToUInt16(this.startAddress);
-            bool[] inputs = mM.ReadInputs(this.deviceId, startAdd, this.dataLength);
-
-            // If the returned data is not what we expect, report an error
-            if (inputs == null || inputs.Length != this.dataLength)
-            {
-                throw new Exception("Received null or inadequate response for inputs.");
-            }
-            else
-            {
-                // Report a successful TCP response, now that we have the data
-                this.SuccessResp();
-            }
-
-            // Begin transforming data into a UI friendly data collection
-            ushort[] inputsConv = inputs.Select(Convert.ToUInt16).ToArray();
-
-            // Loop through the received data and convert each piece into a string, for easier UI implementation
-            for (int i = 0; i < this.dataLength; i++)
-            {
-                nD.Add(inputsConv[i].ToString());
-            }
-
-            // Return this collection so it can be forwarded up to the ViewModel
-            return nD;
+            // Use another LINQ statement to convert the collection of bools into 1s and 0s
+            return [.. rawData.Select(x => Convert.ToByte(x).ToString())];
         }
 
         // Read Holding Registers attempt
-        private ObservableCollection<string> ReadHoldingRegs(IModbusMaster mM, ObservableCollection<string> nD)
+        private ObservableCollection<string> ReadHoldingRegs(IModbusMaster mM)
         {
             // Request data over TCP
             ushort startAdd = Convert.ToUInt16(this.startAddress);
@@ -715,11 +696,11 @@ namespace Schism.Services
 
             // Convert registers to a parsed Observablecollection of strings using several helper methods
             // This helper will handle endian transformation, numeric base formatting, and ASCII interpretation based on user settings.
-            return this.InterpetModbusData(holdingRegs);
+            return this.InterpretModbusRegs(holdingRegs);
         }
 
         // Read Input Registers attempt
-        private ObservableCollection<string> ReadInputRegs(IModbusMaster mM, ObservableCollection<string> nD)
+        private ObservableCollection<string> ReadInputRegs(IModbusMaster mM)
         {
             // Request data over TCP
             ushort startAdd = Convert.ToUInt16(this.startAddress);
@@ -738,11 +719,11 @@ namespace Schism.Services
 
             // Convert registers to a parsed collection of strings using helper and update UI
             // This helper will handle endian transformation, numeric base formatting, and ASCII interpretation based on user settings.
-            return this.InterpetModbusData(inputRegs);
+            return this.InterpretModbusRegs(inputRegs);
         }
 
         // Helper Methods
-        private ObservableCollection<string> InterpetModbusData(ushort[] receivedRegisters)
+        private ObservableCollection<string> InterpretModbusRegs(ushort[] receivedRegisters)
         {
             // Convert raw ushort registers into ObservableCollection<string> for UI display, applying user-selected transformations for data size, numeric base, endianness, and ASCII interpretation.
             var result = new ObservableCollection<string>();
