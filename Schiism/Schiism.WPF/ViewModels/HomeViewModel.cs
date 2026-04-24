@@ -18,6 +18,7 @@ namespace Schiism.ViewModels
 
     public class HomeViewModel : BindableBase, INotifyPropertyChanged
     {
+
         // Private variables
         private string title;
         private bool nonBoolData;

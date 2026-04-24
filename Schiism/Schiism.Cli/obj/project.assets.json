@@ -2,12 +2,59 @@
   "version": 3,
   "targets": {
     "net8.0": {
+      "NModbus/3.0.81": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/NModbus.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/NModbus.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "StyleCop.Analyzers.Unstable/1.2.0.556": {
         "type": "package"
+      },
+      "Schiism.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "NModbus": "3.0.81"
+        },
+        "compile": {
+          "bin/placeholder/Schiism.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Schiism.Core.dll": {}
+        }
       }
     }
   },
   "libraries": {
+    "NModbus/3.0.81": {
+      "sha512": "EzKEp7CHD8ErBL36iMts+6IrZZ9FEqllaD7Y5XzhoRjlxt5yXRughQ1bxPs99QFYFkW5xfkANB0Qs1gAmYGP8Q==",
+      "type": "package",
+      "path": "nmodbus/3.0.81",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.md",
+        "lib/net46/NModbus.dll",
+        "lib/net46/NModbus.xml",
+        "lib/net6.0/NModbus.dll",
+        "lib/net6.0/NModbus.xml",
+        "lib/netstandard1.3/NModbus.dll",
+        "lib/netstandard1.3/NModbus.xml",
+        "lib/netstandard2.0/NModbus.dll",
+        "lib/netstandard2.0/NModbus.xml",
+        "nmodbus.3.0.81.nupkg.sha512",
+        "nmodbus.nuspec"
+      ]
+    },
     "StyleCop.Analyzers.Unstable/1.2.0.556": {
       "sha512": "zvn9Mqs/ox/83cpYPignI8hJEM2A93s2HkHs8HYMOAQW0PkampyoErAiIyKxgTLqbbad29HX/shv/6LGSjPJNQ==",
       "type": "package",
@@ -33,10 +80,16 @@
         "tools/install.ps1",
         "tools/uninstall.ps1"
       ]
+    },
+    "Schiism.Core/1.0.0": {
+      "type": "project",
+      "path": "../Schiism.Core/Schiism.Core.csproj",
+      "msbuildProject": "../Schiism.Core/Schiism.Core.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "Schiism.Core >= 1.0.0",
       "StyleCop.Analyzers.Unstable >= 1.2.0.556"
     ]
   },
@@ -71,7 +124,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Schiism.Core.csproj": {
+              "projectPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Schiism.Core.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
