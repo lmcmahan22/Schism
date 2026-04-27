@@ -10,7 +10,7 @@ namespace Schiism.Core.Abstractions
     using System.Text;
     using System.Threading.Tasks;
     using NModbus;
-    using Schiism.Core.Models.Config;
+    using Schiism.Core.Models.Handlers;
     using Schiism.Core.Models.Enums;
 
     // "Contract for reading data." Simply define the methods and properties that can be used, since these will have unique logic between the different client classes.

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Schiism.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "-ip \"200.200.200.200\"\r\n-port \"413\"\r\n-deviceID \"12\"\r\n-startAddress \"100\"\r\n-length \"24\"\r\n-scanRate \"1050\"\r\n-tcpTimeout \"10000\"\r\n-pollType \"ir\"\r\n-dataSize \"32\"\r\n-numericBase \"Hex\"\r\n-endian \"LEsw\"\r\n-asciiEnable \"True\""
+    }
+  }
+}

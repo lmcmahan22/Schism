@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.37216.2
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schiism.Service", "Schiism.Service\Schiism.Service.csproj", "{2C74361C-B26D-435E-A03E-CF79B426230E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schiism.Core", "Schiism.Core\Schiism.Core.csproj", "{2D9AE2C6-8145-4BAB-A856-F74AC096E250}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schiism.Cli", "Schiism.Cli\Schiism.Cli.csproj", "{6861D542-2E4C-474C-97FD-40E4CD79230D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schiism.WPF", "Schiism.WPF\Schiism.WPF.csproj", "{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schiism.Service", "Schiism.Service\Schiism.Service.csproj", "{3185F97B-262D-478E-B009-271CEC4A7097}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2C74361C-B26D-435E-A03E-CF79B426230E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2C74361C-B26D-435E-A03E-CF79B426230E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2C74361C-B26D-435E-A03E-CF79B426230E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2C74361C-B26D-435E-A03E-CF79B426230E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2D9AE2C6-8145-4BAB-A856-F74AC096E250}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2D9AE2C6-8145-4BAB-A856-F74AC096E250}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D9AE2C6-8145-4BAB-A856-F74AC096E250}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3185F97B-262D-478E-B009-271CEC4A7097}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3185F97B-262D-478E-B009-271CEC4A7097}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3185F97B-262D-478E-B009-271CEC4A7097}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3185F97B-262D-478E-B009-271CEC4A7097}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

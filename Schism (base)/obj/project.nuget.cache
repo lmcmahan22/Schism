@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "rYeMmwxKot4=",
+  "dgSpecHash": "6awCYQpeagA=",
   "success": true,
-  "projectFilePath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Schism.csproj",
+  "projectFilePath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism (base)\\Schism.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.extensions.configuration\\10.0.7\\microsoft.extensions.configuration.10.0.7.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\10.0.7\\microsoft.extensions.configuration.abstractions.10.0.7.nupkg.sha512",

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Schism")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5cdda4c3cd356a84f49479d1888e07d1f7d12bc5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9bd29d4d2b8ea785f7ca3ebc98a48b45c71eeaed")]
 [assembly: System.Reflection.AssemblyProductAttribute("Schism")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Schism")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,7 +1,0 @@
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Debug\Schiism.Service.exe.config
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Debug\Schiism.Service.exe
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Debug\Schiism.Service.pdb
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Debug\Schiism.Service.csproj.AssemblyReference.cache
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Debug\Schiism.Service.csproj.CoreCompileInputs.cache
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Debug\Schiism.Service.exe
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Debug\Schiism.Service.pdb

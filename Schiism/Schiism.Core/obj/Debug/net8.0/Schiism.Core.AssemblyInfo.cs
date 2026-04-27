@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Schiism.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a761d01b152608437d822405773fb0637000d070")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9bd29d4d2b8ea785f7ca3ebc98a48b45c71eeaed")]
 [assembly: System.Reflection.AssemblyProductAttribute("Schiism.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Schiism.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

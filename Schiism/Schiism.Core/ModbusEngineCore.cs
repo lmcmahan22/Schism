@@ -8,50 +8,92 @@ namespace Schiism.Core
     using System.Threading.Tasks;
     using NModbus;
     using Schiism.Core.Abstractions;
-    using Schiism.Core.Models;
-    using Schiism.Core.Models.Config;
     using Schiism.Core.Models.Enums;
+    using Schiism.Core.Models.Handlers;
     using Schiism.Core.Models.Snapshots;
 
     // Responsible for polling only
     // Engine → ModbusClient → Interpreter → Publisher
-    public class ModbusEngineCore
+    public class ModbusEngineCore : IEngineService
     {
         // Ryan showed you a way to incorporate these not as instances, but as parameters from interfaces. You have the second part right...)
         private readonly IModbusClient modbusClient;
-        private readonly ModbusInterpreter dataInterpreter;
+        private readonly IModbusInterpreter dataInterpreter;
         private readonly IDataPublisher dataPublisher;
-        private readonly IEngineDiagnostics engineDiagnostics;
+
+        // Service logger used here via DI
+        private readonly IEngineLogger _logger;
+
+        private ModbusConfig? config;
+        private CancellationTokenSource? internalCts;
+        private Task? runningTask;
 
         // Private variables for engine internal state
-        private int numOKs;
-        private int numErrors;
-        private int numRequests;
-        private int numResponses;
-        private string errMess;
+        private string errMess = string.Empty;
         private bool isConnected;
 
         // Optional if you see connection drops at high poll rates...
         // private int _failureCount;
         // private const int FailureThreshold = 3;
 
+        public event Action<bool>? ConnectionChanged;
+
         public ModbusEngineCore(
-        IModbusClient client,
-        ModbusInterpreter interpreter,
-        IDataPublisher dataPublisher,
-        IEngineDiagnostics engineDiag)
+            IModbusClient client,
+            IModbusInterpreter interpreter,
+            IDataPublisher dataPublisher,
+            IEngineLogger logger)
         {
             this.modbusClient = client;
             this.dataInterpreter = interpreter;
             this.dataPublisher = dataPublisher;
-            this.engineDiagnostics = engineDiag;
-            this.errMess = string.Empty;
+            this._logger = logger;
         }
 
-        public event Action<bool>? ConnectionChanged;
-
-        public async Task RunAsync(ModbusConfig config, CancellationToken ct)
+        public void Configure(ModbusConfig config)
         {
+            this.config = config ?? throw new ArgumentNullException(nameof(config));
+        }
+
+        public Task StartAsync(CancellationToken ct)
+        {
+            // Check for loaded configuration
+            if (this.config == null)
+            {
+                throw new InvalidOperationException("Engine not configured.");
+            }
+
+            if (this.runningTask != null)
+            {
+                throw new InvalidOperationException("Engine already running.");
+            }
+
+            // define cancellation token
+            this.internalCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+
+            // Define the task to be run
+            this.runningTask = Task.Run(() => this.RunLoop(this.config, this.internalCts.Token));
+
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync()
+        {
+            if (this.internalCts == null)
+            {
+                return Task.CompletedTask;
+            }
+
+            this.internalCts.Cancel();
+
+            return this.runningTask ?? Task.CompletedTask;
+        }
+
+        private async Task RunLoop(ModbusConfig config, CancellationToken ct)
+        {
+
+            this._logger.Info($"Attempting to poll device {config.DeviceId} at {config.IPAddress}...");
+
             // While there is no desire to cancel (i.e. run in background constantly)
             while (!ct.IsCancellationRequested)
             {
@@ -103,9 +145,10 @@ namespace Schiism.Core
                         DeviceId = config.DeviceId,
                         TimestampUtc = DateTime.UtcNow,
                     };
-
                     this.dataPublisher.PublishData(snap);
-                    this.SetConnectionState(true); // This may seem strange, but in TCP, the only reliable signal is an already successful poll!
+
+                    // This may seem strange, but in TCP, the only reliable signal is an already successful poll!
+                    this.SetConnectionState(true);
                     this.SuccessResp();
 
                     // Delay the polling loop, just as we used to
@@ -113,29 +156,28 @@ namespace Schiism.Core
                 }
                 catch (Exception e)
                 {
+                    // Similar to observing a successful poll, update to and document for a failed poll.
                     this.SetConnectionState(false);
-
-                    // Increment the number of failed responses (data request)
-                    this.FailResp(e);
+                    this.FailResp(e, config.DeviceId);
                 }
             }
         }
 
         private void RequestInc()
         {
-            this.numRequests++;
+            // this.numRequests++;
         }
 
         private void SuccessResp()
         {
-            this.numResponses++;
-            this.numOKs++;
+            // this.numResponses++;
+            // this.numOKs++;
 
             // Clear error message, since we are now in a functional state
             this.errMess = string.Empty;
         }
 
-        private void FailResp(Exception e)
+        private void FailResp(Exception e, Byte deviceID)
         {
             // Error messages for user clarity
             if (e is SlaveException se)
@@ -186,8 +228,10 @@ namespace Schiism.Core
                 this.errMess = "Unknown Error: " + e.Message;
             }
 
-            this.numResponses++;
-            this.numErrors++;
+            // this.numResponses++;
+            // this.numErrors++;
+
+            this._logger.Error($"Modbus polling failed for device: {deviceID} @ {DateTime.UtcNow}.\nDetails: {this.errMess}", e);
         }
 
         private void SetConnectionState(bool connected)

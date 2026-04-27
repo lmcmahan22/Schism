@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Schism.csproj": {}
+    "C:\\Users\\lmcmahan\\Github\\Schism\\Schism (base)\\Schism.csproj": {}
   },
   "projects": {
-    "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Schism.csproj": {
+    "C:\\Users\\lmcmahan\\Github\\Schism\\Schism (base)\\Schism.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Schism.csproj",
+        "projectUniqueName": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism (base)\\Schism.csproj",
         "projectName": "Schism",
-        "projectPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\Schism.csproj",
+        "projectPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism (base)\\Schism.csproj",
         "packagesPath": "C:\\Users\\lmcmahan\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism\\obj\\",
+        "outputPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schism (base)\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
