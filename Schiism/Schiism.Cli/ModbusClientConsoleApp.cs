@@ -8,7 +8,7 @@
 
 // NOTE: Your console app is able to refer to the .Core project, because you configured a reference in the solution explorer! Projects can't see each other without that step!
 // Define ModbusConfig parameters here (eventually, the UI will bring this info forward to the core/engine instead
-namespace Sciism.Cli
+namespace Schiism.Cli
 {
     using System.Threading.Tasks;
     using Schiism.Core;

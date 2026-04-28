@@ -9,10 +9,10 @@ namespace Schiism.Core.Abstractions
     // Engine-based Logger object to replace .Service's Windows based Logger object. Originally required the app to use a Windows dependency/package, but that's no longer the case with this dependency.
     public interface IEngineLogger
     {
-        void Info(string message, params object[] args);
+        void Info(string message);
 
-        void Warning(string message, params object[] args);
+        void Warning(string message);
 
-        void Error(string message, Exception ex, params object[] args);
+        void Error(string message, Exception ex);
     }
 }

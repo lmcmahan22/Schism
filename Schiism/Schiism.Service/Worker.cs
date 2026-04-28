@@ -1,7 +1,6 @@
 namespace Schiism.Service
 {
     using Microsoft.Extensions.Logging;
-    using Schiism.Core;
     using Schiism.Core.Abstractions;
     using Schiism.Core.Models.Handlers;
 
@@ -15,6 +14,7 @@ namespace Schiism.Service
         // Logger object
         private readonly ILogger<Worker> _logger;
 
+        // Constructor
         public Worker(IEngineService engine, IConfiguration config, ILogger<Worker> logger)
         {
             _engine = engine;
@@ -31,7 +31,6 @@ namespace Schiism.Service
 
             // Begin the engine's execution in the background
             await _engine.StartAsync(stoppingToken);
-            _logger.LogInformation("Worker started");
 
             // Keeps the ExecuteAsync method alive indefinitely until cancellation.
             await Task.Delay(Timeout.Infinite, stoppingToken);

@@ -18,17 +18,24 @@ namespace Schiism.Service.Publishers
     // Dev/test output with an IPC (most likely "NamedPipes")
     public class IPCDataPublisher : IDataPublisher
     {
+        // This refers to the singleton defined in the Program.cs file, managed by the DI container!
+        private readonly ILogger<IPCDataPublisher> _logger;
+
+        public IPCDataPublisher(ILogger<IPCDataPublisher> logger)
+        {
+            _logger = logger;
+        }
+
         public void PublishData(DataSnapshotDto snapshot)
         {
-            // Console.WriteLine("Publish hit");
-            // Console.WriteLine($"Device {snapshot.DeviceId} @ {snapshot.TimestampUtc} (UTC)");
+            _logger.LogInformation($"Device {snapshot.DeviceId} @ {snapshot.TimestampUtc} (UTC)");
 
-            // foreach (var v in snapshot.Data)
-            // {
-            //     Console.Write($"{v} ");
-            // }
+            foreach (var v in snapshot.Data)
+            {
+                _logger.LogInformation($"{v} ");
+            }
 
-            // Console.WriteLine();
+            Console.WriteLine();
         }
     }
 }
