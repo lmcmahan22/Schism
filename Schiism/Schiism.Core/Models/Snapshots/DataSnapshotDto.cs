@@ -19,8 +19,6 @@ namespace Schiism.Core.Models.Snapshots
     {
         public int DeviceId { get; set; }
 
-        public DateTime TimestampUtc { get; set; }
-
         public List<string> Data { get; set; } = new();
     }
 }

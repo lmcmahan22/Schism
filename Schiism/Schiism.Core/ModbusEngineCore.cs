@@ -55,48 +55,30 @@ namespace Schiism.Core
             this.config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
-        public Task StartAsync(CancellationToken ct)
+        public async Task RunAsync(CancellationToken token)
         {
-            // Check for loaded configuration
             if (this.config == null)
             {
                 throw new InvalidOperationException("Engine not configured.");
             }
 
-            if (this.runningTask != null)
+            while (!token.IsCancellationRequested)
             {
-                throw new InvalidOperationException("Engine already running.");
+                await RunLoop(this.config, token);
+                await Task.Delay(this.config.ScanRate, token);
             }
-
-            // define cancellation token
-            this.internalCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-
-            // Define the task to be run
-            this.runningTask = Task.Run(() => this.RunLoop(this.config, this.internalCts.Token));
-
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync()
-        {
-            if (this.internalCts == null)
-            {
-                return Task.CompletedTask;
-            }
-
-            this.internalCts.Cancel();
-
-            return this.runningTask ?? Task.CompletedTask;
         }
 
         private async Task RunLoop(ModbusConfig config, CancellationToken ct)
         {
+            await Task.Yield();
 
-            this._logger.Info($"Attempting to poll device {config.DeviceId} at {config.IPAddress}...");
+            this._logger.Info($"Attempting to poll device {config.DeviceId} at {config.IPAddress}:");
 
             // While there is no desire to cancel (i.e. run in background constantly)
             while (!ct.IsCancellationRequested)
             {
+                ct.ThrowIfCancellationRequested();
                 try
                 {
                     // Increment the number of requests sent (connection request)
@@ -143,7 +125,6 @@ namespace Schiism.Core
                     {
                         Data = interp,
                         DeviceId = config.DeviceId,
-                        TimestampUtc = DateTime.UtcNow,
                     };
                     this.dataPublisher.PublishData(snap);
 
@@ -154,7 +135,7 @@ namespace Schiism.Core
                     // Delay the polling loop, just as we used to
                     await Task.Delay(config.ScanRate, ct);
                 }
-                catch (Exception e)
+                catch (Exception e) when (e is not OperationCanceledException)
                 {
                     // Similar to observing a successful poll, update to and document for a failed poll.
                     this.SetConnectionState(false);
@@ -177,7 +158,7 @@ namespace Schiism.Core
             this.errMess = string.Empty;
         }
 
-        private void FailResp(Exception e, Byte deviceID)
+        private void FailResp(Exception e, byte deviceID)
         {
             // Error messages for user clarity
             if (e is SlaveException se)
@@ -231,7 +212,7 @@ namespace Schiism.Core
             // this.numResponses++;
             // this.numErrors++;
 
-            this._logger.Error($"Modbus polling failed for device: {deviceID} @ {DateTime.UtcNow}.\nDetails: {this.errMess}", e);
+            this._logger.Error($"Modbus polling failed for device: {deviceID}.\nDetails: {this.errMess}", e);
         }
 
         private void SetConnectionState(bool connected)

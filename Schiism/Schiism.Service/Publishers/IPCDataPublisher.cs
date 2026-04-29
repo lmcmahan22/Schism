@@ -28,14 +28,11 @@ namespace Schiism.Service.Publishers
 
         public void PublishData(DataSnapshotDto snapshot)
         {
-            _logger.LogInformation($"Device {snapshot.DeviceId} @ {snapshot.TimestampUtc} (UTC)");
-
-            foreach (var v in snapshot.Data)
-            {
-                _logger.LogInformation($"{v} ");
-            }
-
-            Console.WriteLine();
+            _logger.LogInformation(
+                "Device {DeviceId} | Data: {Data}",
+                snapshot.DeviceId,
+                string.Join(", ", snapshot.Data)
+            );
         }
     }
 }

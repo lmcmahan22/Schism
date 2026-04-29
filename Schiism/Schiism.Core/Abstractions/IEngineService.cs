@@ -6,10 +6,8 @@
     // Works a lot like IHostedService. Should we be implementing that interface from within this interface???
     public interface IEngineService
     {
-        Task StartAsync(CancellationToken ct);
-
-        Task StopAsync();
-
         void Configure(ModbusConfig config);
+
+        Task RunAsync(CancellationToken token);
     }
 }

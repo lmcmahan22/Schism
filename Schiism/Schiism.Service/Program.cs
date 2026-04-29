@@ -4,11 +4,14 @@ using Schiism.Core.Abstractions;
 using Schiism.Core.Models.Clients;
 using Schiism.Core.Models.Handlers;
 using Schiism.Service;
+using Schiism.Service.FileLogging;
 using Schiism.Service.Publishers;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 // Service Name (defined once here so we don't accidentally mistype it anywhere)
 const string ServiceName = "SchiismModbusClientService";
+bool useEventViewer = false; // personal use, so I can switch back to EventViewer, if desired
 
 // Installation parameter (used for batch script when publishing and starting the service)
 if (args.FirstOrDefault()?.Trim().ToLowerInvariant() == "-install")
@@ -22,36 +25,62 @@ if (args.FirstOrDefault()?.Trim().ToLowerInvariant() == "-install")
     RunCommand("sc.exe", $"delete {ServiceName}");
     RunCommand("sc.exe", $"create {ServiceName} binPath= \"{exePath}\" start= auto");
     RunCommand("sc.exe", $"description {ServiceName} \"Schiism Modbus Client Engine\"");
-    Console.WriteLine($"Installed {ServiceName} at: {exePath}");
 
     // If we have installed the app via the batch script, then don't continue down to the Run sequence! That will be handled later!
     return;
 }
 
 // Creates the host with: DI container, Logging, and Configuration capabilities
-var builder = Host.CreateApplicationBuilder(args);
+HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
 // Add the Windows Service for WS mode only
 // Note that the program can identify a Windows Service from a console execution through VSStudio depending on how you start the app
 bool isService = WindowsServiceHelpers.IsWindowsService();
+// Batch script or "sc.exe start SchiismModbusClientService" in command line
 if (isService)
 {
     // Service/IPC Use
     builder.Services.AddWindowsService();
     builder.Logging.ClearProviders();
-    builder.Logging.SetMinimumLevel(LogLevel.Trace);
 
-    // Define the EventLog: What the source should be called, and where the log should appear
-    // Move this to a file eventually, for easier user interaction!
-    builder.Logging.AddEventLog(settings =>
+    SetStartup(true); // This will eventually be controlled by the UI instead, via a WPF checkbox!
+
+    if (useEventViewer)
     {
-        settings.SourceName = $"{ServiceName}";
-        settings.LogName = "Application";
-    });
+        // I attempted to add filtering via C# to get Information level messages to appear in EventViewer, each containing the MODBUS data, but that didn't work.
+        // The only solution was to specify that I wanted Information level event to appear via the appsettings.json files. Annoying!
+        // builder.Logging.SetMinimumLevel(LogLevel.Trace);
 
-    // STILL NEEDS TO BE WRITTEN OUT!
+    //    "Logging": {
+    //        "LogLevel": {
+    //            "Default": "Information",
+    //  "Microsoft.Hosting.Lifetime": "Information"
+    //        },
+    //"EventLog": {
+    //            "LogLevel": {
+    //                "Default": "Information"
+    //            }
+    //        }
+    //    },
+            // Define the EventLog: What the source should be called, and where the log should appear
+
+        // Move this to a file eventually, for easier user interaction!
+        builder.Logging.AddEventLog(settings =>
+        {
+            settings.SourceName = $"{ServiceName}";
+            settings.LogName = "Application";
+        });
+    }
+    else
+    {
+        // make available for IPC AND print to log file!
+        builder.Logging.AddProvider(new FileLoggerProvider($"C:\\Users\\lmcmahan\\OneDrive - Precision Valve and Automation\\Desktop\\SchiismLogs"));
+    }
+
+    // Data publisher (currently pushes poll data to event viewer)
     builder.Services.AddSingleton<IDataPublisher, IPCDataPublisher>();
 }
+// ".\Schiism.Service.exe" in command line
 else
 {
     // Pure Console Use
@@ -83,4 +112,18 @@ static void RunCommand(string file, string args)
     };
 
     Process.Start(psi)?.WaitForExit();
+}
+
+static void SetStartup(bool enable)
+{
+    var startType = enable ? "auto" : "demand";
+
+    Process.Start(new ProcessStartInfo
+    {
+        FileName = "sc.exe",
+        Arguments = $"config SchiismModbusClientService start= {startType}",
+        Verb = "runas", // requires admin
+        CreateNoWindow = true,
+        UseShellExecute = true
+    });
 }

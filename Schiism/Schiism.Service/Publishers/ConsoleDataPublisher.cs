@@ -13,7 +13,7 @@ namespace Schiism.Service.Publishers
         public void PublishData(DataSnapshotDto snapshot)
         {
             Console.WriteLine("Publish hit");
-            Console.WriteLine($"Device {snapshot.DeviceId} @ {snapshot.TimestampUtc} (UTC)");
+            Console.WriteLine($"Device {snapshot.DeviceId}");
 
             foreach (var v in snapshot.Data)
             {
