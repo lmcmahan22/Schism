@@ -44,7 +44,7 @@
               "RelativeDocumentMoniker": "Schiism.Service\\Program.cs",
               "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Program.cs",
               "RelativeToolTip": "Schiism.Service\\Program.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAAAC8AAAAXAAAAAAAAAA==",
+              "ViewState": "AgIAAGAAAAAAAAAAAAAAAIsAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-29T19:20:38.677Z",
               "EditorCaption": ""
@@ -59,8 +59,7 @@
               "RelativeToolTip": "Schiism.Core\\Abstractions\\IEngineService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-29T17:58:10.482Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-29T17:58:10.482Z"
             },
             {
               "$type": "Document",
@@ -72,8 +71,7 @@
               "RelativeToolTip": "Schiism.Service\\Worker.cs",
               "ViewState": "AgIAABUAAAAAAAAAAAAAACgAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-29T17:53:24.734Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-29T17:53:24.734Z"
             },
             {
               "$type": "Document",
@@ -85,8 +83,7 @@
               "RelativeToolTip": "Schiism.Core\\ModbusEngineCore.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAFgAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-29T17:13:21.103Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-29T17:13:21.103Z"
             }
           ]
         }

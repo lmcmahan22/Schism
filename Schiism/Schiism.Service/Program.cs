@@ -43,7 +43,7 @@ if (isService)
     builder.Services.AddWindowsService();
     builder.Logging.ClearProviders();
 
-    SetStartup(true); // This will eventually be controlled by the UI instead, via a WPF checkbox!
+    ConfigureService(true); // This will eventually be controlled by the UI instead, via a WPF checkbox! The boolean controls startup behavior only, recovery behavior is non-configurable atm.
 
     if (useEventViewer)
     {
@@ -114,16 +114,31 @@ static void RunCommand(string file, string args)
     Process.Start(psi)?.WaitForExit();
 }
 
-static void SetStartup(bool enable)
+// This currently runs at startup everytime. A bit redundant, especially since AutoStart is configurable, and recovery behavior only needs to be configured on installation. Spend some more time with this when you can.
+static void ConfigureService(bool enableAutoStart)
 {
-    var startType = enable ? "auto" : "demand";
+    // "delayed-auto" also works in place of "auto" here, but took about 90 seconds longer on my desktop PC to start up. Keeping this as "auto" until I see reason to change it.
+    string startType = enableAutoStart ? "auto" : "demand";
 
+    RunSc($"config {ServiceName} start= {startType}");
+    RunSc($"failureflag {ServiceName} 1");
+    RunSc($"failure {ServiceName} reset= 0 actions= restart/5000/restart/5000/restart/5000");
+}
+
+static void RunSc(string arguments)
+{
     Process.Start(new ProcessStartInfo
     {
         FileName = "sc.exe",
-        Arguments = $"config SchiismModbusClientService start= {startType}",
+        Arguments = arguments,
         Verb = "runas", // requires admin
         CreateNoWindow = true,
         UseShellExecute = true
     });
 }
+
+// For triggering a crash, enter the following in terminal from any file location
+// taskkill /F /IM Schiism.Service.exe
+
+// Command for telling the scm to auto restart the app, also a checkbox in WPF:
+// sc.exe failure SchiismModbusClientService reset= 0 actions= restart/5000/restart/5000/restart/5000
