@@ -1,25 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// <copyright file="FileLogger.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
+// </copyright>
 
 namespace Schiism.Service.FileLogging
 {
+    /// <summary>
+    /// ILogger implementation to send Logged messages to a timestamped text file.
+    /// NOTE: A lock is implemented since the WorkerService may delegate error logging and data logging to different threads.
+    /// </summary>
     public class FileLogger : ILogger
     {
-        private readonly string _filePath;
-        private static readonly object _lock = new();
+        private static readonly object TextAppendlock = new();
+        private readonly string filePath;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileLogger"/> class.
+        /// </summary>
+        /// <param name="filePath">
+        /// File path received from the Program.cs logic, where the file directory can be modified.
+        /// </param>
         public FileLogger(string filePath)
         {
-            _filePath = filePath;
+            this.filePath = filePath;
         }
 
+        /// <inheritdoc/>
         public IDisposable BeginScope<TState>(TState state) => null;
 
+        /// <inheritdoc/>
         public bool IsEnabled(LogLevel logLevel) => true;
 
+        /// <inheritdoc/>
         public void Log<TState>(
             LogLevel logLevel,
             EventId eventId,
@@ -27,12 +38,12 @@ namespace Schiism.Service.FileLogging
             Exception exception,
             Func<TState, Exception, string> formatter)
         {
-            var timestamp = DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            var message = $"{timestamp} [{logLevel}] {formatter(state, exception)}";
+            string timestamp = DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            string message = $"{eventId} {timestamp} [{logLevel}] {formatter(state, exception)}";
 
-            lock (_lock)
+            lock (TextAppendlock)
             {
-                File.AppendAllText(_filePath, message + Environment.NewLine);
+                File.AppendAllText(this.filePath, message + Environment.NewLine);
             }
         }
     }

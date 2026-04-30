@@ -41,13 +41,13 @@ namespace Schiism.Cli
             };
 
             // Dependencies
-            IModbusClient client = new NModbusClient();
+            IModbusClient client = new ModbusClient();
             ModbusInterpreter interpreter = new ModbusInterpreter();
             IDataPublisher publisher = new ConsoleDataPublisher();
             IEngineDiagnostics diag = new ConsoleDiagPublisher();
 
             // Engine
-            ModbusEngineCore engine = new ModbusEngineCore(client, interpreter, publisher, diag);
+            ModbusEngine engine = new ModbusEngineCore(client, interpreter, publisher, diag);
 
             // Cancellation handling
             CancellationTokenSource cts = new CancellationTokenSource();

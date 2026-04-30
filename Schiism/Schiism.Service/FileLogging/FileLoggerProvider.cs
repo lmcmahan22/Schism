@@ -1,31 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// <copyright file="FileLoggerProvider.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
+// </copyright>
 
 namespace Schiism.Service.FileLogging
 {
+    /// <summary>
+    /// Creates the Logger and Directory for the Log File.
+    /// </summary>
     public class FileLoggerProvider : ILoggerProvider
     {
-        private readonly string _basePath;
-        private readonly string _fileName;
+        private readonly string basePath;
+        private readonly string fileName;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileLoggerProvider"/> class.
+        /// </summary>
+        /// <param name="basePath">
+        /// Base file path provided by Program.cs.
+        /// </param>
         public FileLoggerProvider(string basePath)
         {
-            _basePath = basePath;
-
-            _fileName =
-                $"schiism@{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}.log";
+            this.basePath = basePath;
+            this.fileName = $"schiism@{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}.log";
         }
 
+        /// <inheritdoc/>
         public ILogger CreateLogger(string categoryName)
         {
-            var fullPath = Path.Combine(_basePath, _fileName);
-            Directory.CreateDirectory(_basePath); // Idempotent, meaning that if this already exists, nothing bad happens :D
+            var fullPath = Path.Combine(this.basePath, this.fileName);
+            Directory.CreateDirectory(this.basePath); // Idempotent, meaning that if this already exists, nothing bad happens :D
             return new FileLogger(fullPath);
         }
 
-        public void Dispose() { }
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 }

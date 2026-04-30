@@ -4,19 +4,23 @@
 
 namespace Schiism.Core.Abstractions
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using NModbus;
     using Schiism.Core.Models.Handlers;
-    using Schiism.Core.Models.Enums;
 
-    // "Contract for reading data." Simply define the methods and properties that can be used, since these will have unique logic between the different client classes.
+    /// <summary>
+    /// Interface for defining what the TCP Client will be doing.
+    /// </summary>
     public interface IModbusClient
     {
-        // Methods for reading MODBUS data from NMODBUS (eventually combine the two register methods into one, like digitals)!
-        List<ushort> ReadData(string ip, int port, byte deviceId, ushort start, ushort length, int timeout, PollType dataType);
+        /// <summary>
+        /// Unified method for handling how to poll MODBUS data from the server device for all data types (i.e. Status Coils, Status Inputs, Holding Regsiters, and Input Registers).
+        /// </summary>
+        /// <param name="mC">
+        /// ModbusConfig object containing everything that the Client needs to know for polling MODBUS data from the server.
+        /// </param>
+        /// <returns>
+        /// MODBUS data is returned as a List of ushorts (0-65535) with one uShort for each coil/register, regardless of configuration settings.
+        /// </returns>
+        List<ushort> ReadData(IModbusConfig mC);
     }
 }
