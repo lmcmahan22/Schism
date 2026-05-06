@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schiism.Models
+namespace Schiism.WPF.Models
 {
     using System.Runtime.Intrinsics.X86;
 
@@ -22,48 +22,48 @@ namespace Schiism.Models
         // Constructor
         public SaveData(byte sL, string sSA, byte sDID, string sDT, string sNB, string sDS, string sE, bool sAE, string sAC)
         {
-            this.saveLength = sL;
-            this.saveStartAddress = sSA;
-            this.saveDeviceID = sDID;
-            this.saveDataType = sDT;
-            this.saveNumericBase = sNB;
-            this.saveDataSize = sDS;
-            this.saveEndian = sE;
-            this.saveASCIIEnable = sAE;
-            this.saveAddressConv = sAC;
+            saveLength = sL;
+            saveStartAddress = sSA;
+            saveDeviceID = sDID;
+            saveDataType = sDT;
+            saveNumericBase = sNB;
+            saveDataSize = sDS;
+            saveEndian = sE;
+            saveASCIIEnable = sAE;
+            saveAddressConv = sAC;
         }
 
         // Empty Constructor (for loading data)
         public SaveData()
         {
-            this.saveLength = 0;
-            this.saveStartAddress = string.Empty;
-            this.saveDeviceID = 0;
-            this.saveDataType = string.Empty;
-            this.saveNumericBase = string.Empty;
-            this.saveDataSize = string.Empty;
-            this.saveEndian = string.Empty;
-            this.saveASCIIEnable = false;
-            this.saveAddressConv = string.Empty;
+            saveLength = 0;
+            saveStartAddress = string.Empty;
+            saveDeviceID = 0;
+            saveDataType = string.Empty;
+            saveNumericBase = string.Empty;
+            saveDataSize = string.Empty;
+            saveEndian = string.Empty;
+            saveASCIIEnable = false;
+            saveAddressConv = string.Empty;
         }
 
         // Simple getters and setters for each variable
-        public byte SaveLength { get => this.saveLength; set => this.saveLength = value; }
+        public byte SaveLength { get => saveLength; set => saveLength = value; }
 
-        public string SaveStartAddress { get => this.saveStartAddress; set => this.saveStartAddress = value; }
+        public string SaveStartAddress { get => saveStartAddress; set => saveStartAddress = value; }
 
-        public byte SaveDeviceId { get => this.saveDeviceID; set => this.saveDeviceID = value; }
+        public byte SaveDeviceId { get => saveDeviceID; set => saveDeviceID = value; }
 
-        public string SaveDataType { get => this.saveDataType; set => this.saveDataType = value; }
+        public string SaveDataType { get => saveDataType; set => saveDataType = value; }
 
-        public string SaveNumericBase { get => this.saveNumericBase; set => this.saveNumericBase = value; }
+        public string SaveNumericBase { get => saveNumericBase; set => saveNumericBase = value; }
 
-        public string SaveDataSize { get => this.saveDataSize; set => this.saveDataSize = value; }
+        public string SaveDataSize { get => saveDataSize; set => saveDataSize = value; }
 
-        public string SaveEndian { get => this.saveEndian; set => this.saveEndian = value; }
+        public string SaveEndian { get => saveEndian; set => saveEndian = value; }
 
-        public bool SaveAsciiEnable { get => this.saveASCIIEnable; set => this.saveASCIIEnable = value; }
+        public bool SaveAsciiEnable { get => saveASCIIEnable; set => saveASCIIEnable = value; }
 
-        public string SaveAddressConv { get => this.saveAddressConv; set => this.saveAddressConv = value; }
+        public string SaveAddressConv { get => saveAddressConv; set => saveAddressConv = value; }
     }
 }

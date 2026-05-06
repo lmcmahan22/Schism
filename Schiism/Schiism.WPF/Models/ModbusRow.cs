@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schiism.Models
+namespace Schiism.WPF.Models
 {
     using System.ComponentModel;
     using System.Runtime.CompilerServices;
@@ -22,35 +22,35 @@ namespace Schiism.Models
 
         public string Name
         {
-            get => this.name;
+            get => name;
             set
             {
-                if (this.name == value)
+                if (name == value)
                 {
                     return;
                 }
 
-                this.name = value;
+                name = value;
                 
             }
         }
 
         public string Data
         {
-            get => this.data;
+            get => data;
             set
             {
-                if (this.data == value)
+                if (data == value)
                 {
                     return;
                 }
 
-                this.data = value;
+                data = value;
                 
             }
         }
 
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

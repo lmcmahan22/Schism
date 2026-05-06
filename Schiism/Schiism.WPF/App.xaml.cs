@@ -8,9 +8,10 @@ namespace Schiism
     using System.Configuration;
     using System.Data;
     using System.Windows;
-    using Schiism.Services;
     using Schiism.ViewModels;
     using Schiism.Views;
+    using Schiism.WPF;
+    using Schiism.WPF.Services;
 
     public partial class App
     {

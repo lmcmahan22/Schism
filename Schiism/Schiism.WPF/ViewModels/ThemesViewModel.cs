@@ -2,11 +2,11 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schiism.ViewModels
+namespace Schiism.WPF.ViewModels
 {
     using System.Collections.ObjectModel;
     using System.Runtime.CompilerServices;
-    using Schiism.Services;
+    using Schiism.WPF.Services;
 
     public class ThemesViewModel : BindableBase
     {
@@ -16,7 +16,7 @@ namespace Schiism.ViewModels
         // Constructor
         public ThemesViewModel()
         {
-            this.title = "Themes";
+            title = "Themes";
         }
 
         // Service Singleton that gets passed up to View
@@ -25,14 +25,14 @@ namespace Schiism.ViewModels
         // Public instance with getters/setters
         public string Title
         {
-            get { return this.title; }
-            set { this.SetProperty(ref this.title, value); }
+            get { return title; }
+            set { SetProperty(ref title, value); }
         }
 
         // INotifyPropertyChanged interface for ViewModels
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
-            this.RaisePropertyChanged(propertyName);
+            RaisePropertyChanged(propertyName);
         }
     }
 }

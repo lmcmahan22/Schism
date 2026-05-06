@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schiism.ViewModels
+namespace Schiism.WPF.ViewModels
 {
     using System.Runtime.CompilerServices;
 
@@ -19,55 +19,55 @@ namespace Schiism.ViewModels
         // Constructor
         public AboutViewModel()
         {
-            this.title = "About";
-            this.version = "Version: 1.0.0";
-            this.buildDate = "Build Date: 04/20/2026";
-            this.appName = "MODBUS TCP Client Simulator";
-            this.copyright = "©2026 Precision Valve & Automation, Inc.";
-            this.author = "Author: Liam McMahan (Product Development)";
+            title = "About";
+            version = "Version: 1.0.0";
+            buildDate = "Build Date: 04/20/2026";
+            appName = "MODBUS TCP Client Simulator";
+            copyright = "©2026 Precision Valve & Automation, Inc.";
+            author = "Author: Liam McMahan (Product Development)";
         }
 
         // Public instances with getters/setters
         public string Title
         {
-            get { return this.title; }
-            set { this.SetProperty(ref this.title, value); }
+            get { return title; }
+            set { SetProperty(ref title, value); }
         }
 
         public string Version
         {
-            get => this.version;
-            set => this.SetProperty(ref this.version, value);
+            get => version;
+            set => SetProperty(ref version, value);
         }
 
         public string AppName
         {
-            get => this.appName;
-            set => this.SetProperty(ref this.appName, value);
+            get => appName;
+            set => SetProperty(ref appName, value);
         }
 
         public string Copyright
         {
-            get => this.copyright;
-            set => this.SetProperty(ref this.copyright, value);
+            get => copyright;
+            set => SetProperty(ref copyright, value);
         }
 
         public string Author
         {
-            get => this.author;
-            set => this.SetProperty(ref this.author, value);
+            get => author;
+            set => SetProperty(ref author, value);
         }
 
         public string BuildDate
         {
-            get => this.buildDate;
-            set => this.SetProperty(ref this.buildDate, value);
+            get => buildDate;
+            set => SetProperty(ref buildDate, value);
         }
 
         // INotifyPropertyChanged interface for ViewModels
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
-            this.RaisePropertyChanged(propertyName);
+            RaisePropertyChanged(propertyName);
         }
     }
 }

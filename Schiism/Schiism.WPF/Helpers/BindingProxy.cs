@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schiism.Helpers
+namespace Schiism.WPF.Helpers
 {
     using System.Windows;
 
@@ -17,8 +17,8 @@ namespace Schiism.Helpers
 
         public object Data
         {
-            get => this.GetValue(DataProperty);
-            set => this.SetValue(DataProperty, value);
+            get => GetValue(DataProperty);
+            set => SetValue(DataProperty, value);
         }
 
         protected override Freezable CreateInstanceCore()

@@ -749,14 +749,24 @@
       "Schiism.Core/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
-        "dependencies": {
-          "NModbus": "3.0.81"
-        },
         "compile": {
           "bin/placeholder/Schiism.Core.dll": {}
         },
         "runtime": {
           "bin/placeholder/Schiism.Core.dll": {}
+        }
+      },
+      "Schiism.IPC/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Schiism.Core": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Schiism.IPC.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Schiism.IPC.dll": {}
         }
       }
     }
@@ -1948,12 +1958,19 @@
       "type": "project",
       "path": "../Schiism.Core/Schiism.Core.csproj",
       "msbuildProject": "../Schiism.Core/Schiism.Core.csproj"
+    },
+    "Schiism.IPC/1.0.0": {
+      "type": "project",
+      "path": "../Schiism.IPC/Schiism.IPC.csproj",
+      "msbuildProject": "../Schiism.IPC/Schiism.IPC.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
       "Microsoft.Extensions.Hosting.WindowsServices >= 10.0.7",
+      "NModbus >= 3.0.81",
       "Schiism.Core >= 1.0.0",
+      "Schiism.IPC >= 1.0.0",
       "StyleCop.Analyzers.Unstable >= 1.2.0.556"
     ]
   },
@@ -1991,6 +2008,9 @@
           "projectReferences": {
             "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Schiism.Core.csproj": {
               "projectPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Schiism.Core.csproj"
+            },
+            "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.IPC\\Schiism.IPC.csproj": {
+              "projectPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.IPC\\Schiism.IPC.csproj"
             }
           }
         }
@@ -2014,6 +2034,10 @@
           "Microsoft.Extensions.Hosting.WindowsServices": {
             "target": "Package",
             "version": "[10.0.7, )"
+          },
+          "NModbus": {
+            "target": "Package",
+            "version": "[3.0.81, )"
           },
           "StyleCop.Analyzers.Unstable": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",

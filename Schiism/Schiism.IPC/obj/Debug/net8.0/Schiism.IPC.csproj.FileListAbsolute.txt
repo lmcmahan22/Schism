@@ -1,0 +1,5 @@
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.IPC\obj\Debug\net8.0\Schiism.IPC.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.IPC\obj\Debug\net8.0\Schiism.IPC.AssemblyInfoInputs.cache
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.IPC\obj\Debug\net8.0\Schiism.IPC.AssemblyInfo.cs
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.IPC\obj\Debug\net8.0\Schiism.IPC.csproj.CoreCompileInputs.cache
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.IPC\obj\Debug\net8.0\Schiism.IPC.sourcelink.json

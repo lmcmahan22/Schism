@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schiism.Services
+namespace Schiism.WPF.Services
 {
     using System.Collections.ObjectModel;
     using System.ComponentModel;
@@ -30,20 +30,20 @@ namespace Schiism.Services
         public ThemeService()
         {
             // Initialize available themes and set default theme
-            this.availableThemes = new ObservableCollection<string> { "Dark", "Light" };
-            this.selectedTheme = this.availableThemes.First();
+            availableThemes = new ObservableCollection<string> { "Dark", "Light" };
+            selectedTheme = availableThemes.First();
 
             // Initialize theme colors based on the default selected theme (dark)
-            this.main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
-            this.accent1 = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
-            this.accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
-            this.accent3 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
-            this.accent4 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
-            this.textColor = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-            this.errorColor = new SolidColorBrush(Color.FromArgb(255, 120, 0, 0));
+            main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
+            accent1 = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
+            accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
+            accent3 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
+            accent4 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+            textColor = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+            errorColor = new SolidColorBrush(Color.FromArgb(255, 120, 0, 0));
 
             // Notify the UI of the initial theme selection
-            this.OnPropertyChanged(nameof(this.SelectedTheme));
+            OnPropertyChanged(nameof(SelectedTheme));
         }
 
         // INotifyPropertyChanged interface for Services
@@ -55,22 +55,22 @@ namespace Schiism.Services
         // Public properties with getters and setters that notify the UI of changes
         public string SelectedTheme
         {
-            get => this.selectedTheme;
+            get => selectedTheme;
             set
             {
-                this.selectedTheme = value;
-                this.UpdateTheme();
+                selectedTheme = value;
+                UpdateTheme();
             }
         }
 
         public Brush Main
         {
-            get => this.main;
+            get => main;
             set
             {
-                if (this.main != value)
+                if (main != value)
                 {
-                    this.main = value;
+                    main = value;
                     
                 }
             }
@@ -78,12 +78,12 @@ namespace Schiism.Services
 
         public Brush Accent1
         {
-            get => this.accent1;
+            get => accent1;
             set
             {
-                if (this.accent1 != value)
+                if (accent1 != value)
                 {
-                    this.accent1 = value;
+                    accent1 = value;
                     
                 }
             }
@@ -91,12 +91,12 @@ namespace Schiism.Services
 
         public Brush Accent2
         {
-            get => this.accent2;
+            get => accent2;
             set
             {
-                if (this.accent2 != value)
+                if (accent2 != value)
                 {
-                    this.accent2 = value;
+                    accent2 = value;
                     
                 }
             }
@@ -104,12 +104,12 @@ namespace Schiism.Services
 
         public Brush Accent3
         {
-            get => this.accent3;
+            get => accent3;
             set
             {
-                if (this.accent3 != value)
+                if (accent3 != value)
                 {
-                    this.accent3 = value;
+                    accent3 = value;
                     
                 }
             }
@@ -117,12 +117,12 @@ namespace Schiism.Services
 
         public Brush Accent4
         {
-            get => this.accent4;
+            get => accent4;
             set
             {
-                if (this.accent4 != value)
+                if (accent4 != value)
                 {
-                    this.accent4 = value;
+                    accent4 = value;
                     
                 }
             }
@@ -130,12 +130,12 @@ namespace Schiism.Services
 
         public Brush TextColor
         {
-            get => this.textColor;
+            get => textColor;
             set
             {
-                if (this.textColor != value)
+                if (textColor != value)
                 {
-                    this.textColor = value;
+                    textColor = value;
                     
                 }
             }
@@ -143,56 +143,56 @@ namespace Schiism.Services
 
         public Brush ErrorColor
         {
-            get => this.errorColor;
+            get => errorColor;
             set
             {
-                if (this.errorColor != value)
+                if (errorColor != value)
                 {
-                    this.errorColor = value;
+                    errorColor = value;
                     
                 }
             }
         }
 
         // ObservableCollection public binding
-        public ObservableCollection<string> AvailableThemes => this.availableThemes;
+        public ObservableCollection<string> AvailableThemes => availableThemes;
 
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         // Method to update theme colors based on the selected theme
         private void UpdateTheme()
         {
-            if (this.SelectedTheme == "Dark")
+            if (SelectedTheme == "Dark")
             {
-                this.main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
-                this.accent1 = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
-                this.accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
-                this.accent3 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
-                this.accent4 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
-                this.textColor = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                this.errorColor = new SolidColorBrush(Color.FromArgb(255, 120, 0, 0));
+                main = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
+                accent1 = new SolidColorBrush(Color.FromArgb(255, 120, 120, 120));
+                accent2 = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
+                accent3 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
+                accent4 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+                textColor = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                errorColor = new SolidColorBrush(Color.FromArgb(255, 120, 0, 0));
             }
             else
             {
-                this.main = new SolidColorBrush(Color.FromArgb(255, 250, 250, 250));
-                this.accent1 = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
-                this.accent2 = new SolidColorBrush(Color.FromArgb(255, 220, 220, 220));
-                this.accent3 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
-                this.accent4 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
-                this.textColor = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
-                this.errorColor = new SolidColorBrush(Color.FromArgb(255, 200, 0, 0));
+                main = new SolidColorBrush(Color.FromArgb(255, 250, 250, 250));
+                accent1 = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
+                accent2 = new SolidColorBrush(Color.FromArgb(255, 220, 220, 220));
+                accent3 = new SolidColorBrush(Color.FromArgb(255, 200, 200, 200));
+                accent4 = new SolidColorBrush(Color.FromArgb(255, 175, 175, 175));
+                textColor = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                errorColor = new SolidColorBrush(Color.FromArgb(255, 200, 0, 0));
             }
 
-            this.OnPropertyChanged(nameof(this.Main));
-            this.OnPropertyChanged(nameof(this.Accent1));
-            this.OnPropertyChanged(nameof(this.Accent2));
-            this.OnPropertyChanged(nameof(this.Accent3));
-            this.OnPropertyChanged(nameof(this.Accent4));
-            this.OnPropertyChanged(nameof(this.TextColor));
-            this.OnPropertyChanged(nameof(this.ErrorColor));
+            OnPropertyChanged(nameof(Main));
+            OnPropertyChanged(nameof(Accent1));
+            OnPropertyChanged(nameof(Accent2));
+            OnPropertyChanged(nameof(Accent3));
+            OnPropertyChanged(nameof(Accent4));
+            OnPropertyChanged(nameof(TextColor));
+            OnPropertyChanged(nameof(ErrorColor));
         }
     }
 }

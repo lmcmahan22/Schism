@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Schiism.WPF")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9bd29d4d2b8ea785f7ca3ebc98a48b45c71eeaed")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+06763d6a617a0291d270df16421f498407c52c0a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Schiism.WPF")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Schiism.WPF")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

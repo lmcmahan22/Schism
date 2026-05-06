@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schiism.ViewModels
+namespace Schiism.WPF.ViewModels
 {
     using System.Collections.ObjectModel;
     using System.ComponentModel;
@@ -12,9 +12,9 @@ namespace Schiism.ViewModels
     using System.Text.Json.Serialization;
     using System.Windows;
     using Microsoft.Win32;
-    using Schiism.Models;
-    using Schiism.Services;
     using Schiism.Views;
+    using Schiism.WPF.Models;
+    using Schiism.WPF.Services;
 
     public class HomeViewModel : BindableBase, INotifyPropertyChanged
     {
@@ -49,25 +49,25 @@ namespace Schiism.ViewModels
         // ViewModel constructor
         public HomeViewModel(IDialogService dialogService)
         {
-            this.title = "PVA MODBUS TCP Client";
-            this.addressList = ["0", "20", "40", "60", "80", "100"];
-            this.nonBoolData = false;
-            this.endianEnable = false;
-            this.hexData = false;
+            title = "PVA MODBUS TCP Client";
+            addressList = ["0", "20", "40", "60", "80", "100"];
+            nonBoolData = false;
+            endianEnable = false;
+            hexData = false;
 
             // Dropdown contents
-            this.addressConventions = ["Register Address (starting from 0)", "Register Number (starting from 1)"];
-            this.selectedAddressConvention = this.addressConventions.First();
+            addressConventions = ["Register Address (starting from 0)", "Register Number (starting from 1)"];
+            selectedAddressConvention = addressConventions.First();
 
             // Visibility control
-            this.colsVis = new ObservableCollection<Visibility> { Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed };
+            colsVis = new ObservableCollection<Visibility> { Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed };
 
             // ViewModel grid elements
-            this.shiftColumn = new ObservableCollection<string>();
-            this.modbusRows = new ObservableCollection<ModbusRow>[6];
+            shiftColumn = new ObservableCollection<string>();
+            modbusRows = new ObservableCollection<ModbusRow>[6];
 
-            this.UpdateShiftColumn(); // Build the initial shift column
-            this.UpdateModbusTable(); // Build the initial table based on default parameters in the Model
+            UpdateShiftColumn(); // Build the initial shift column
+            UpdateModbusTable(); // Build the initial table based on default parameters in the Model
 
             // Logic for handling reactions to updates from the MODBUSService
             // NOTE: We don't need this for the ThemeService, because there's no logic that we need to perform in response to anything there. The View still gets access to everything in both services, even without this logic for the MS.
@@ -87,80 +87,80 @@ namespace Schiism.ViewModels
         // Public instances of the ViewModel for control in the View
         public string Title
         {
-            get => this.title;
-            set => this.SetProperty(ref this.title, value);
+            get => title;
+            set => SetProperty(ref title, value);
         }
 
         public bool NonBoolData
         {
-            get => this.nonBoolData;
-            set => this.SetProperty(ref this.nonBoolData, value);
+            get => nonBoolData;
+            set => SetProperty(ref nonBoolData, value);
         }
 
         public bool EndianEnable
         {
-            get => this.endianEnable;
-            set => this.SetProperty(ref this.endianEnable, value);
+            get => endianEnable;
+            set => SetProperty(ref endianEnable, value);
         }
 
         public bool HexData
         {
-            get => this.hexData;
-            set => this.SetProperty(ref this.hexData, value);
+            get => hexData;
+            set => SetProperty(ref hexData, value);
         }
 
         public string[] AddressList
         {
-            get => this.addressList;
-            set => this.SetProperty(ref this.addressList, value);
+            get => addressList;
+            set => SetProperty(ref addressList, value);
         }
 
-        public ObservableCollection<string> AddressConventions { get => this.addressConventions; }
+        public ObservableCollection<string> AddressConventions { get => addressConventions; }
 
         public string SelectedAddressConvention
         {
-            get => this.selectedAddressConvention;
+            get => selectedAddressConvention;
             set
             {
-                this.SetProperty(ref this.selectedAddressConvention, value);
+                SetProperty(ref selectedAddressConvention, value);
 
                 // Update Shift Column, since we have changed how to express the information here
-                this.UpdateShiftColumn();
+                UpdateShiftColumn();
             }
         }
 
         public ObservableCollection<Visibility> ColsVis
         {
-            get => this.colsVis;
-            set => this.SetProperty(ref this.colsVis, value);
+            get => colsVis;
+            set => SetProperty(ref colsVis, value);
         }
 
         // Grid collections
-        public ObservableCollection<string> ShiftColumn => this.shiftColumn;
+        public ObservableCollection<string> ShiftColumn => shiftColumn;
 
-        public ObservableCollection<ModbusRow>[] ModbusRows => this.modbusRows;
+        public ObservableCollection<ModbusRow>[] ModbusRows => modbusRows;
 
         // Public Command properties
         public DelegateCommand SaveClick =>
-            this.saveClick ??= new DelegateCommand(this.ExecuteSaveClick);
+            saveClick ??= new DelegateCommand(ExecuteSaveClick);
 
         public DelegateCommand LoadClick =>
-            this.loadClick ??= new DelegateCommand(this.ExecuteLoadClick);
+            loadClick ??= new DelegateCommand(ExecuteLoadClick);
 
         public DelegateCommand ExitClick =>
-            this.exitClick ??= new DelegateCommand(this.ExecuteExitClick);
+            exitClick ??= new DelegateCommand(ExecuteExitClick);
 
         public DelegateCommand ConnClick =>
-            this.connClick ??= new DelegateCommand(this.ExecuteConnClick);
+            connClick ??= new DelegateCommand(ExecuteConnClick);
 
         public DelegateCommand SettClick =>
-            this.settClick ??= new DelegateCommand(this.ExecuteSettClick);
+            settClick ??= new DelegateCommand(ExecuteSettClick);
 
         public DelegateCommand ThemesClick =>
-            this.themesClick ??= new DelegateCommand(this.ExecuteThemesClick);
+            themesClick ??= new DelegateCommand(ExecuteThemesClick);
 
         public DelegateCommand AboutClick =>
-            this.aboutClick ??= new DelegateCommand(this.ExecuteAboutClick);
+            aboutClick ??= new DelegateCommand(ExecuteAboutClick);
 
         // View Model Visibility element bases from Model boolean! :D
         public Visibility ErrorContents
@@ -183,14 +183,14 @@ namespace Schiism.ViewModels
                 SaveEndian = this.MS.SelectedEndian,
                 SaveAsciiEnable = this.MS.AsciiEnable,
 
-                SaveAddressConv = this.selectedAddressConvention,
+                SaveAddressConv = selectedAddressConvention,
             };
-            this.Save(sD);
+            Save(sD);
         }
 
         public void ExecuteLoadClick()
         {
-            SaveData lD = this.Load();
+            SaveData lD = Load();
 
             // Update ViewModel properties with loaded data
             // NOTE: Setting the public instances of variables runs the logic in the setters implicitly! ;)
@@ -204,9 +204,9 @@ namespace Schiism.ViewModels
             this.MS.AsciiEnable = lD.SaveAsciiEnable;
 
             // ViewModel specific save parameter
-            this.selectedAddressConvention = lD.SaveAddressConv;
+            selectedAddressConvention = lD.SaveAddressConv;
 
-            this.OnPropertyChanged(nameof(this.SelectedAddressConvention));
+            OnPropertyChanged(nameof(SelectedAddressConvention));
 
             // Since you're updating these parameters in the Service, your subscription from the constructor will catch this and update the UI automatically.
             // Load --> Update Service --> Subscription pings --> Table is rebuilt
@@ -273,7 +273,7 @@ namespace Schiism.ViewModels
         // INotifyPropertyChanged interface for ViewModels
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
-            this.RaisePropertyChanged(propertyName);
+            RaisePropertyChanged(propertyName);
         }
 
         // React to MODBUSService updates, depending on what updated
@@ -283,21 +283,21 @@ namespace Schiism.ViewModels
             if (e.PropertyName is nameof(this.MS.DataLength))
             {
                 // Update MODBUS table, since the shape of the names and data may have changed here
-                this.UpdateModbusTable();
+                UpdateModbusTable();
             }
 
             // Starting Address should update the table headers as well as call a table update, in case the starting address requires a length change
             if (e.PropertyName is nameof(this.MS.StartAddress))
             {
                 // Update the address headers that sit above the data columns
-                for (int i = 0; i < this.addressList.Length; i++)
+                for (int i = 0; i < addressList.Length; i++)
                 {
                     ushort startAdd = Convert.ToUInt16(this.MS.StartAddress);
-                    int addr = startAdd + (i * 20);
-                    this.addressList[i] = addr.ToString();
+                    int addr = startAdd + i * 20;
+                    addressList[i] = addr.ToString();
                 }
 
-                this.OnPropertyChanged(nameof(this.AddressList));
+                OnPropertyChanged(nameof(AddressList));
 
                 // Update MODBUS table, since the shape of the names and data may have changed here
                 // UpdateModbusTable(); (You shouldn't need this here. Address is changed in View --> Address is updated in Service --> Length is updated in Service in response to the change in Address --> Change in Length gets pushed up to here and runs the above table update call)
@@ -309,15 +309,15 @@ namespace Schiism.ViewModels
                 if (this.MS.SelectedDataType is "Holding Registers" or "Input Registers")
                 {
                     // If we're attempting to poll an odd number of registers while in a numeric base that requires an even number of registers, reduce the length until it is a multiple of 2 to ensure we don't exceed the length with our data display.
-                    if ((this.MS.SelectedDataSize == "32-Bit") && (this.MS.DataLength % 2 != 0) && (this.MS.DataLength > 2))
+                    if (this.MS.SelectedDataSize == "32-Bit" && this.MS.DataLength % 2 != 0 && this.MS.DataLength > 2)
                     {
-                        this.MS.DataLength = (byte)(this.MS.DataLength - (this.MS.DataLength % 2));
+                        this.MS.DataLength = (byte)(this.MS.DataLength - this.MS.DataLength % 2);
                     }
 
                     // If we're attempting to poll a number of registers that isn't a multiple of 4 while in a numeric base that requires a multiple of 4, reduce the length until it is a multiple of 4 to ensure we don't exceed the length with our data display.
-                    else if ((this.MS.SelectedDataSize == "64-Bit") && (this.MS.DataLength % 4 != 0) && (this.MS.DataLength > 4))
+                    else if (this.MS.SelectedDataSize == "64-Bit" && this.MS.DataLength % 4 != 0 && this.MS.DataLength > 4)
                     {
-                        this.MS.DataLength = (byte)(this.MS.DataLength - (this.MS.DataLength % 4));
+                        this.MS.DataLength = (byte)(this.MS.DataLength - this.MS.DataLength % 4);
                     }
                 }
 
@@ -355,8 +355,8 @@ namespace Schiism.ViewModels
                     this.MS.NumericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary", "Floating Point" };
                 }
 
-                this.endianEnable = this.MS.SelectedDataType is "Holding Registers" or "Input Registers";
-                this.OnPropertyChanged(nameof(this.EndianEnable));
+                endianEnable = this.MS.SelectedDataType is "Holding Registers" or "Input Registers";
+                OnPropertyChanged(nameof(EndianEnable));
 
                 // Update MODBUS table, since the shape of the names and data may have changed here
                 // UpdateModbusTable(); (MIGHT NEED TO PUT THIS BACK IN)
@@ -365,13 +365,13 @@ namespace Schiism.ViewModels
             if (e.PropertyName is nameof(this.MS.SelectedDataType))
             {
                 // Update selection availability, according to current settings (ex. allow ASCII display only when using Hex as the numeric base)
-                this.nonBoolData = this.MS.SelectedDataType is "Holding Registers" or "Input Registers";
-                this.hexData = (this.MS.SelectedDataType is "Holding Registers" or "Input Registers") && (this.MS.SelectedNumericBase is "Hexadecimal");
-                this.endianEnable = this.MS.SelectedDataType is "Holding Registers" or "Input Registers";
+                nonBoolData = this.MS.SelectedDataType is "Holding Registers" or "Input Registers";
+                hexData = this.MS.SelectedDataType is "Holding Registers" or "Input Registers" && this.MS.SelectedNumericBase is "Hexadecimal";
+                endianEnable = this.MS.SelectedDataType is "Holding Registers" or "Input Registers";
 
-                this.OnPropertyChanged(nameof(this.NonBoolData));
-                this.OnPropertyChanged(nameof(this.EndianEnable));
-                this.OnPropertyChanged(nameof(this.HexData));
+                OnPropertyChanged(nameof(NonBoolData));
+                OnPropertyChanged(nameof(EndianEnable));
+                OnPropertyChanged(nameof(HexData));
 
                 // Update MODBUS table, since the shape of the names and data may have changed here
                 // UpdateModbusTable(); (MIGHT NEED TO PUT THIS BACK IN)
@@ -380,21 +380,21 @@ namespace Schiism.ViewModels
             if (e.PropertyName is nameof(this.MS.SelectedNumericBase))
             {
                 // Update selection availability, according to current settings (ex. allow ASCII display only when using Hex as the numeric base)
-                this.hexData = (this.MS.SelectedDataType is "Holding Registers" or "Input Registers") && (this.MS.SelectedNumericBase is "Hexadecimal");
-                this.OnPropertyChanged(nameof(this.HexData));
+                hexData = this.MS.SelectedDataType is "Holding Registers" or "Input Registers" && this.MS.SelectedNumericBase is "Hexadecimal";
+                OnPropertyChanged(nameof(HexData));
             }
 
             if (e.PropertyName is nameof(this.MS.RawModbusData))
             {
                 // Update MODBUS Data in the UI
                 // NOTE: since the RawModbusData updates via a loop on another thread, this method will get called constantly!
-                this.UpdateModbusData();
+                UpdateModbusData();
             }
 
             // Simply pass along the error message contents from the catch block in the MODBUS Service
             if (e.PropertyName is nameof(this.MS.ErrMess))
             {
-                this.OnPropertyChanged(nameof(this.ErrorContents));
+                OnPropertyChanged(nameof(ErrorContents));
             }
         }
 
@@ -412,23 +412,23 @@ namespace Schiism.ViewModels
             }
 
             // Retrieve the current names from every existing row of MODBUS data for the cache
-            for (int i = 0; i < this.modbusRows.Length; i++)
+            for (int i = 0; i < modbusRows.Length; i++)
             {
                 // Prevent null issues on the first run (should probably be put in the constructor tbh...
-                if (this.modbusRows[i] == null)
+                if (modbusRows[i] == null)
                 {
-                    this.modbusRows[i] = new ObservableCollection<ModbusRow>();
+                    modbusRows[i] = new ObservableCollection<ModbusRow>();
                 }
 
-                for (int j = 0; j < this.modbusRows[i].Count; j++)
+                for (int j = 0; j < modbusRows[i].Count; j++)
                 {
-                    int idx = (i * 20) + j; // Calculate the overall index based on column and row
+                    int idx = i * 20 + j; // Calculate the overall index based on column and row
 
                     // Only save this name for the new display if we know that we'll see it in the new length.
                     // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
                     if (idx < this.MS.DataLength)
                     {
-                        string? temp = this.modbusRows[i][j].Name;
+                        string? temp = modbusRows[i][j].Name;
                         if (temp == null)
                         {
                             namesCache[idx] = string.Empty;
@@ -440,46 +440,46 @@ namespace Schiism.ViewModels
                     }
                 }
 
-                this.modbusRows[i].Clear();
+                modbusRows[i].Clear();
             }
 
             // Calculate how many columns we need based on the lengthm which may have changed (integer division)
-            var reqCols = ((this.MS.DataLength - 1) / 20) + 1;
+            var reqCols = (this.MS.DataLength - 1) / 20 + 1;
 
             // Add new MODBUS rows for the configured length with the names cache
             for (int i = 0; i < reqCols; i++)
             {
                 // Calculate how many rows we need in each column, ensuring we don't exceed the total length
-                var reqRows = Math.Min(this.MS.DataLength - (20 * i), 20);
+                var reqRows = Math.Min(this.MS.DataLength - 20 * i, 20);
 
                 // Add the new names and data iteratively to the new table
                 for (int j = 0; j < reqRows; j++)
                 {
-                    int idx = (i * 20) + j; // Calculate the overall index based on column and row
-                    this.modbusRows[i].Add(new ModbusRow(namesCache[idx], string.Empty)); // Populate the name, data remains empty for now
+                    int idx = i * 20 + j; // Calculate the overall index based on column and row
+                    modbusRows[i].Add(new ModbusRow(namesCache[idx], string.Empty)); // Populate the name, data remains empty for now
                 }
             }
 
             // Determine which columns should be visible, based on the provided length of the data
-            this.colsVis.Clear();
+            colsVis.Clear();
             for (int i = 0; i < 6; i++)
             {
-                this.colsVis.Add(this.MS.DataLength > (i * 20) ? Visibility.Visible : Visibility.Collapsed);
+                colsVis.Add(this.MS.DataLength > i * 20 ? Visibility.Visible : Visibility.Collapsed);
             }
 
-            this.OnPropertyChanged(nameof(this.ModbusRows));
+            OnPropertyChanged(nameof(ModbusRows));
         }
 
         // Update only the data in the table
         private void UpdateModbusData()
         {
             // Loop through all 6 column pairs of MODBUS names and data
-            for (int i = 0; i < this.modbusRows.Length; i++)
+            for (int i = 0; i < modbusRows.Length; i++)
             {
                 // Loop through each of the twenty rows
-                for (int j = 0; j < this.modbusRows[i].Count; j++)
+                for (int j = 0; j < modbusRows[i].Count; j++)
                 {
-                    int idx = (i * 20) + j; // Calculate the overall index based on current  column and row
+                    int idx = i * 20 + j; // Calculate the overall index based on current  column and row
 
                     // Only try to take the MODBUS data if we have a connection and if the index is within the bounds of the current length.
                     // i.e. the user can change the desired data length prior to connecting, so we don't necessarily want to try reading data here (it may not exist yet)
@@ -494,26 +494,26 @@ namespace Schiism.ViewModels
                         data = new string(string.Empty);
                     }
 
-                    this.modbusRows[i][j].Data = data;
+                    modbusRows[i][j].Data = data;
                 }
             }
 
             // Notify the UI of element updates
-            this.OnPropertyChanged(nameof(this.ModbusRows)); // Might not be needed, since this is an ObservableCollection...
+            OnPropertyChanged(nameof(ModbusRows)); // Might not be needed, since this is an ObservableCollection...
         }
 
         private void UpdateShiftColumn()
         {
             // Update ShiftColumn contents, since the values here will need to be modified as a result of the convention changing
-            this.shiftColumn.Clear();
+            shiftColumn.Clear();
             for (int i = 0; i < 20; i++)
             {
                 // This will print each index as i if counting from 0, or i+1 if counting from 1
-                string content = $"+{(this.selectedAddressConvention == "Register Address (starting from 0)" ? i : i + 1)}";
-                this.shiftColumn.Add(new string(content));
+                string content = $"+{(selectedAddressConvention == "Register Address (starting from 0)" ? i : i + 1)}";
+                shiftColumn.Add(new string(content));
             }
 
-            this.OnPropertyChanged(nameof(this.ShiftColumn));
+            OnPropertyChanged(nameof(ShiftColumn));
         }
 
         // Logic to save data

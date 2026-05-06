@@ -12,7 +12,8 @@ namespace Schiism.Cli
 {
     using System.Threading.Tasks;
     using Schiism.Core;
-    using Schiism.Core.Abstractions;
+    using Schiism.Core.Abstractions.Modbus;
+    using Schiism.Core.Abstractions.Publishers;
     using Schiism.Core.Models.Clients;
     using Schiism.Core.Models.Config;
     using Schiism.Core.Models.Enums;
