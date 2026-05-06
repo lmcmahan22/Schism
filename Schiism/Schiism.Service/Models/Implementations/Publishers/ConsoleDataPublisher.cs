@@ -4,7 +4,7 @@
 
 namespace Schiism.Service.Models.Implementations.Publishers
 {
-    using Schiism.Core.Abstractions.Publishers;
+    using Schiism.Core.Abstractions.Logging;
     using Schiism.Core.Models.DTOs;
 
     /// <inheritdoc/>

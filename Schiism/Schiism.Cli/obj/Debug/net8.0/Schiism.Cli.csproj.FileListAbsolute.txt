@@ -1,6 +1,0 @@
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.csproj.AssemblyReference.cache
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.AssemblyInfoInputs.cache
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.AssemblyInfo.cs
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.csproj.CoreCompileInputs.cache
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.sourcelink.json

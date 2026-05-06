@@ -10,7 +10,6 @@ namespace Schiism.IPC
     {
         public const string ModbusDataStream = "schiism.modbusData.stream.v1";
         public const string ConnDiagStream = "schiism.connDiag.stream.v1";
-        public const string ModbusSettingsCommand = "schiism.modbusSett.cmd.v1";
-        public const string ConnSettingsCommand = "schiism.connSett.cmd.v1";
+        public const string SettingsCommand = "schiism.settings.cmd.v1";
     }
 }

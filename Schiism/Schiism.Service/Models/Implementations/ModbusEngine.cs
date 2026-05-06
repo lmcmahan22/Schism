@@ -4,13 +4,15 @@
 
 namespace Schiism.Service.Models.Implementations
 {
+    using NModbus;
+    using Schiism.Core.Abstractions.IPC.Streams;
+    using Schiism.Core.Abstractions.Logging;
+    using Schiism.Core.Abstractions.Modbus;
+    using Schiism.Core.Models.DTOs;
+    using Schiism.Core.Models.DTOs.IPC.Streams;
+    using Schiism.Core.Models.Enums;
     using System.Net.Sockets;
     using System.Threading.Tasks;
-    using NModbus;
-    using Schiism.Core.Abstractions.Modbus;
-    using Schiism.Core.Abstractions.Publishers;
-    using Schiism.Core.Models.DTOs;
-    using Schiism.Core.Models.Enums;
 
     /// <summary>
     /// Main MODBUS Engine class.
@@ -22,8 +24,13 @@ namespace Schiism.Service.Models.Implementations
     ///     - NOTE: Including these at the top of the class removes the need for an explicit constructor! These are readonly!).
     /// Contains its own instance of commsics, which the Engine only has context to at the top level (here).
     /// </summary>
-    public class ModbusEngine(IModbusConfig config, ICommsMetrics comms, IModbusClient client, IModbusInterpreter interpreter, IDataPublisher dataPublisher, IEnginePublisher enginePublisher) : IModbusEngine
+    public class ModbusEngine(IModbusConfig config, ConnectionDiagnostics comms, IModbusClient client, IModbusInterpreter interpreter, IDataPublisher dataPublisher, IEnginePublisher enginePublisher, IStreamQueue<ModbusData> modbusStreamQueue, IStreamQueue<ConnectionDiagnostics> connDiagStreamQueue) : IModbusEngine
     {
+
+        private readonly SemaphoreSlim lifecycleLock = new(1, 1);
+        private CancellationTokenSource? engineCts;
+        private Task? runTask;
+
         /// <inheritdoc/>
         public async Task RunAsync(CancellationToken token)
         {
@@ -32,14 +39,16 @@ namespace Schiism.Service.Models.Implementations
                 throw new InvalidOperationException("Engine not configured.");
             }
 
+            await client.ConnectAsync(config);
+
             while (!token.IsCancellationRequested)
             {
-                await RunLoop(config, token);
+                await PollData(config, token);
                 await Task.Delay(config.ScanRate, token);
             }
         }
 
-        private async Task RunLoop(IModbusConfig config, CancellationToken ct)
+        private async Task PollData(IModbusConfig config, CancellationToken ct)
         {
             await Task.Yield();
 
@@ -50,8 +59,12 @@ namespace Schiism.Service.Models.Implementations
                 ct.ThrowIfCancellationRequested();
                 try
                 {
-                    RequestInc();
+                    RequestInc(ct);
 
+                    // if (client?.IsConnected != true)
+                    // {
+                    //    throw new InvalidOperationException("Connection lost.");
+                    // }
                     List<ushort> rawData = client.ReadData(config);
                     if (rawData == null || rawData.Count != config.DataLength)
                     {
@@ -75,32 +88,42 @@ namespace Schiism.Service.Models.Implementations
                     };
                     dataPublisher.PublishData(snap);
 
+                    // Enqueue raw data and interpreted data for streaming to UI and other potential subscribers.
+                    ModbusData modbusData = new ModbusData(config.DeviceId, interp, DateTime.UtcNow);
+                    await modbusStreamQueue.EnqueueAsync(modbusData, ct);
+
                     comms.IsConnected = true;
-                    SuccessResp();
+                    SuccessResp(ct);
 
                     await Task.Delay(config.ScanRate, ct);
                 }
                 catch (Exception e) when (e is not OperationCanceledException)
                 {
                     comms.IsConnected = false;
-                    FailResp(e, config.DeviceId);
+                    FailResp(e, config.DeviceId, ct);
                 }
             }
         }
 
-        private void RequestInc()
+        private async void RequestInc(CancellationToken ct)
         {
             comms.NumRequests++;
+
+            // Enqueue diagnostic data, since this has been updated.
+            await connDiagStreamQueue.EnqueueAsync(comms, ct);
         }
 
-        private void SuccessResp()
+        private async void SuccessResp(CancellationToken ct)
         {
             comms.NumResponses++;
             comms.NumOKs++;
             comms.ErrorMessage = string.Empty;
+
+            // Enqueue diagnostic data, since this has been updated.
+            await connDiagStreamQueue.EnqueueAsync(comms, ct);
         }
 
-        private void FailResp(Exception e, byte deviceID)
+        private async void FailResp(Exception e, byte deviceID, CancellationToken ct)
         {
             if (e is SlaveException se)
             {
@@ -154,6 +177,63 @@ namespace Schiism.Service.Models.Implementations
             comms.NumErrors++;
 
             enginePublisher.Error($"Modbus polling failed for device: {deviceID}.\nDetails: {comms.ErrorMessage}", e);
+
+            // Enqueue diagnostic data, since this has been updated.
+            await connDiagStreamQueue.EnqueueAsync(comms, ct);
+        }
+
+        public async Task RestartAsync()
+        {
+            await lifecycleLock.WaitAsync();
+            try
+            {
+                await StopInternalAsync();
+                await StartInternalAsync();
+            }
+            finally
+            {
+                lifecycleLock.Release();
+            }
+        }
+
+        private Task StartInternalAsync()
+        {
+            engineCts = new CancellationTokenSource();
+
+            runTask = Task.Run(() => RunAsync(engineCts.Token));
+
+            return Task.CompletedTask;
+        }
+
+        private async Task StopInternalAsync()
+        {
+            if (engineCts == null)
+                return;
+
+            try
+            {
+                engineCts.Cancel();
+
+                if (runTask != null)
+                    await runTask;
+            }
+            catch (OperationCanceledException e)
+            {
+                // Expected...?
+
+                // comms.ErrorMessage = "Settings Update Failure: Polling could not be stopped and operation was cancelled.";
+                // enginePublisher.Error($"Modbus polling failed for device: {config.DeviceId}.\nDetails: {comms.ErrorMessage}", e);
+                // // Enqueue diagnostic data, since this has been updated.
+                // await connDiagStreamQueue.EnqueueAsync(comms, engineCts.Token);
+            }
+            finally
+            {
+                engineCts.Dispose();
+                engineCts = null;
+                runTask = null;
+            }
+
+            await client.DisconnectAsync();
         }
     }
 }

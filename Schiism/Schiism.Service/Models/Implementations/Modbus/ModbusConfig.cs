@@ -4,13 +4,19 @@
 
 namespace Schiism.Service.Models.Implementations.Modbus
 {
-    using System;
     using Schiism.Core.Abstractions.Modbus;
+    using Schiism.Core.Models.DTOs.IPC_Records.Commands;
     using Schiism.Core.Models.Enums;
+    using System;
+    using System.Net;
+    using System.Threading;
 
     /// <inheritdoc/>
     public class ModbusConfig : IModbusConfig
     {
+
+        private readonly object configLock = new();
+
         // Private wariables (that which can be manipulated by more than one setter from this class, or non-nullable)
         private string iPAddress;
         private byte dataLength;
@@ -34,12 +40,12 @@ namespace Schiism.Service.Models.Implementations.Modbus
         }
 
         /// <summary>
-        /// Gets or Sets Data Length in accordance with DataSize and StartAddress for min and max allowable value respectively.
+        /// Gets dataLength in accordance with DataSize and StartAddress for min and max allowable value respectively.
         /// </summary>
         public byte DataLength
         {
             get => dataLength;
-            set
+            private set
             {
                 byte minLen = GetMinLengthForDataSize();
                 byte maxLen = GetMaxLengthForStartAddress();
@@ -58,7 +64,7 @@ namespace Schiism.Service.Models.Implementations.Modbus
         public ushort StartAddress
         {
             get => startAddress;
-            set
+            private set
             {
                 // NOTE: THE FOLLOWING COMMENTED CODE SHOULD BE CONTROLLED IN THE WPF APPLICATION PRIOR TO RECIEPT BY THE ENGINE HERE!!!
 
@@ -104,7 +110,7 @@ namespace Schiism.Service.Models.Implementations.Modbus
         public DataSize SelectedDataSize
         {
             get => selectedDataSize;
-            set
+            private set
             {
                 if (selectedDataSize != value)
                 {
@@ -122,28 +128,28 @@ namespace Schiism.Service.Models.Implementations.Modbus
         }
 
         /// <inheritdoc/>
-        public ushort TCPPort { get; set; }
+        public ushort TCPPort { get; private set; }
 
         /// <inheritdoc/>
-        public int ScanRate { get; set; }
+        public int ScanRate { get; private set; }
 
         /// <inheritdoc/>
-        public int TCPTimeout { get; set; }
+        public int TCPTimeout { get; private set; }
 
         /// <inheritdoc/>
-        public byte DeviceId { get; set; }
+        public byte DeviceId { get; private set; }
 
         /// <inheritdoc/>
-        public PollType SelectedPollType { get; set; }
+        public PollType SelectedPollType { get; private set; }
 
         /// <inheritdoc/>
-        public bool AsciiEnable { get; set; }
+        public bool AsciiEnable { get; private set; }
 
         /// <inheritdoc/>
-        public NumericBase SelectedNumericBase { get; set; }
+        public NumericBase SelectedNumericBase { get; private set; }
 
         /// <inheritdoc/>
-        public Endian SelectedEndian { get; set; }
+        public Endian SelectedEndian { get; private set; }
 
         // Prevent user from prompting a data overflow simply due to configuring the length and data size poorly
         private byte GetMinLengthForDataSize()
@@ -161,6 +167,71 @@ namespace Schiism.Service.Models.Implementations.Modbus
             int cap = ushort.MaxValue - startAddress + 1;
             ushort clamped = (ushort)Math.Min(120, cap);
             return (byte)clamped;
+        }
+
+        public void Update(SettingsConfig cmd)
+        {
+            lock (this.configLock)
+            {
+                if (cmd.IPAddress is not null)
+                {
+                    this.IPAddress = cmd.IPAddress;
+                }
+
+                if (cmd.TCPPort.HasValue)
+                {
+                    this.TCPPort = cmd.TCPPort.Value;
+                }
+
+                if (cmd.DeviceId.HasValue)
+                {
+                    this.DeviceId = cmd.DeviceId.Value;
+                }
+
+                if (cmd.StartAddress.HasValue)
+                {
+                    this.StartAddress = cmd.StartAddress.Value;
+                }
+                if (cmd.DataLength.HasValue)
+                {
+                    this.DataLength = cmd.DataLength.Value;
+                }
+
+                if (cmd.ScanRate.HasValue)
+                {
+                    this.ScanRate = cmd.ScanRate.Value;
+                }
+
+                if (cmd.TCPTimeout.HasValue)
+                {
+                    this.TCPTimeout = cmd.TCPTimeout.Value;
+                }
+
+                if (cmd.AsciiEnable.HasValue)
+                {
+                    this.AsciiEnable = cmd.AsciiEnable.Value;
+                }
+
+                if (cmd.SelectedDataSize.HasValue)
+                {
+                    this.SelectedDataSize = cmd.SelectedDataSize.Value;
+                }
+
+                if (cmd.SelectedPollType.HasValue)
+                {
+                    this.SelectedPollType = cmd.SelectedPollType.Value;
+                }
+
+                if (cmd.SelectedNumericBase.HasValue)
+                {
+                    this.SelectedNumericBase = cmd.SelectedNumericBase.Value;
+                }
+
+                if (cmd.SelectedEndian.HasValue)
+                {
+                    this.SelectedEndian = cmd.SelectedEndian.Value;
+                }
+            }
         }
     }
 }

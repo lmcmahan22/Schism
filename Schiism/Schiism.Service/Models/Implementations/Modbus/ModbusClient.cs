@@ -7,6 +7,7 @@ namespace Schiism.Service.Models.Implementations.Modbus
     using System.Linq;
     using System.Net.Sockets;
     using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
     using NModbus;
     using Schiism.Core.Abstractions.Modbus;
     using Schiism.Core.Models.Enums;
@@ -14,32 +15,77 @@ namespace Schiism.Service.Models.Implementations.Modbus
     /// <inheritdoc/>
     public class ModbusClient : IModbusClient
     {
+
+        private readonly SemaphoreSlim connectionLock = new(1, 1);
+        private TcpClient? client;
+        private IModbusMaster? master;
+
+        public async Task ConnectAsync(IModbusConfig config)
+        {
+            await connectionLock.WaitAsync();
+            try
+            {
+                if (client?.Connected == true)
+                {
+                    return;
+                }
+
+                client = CreateClient(config.IPAddress, config.TCPPort, config.TCPTimeout);
+
+                // TcpClient constructor connects synchronously, so just wrap for consistency
+                await Task.CompletedTask;
+
+                master = CreateMaster(client, config.TCPTimeout);
+            }
+            finally
+            {
+                connectionLock.Release();
+            }
+        }
+
+        public async Task DisconnectAsync()
+        {
+            await connectionLock.WaitAsync();
+            try
+            {
+                master?.Dispose();
+                master = null;
+
+                if (client != null)
+                {
+                    client.Close();
+                    client.Dispose();
+                    client = null;
+                }
+            }
+            finally
+            {
+                connectionLock.Release();
+            }
+        }
+
         /// <inheritdoc/>
         public List<ushort> ReadData(IModbusConfig config)
         {
-            List<ushort> numericData = new List<ushort>();
-
-            using TcpClient client = CreateClient(config.IPAddress, config.TCPPort, config.TCPTimeout);
-            IModbusMaster master = CreateMaster(client, config.TCPTimeout);
-
-            switch (config.SelectedPollType)
+            if (master == null)
             {
-                case PollType.InputStatus:
-                    numericData = ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, true);
-                    break;
-                case PollType.HoldingRegisters:
-                    numericData = ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, false);
-                    break;
-                case PollType.InputRegisters:
-                    numericData = ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, true);
-                    break;
-                default:
-                    // "PollType.CoilStatus"
-                    numericData = ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, false);
-                    break;
+                throw new InvalidOperationException("Modbus client not connected.");
             }
 
-            return numericData;
+            return config.SelectedPollType switch
+            {
+                PollType.InputStatus =>
+                    ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, true),
+
+                PollType.HoldingRegisters =>
+                    ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, false),
+
+                PollType.InputRegisters =>
+                    ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, true),
+
+                _ =>
+                    ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, false),
+            };
         }
 
         private static List<ushort> ReadDigitals(
@@ -72,10 +118,11 @@ namespace Schiism.Service.Models.Implementations.Modbus
 
         private static TcpClient CreateClient(string ipAddr, int tcpPort, int tcpTimeout)
         {
+            // Move this to the front end!
             // Regex \b0+(\d+) finds leading zeros at word boundaries and keeps the remaining digits
-            string cleanedIP = Regex.Replace(ipAddr, @"\b0+(\d+)", "$1");
+            // string cleanedIP = Regex.Replace(ipAddr, @"\b0+(\d+)", "$1");
 
-            TcpClient client = new TcpClient(cleanedIP, tcpPort)
+            TcpClient client = new TcpClient(ipAddr, tcpPort) // used to be cleanedIP
             {
                 ReceiveTimeout = tcpTimeout,
                 SendTimeout = tcpTimeout,

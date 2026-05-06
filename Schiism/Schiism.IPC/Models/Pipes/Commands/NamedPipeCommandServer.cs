@@ -1,6 +1,6 @@
 ﻿namespace Schiism.IPC.Models.Pipes.Commands
 {
-    using Schiism.Core.Abstractions.IPC;
+    using Schiism.Core.Abstractions.IPC.Commands;
     using Schiism.IPC.Models;
     using System;
     using System.IO.Pipes;

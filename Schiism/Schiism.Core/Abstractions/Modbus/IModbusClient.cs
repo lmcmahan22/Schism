@@ -5,13 +5,17 @@
 namespace Schiism.Core.Abstractions.Modbus
 {
     using System.Collections.Generic;
-    using Schiism.Core.Models.Handlers;
 
     /// <summary>
     /// Interface for defining what the TCP Client will be doing.
     /// </summary>
     public interface IModbusClient
     {
+
+        Task ConnectAsync(IModbusConfig mC);
+
+        Task DisconnectAsync();
+
         /// <summary>
         /// Unified method for handling how to poll MODBUS data from the server device for all data types (i.e. Status Coils, Status Inputs, Holding Regsiters, and Input Registers).
         /// </summary>

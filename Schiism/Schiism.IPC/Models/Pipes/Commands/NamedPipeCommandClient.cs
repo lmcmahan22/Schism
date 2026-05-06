@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Schiism.IPC.Models.Pipes.Commands
 {
-    using Schiism.Core.Abstractions.IPC;
+    using Schiism.Core.Abstractions.IPC.Commands;
     using Schiism.IPC.Models;
 
     public class NamedPipeCommandClient<T>(string pipeName) : ICommandClient<T>

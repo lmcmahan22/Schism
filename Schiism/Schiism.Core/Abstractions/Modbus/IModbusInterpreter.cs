@@ -4,8 +4,6 @@
 
 namespace Schiism.Core.Abstractions.Modbus
 {
-    using Schiism.Core.Models.Handlers;
-
     /// <summary>
     /// Interface for defining the MODBUS data interpreter, which executes discretely from the TCP client.
     /// </summary>

@@ -1,4 +1,4 @@
-﻿using Schiism.Core.Abstractions.IPC;
+﻿using Schiism.Core.Abstractions.IPC.Streams;
 using System;
 using System.Collections.Generic;
 using System.IO.Pipes;

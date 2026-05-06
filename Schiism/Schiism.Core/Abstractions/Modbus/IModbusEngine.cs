@@ -10,6 +10,8 @@ namespace Schiism.Core.Abstractions.Modbus
     /// </summary>
     public interface IModbusEngine
     {
+        Task RestartAsync();
+
         /// <summary>
         /// RunAsync method defines what the Background Service will be executing on thread 0.
         /// </summary>

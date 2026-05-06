@@ -5,7 +5,7 @@
 namespace Schiism.Service.Models.Implementations.Publishers
 {
     using System;
-    using Schiism.Core.Abstractions.Publishers;
+    using Schiism.Core.Abstractions.Logging;
 
     /// <inheritdoc/>
     public class EnginePublisher(ILogger<EnginePublisher> logger) : IEnginePublisher
