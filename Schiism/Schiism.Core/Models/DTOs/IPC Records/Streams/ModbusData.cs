@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Schiism.Core.Models.DTOs.IPC.Streams
+namespace Schiism.Core.Models.DTOs.IPC_Records.Streams
 {
     public record ModbusData
     {

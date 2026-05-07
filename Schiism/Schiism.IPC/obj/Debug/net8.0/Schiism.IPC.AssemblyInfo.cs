@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Schiism.IPC")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4fac3895925a04334d0a75f3d07ac36c2d7113c8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+75acfa3278e8476225d769f2a1d6d0dca3fe23d7")]
 [assembly: System.Reflection.AssemblyProductAttribute("Schiism.IPC")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Schiism.IPC")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

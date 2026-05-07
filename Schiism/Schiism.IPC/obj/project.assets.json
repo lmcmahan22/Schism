@@ -15,6 +15,21 @@
           "bin/placeholder/Schiism.Core.dll": {}
         }
       }
+    },
+    "net8.0/win-x64": {
+      "StyleCop.Analyzers.Unstable/1.2.0.556": {
+        "type": "package"
+      },
+      "Schiism.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/Schiism.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Schiism.Core.dll": {}
+        }
+      }
     }
   },
   "libraries": {
@@ -104,7 +119,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "10.0.100"
+      "SdkAnalysisLevel": "10.0.200"
     },
     "frameworks": {
       "net8.0": {
@@ -133,7 +148,12 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.107/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json"
+      }
+    },
+    "runtimes": {
+      "win-x64": {
+        "#import": []
       }
     }
   }

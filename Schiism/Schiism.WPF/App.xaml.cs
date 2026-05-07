@@ -8,7 +8,6 @@ namespace Schiism
     using System.Configuration;
     using System.Data;
     using System.Windows;
-    using Schiism.ViewModels;
     using Schiism.Views;
     using Schiism.WPF;
     using Schiism.WPF.Services;
@@ -24,7 +23,6 @@ namespace Schiism
         // Registers types with the dependency injection container. This method is called during application initialization.
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.RegisterSingleton<MODBUSService>();
             containerRegistry.RegisterSingleton<ThemeService>();
         }
 

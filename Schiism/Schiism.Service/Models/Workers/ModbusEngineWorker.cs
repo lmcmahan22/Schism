@@ -4,18 +4,58 @@
 
 namespace Schiism.Service.Models.Workers
 {
+    using Microsoft.Extensions.Logging;
     using Schiism.Core.Abstractions.Modbus;
 
     /// <summary>
-    /// Worker class contains the background execution loop that will use your engine.
-    /// WHAT DOES ASYNC AND AWAIT MEAN???.
+    /// Worker class runs the MODBUS Engine in a background thread, allowing it to run independently of the main service thread and be restarted on demand.
     /// </summary>
-    public class ModbusEngineWorker(IModbusEngine engine) : BackgroundService
+    public class ModbusEngineWorker(IModbusEngine engine, ILogger<ModbusEngineWorker> logger) : BackgroundService
     {
-        /// <inheritdoc/>
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        private CancellationTokenSource? sessionCts;
+
+        public async Task RequestRestart()
         {
-            await engine.RunAsync(stoppingToken);
+            sessionCts?.Cancel();
+            await Task.CompletedTask;
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                sessionCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+
+                try
+                {
+                    await engine.ConnectAsync(sessionCts.Token);
+                    logger.LogInformation("Modbus Engine Connected");
+
+                    await RunPollingLoop(sessionCts.Token);
+                }
+                catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+                {
+                    logger.LogInformation("Modbus Engine session restarted");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Modbus Engine failure");
+                }
+                finally
+                {
+                    await engine.DisconnectAsync();
+                }
+
+                await Task.Delay(3000, ct);
+            }
+        }
+
+        private async Task RunPollingLoop(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                await engine.PollOnceAsync(ct);
+            }
         }
     }
 }

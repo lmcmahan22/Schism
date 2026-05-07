@@ -55,3 +55,5 @@ C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Release\net8.0\win-x
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Release\net8.0\win-x64\Schiism.Service.pdb
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Release\net8.0\win-x64\Schiism.Service.genruntimeconfig.cache
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Release\net8.0\win-x64\ref\Schiism.Service.dll
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Release\net8.0\win-x64\Schiism.IPC.dll
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Release\net8.0\win-x64\Schiism.IPC.pdb

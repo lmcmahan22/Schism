@@ -1,21 +1,29 @@
 ﻿using Schiism.Core.Abstractions.IPC.Streams;
-using Schiism.Core.Models.DTOs.IPC.Streams;
+using Schiism.Core.Models.DTOs.IPC_Records.Streams;
 
 namespace Schiism.Service.Models.Workers.Streams
 {
-    public class ConnDiagStreamWorker(IStreamQueue<ConnectionDiagnostics> queue, IStreamPublisher<ConnectionDiagnostics> publisher, ILogger<ConnDiagStreamWorker> logger) : BackgroundService
+    public class ConnDiagStreamNameWorker(IStreamQueue<ConnectionDiagnostics> queue, IStreamPublisher<ConnectionDiagnostics> publisher, ILogger<ConnDiagStreamNameWorker> logger) : BackgroundService
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await foreach (var info in queue.ReadAllAsync(stoppingToken))
+            try
             {
-                var lag = DateTime.UtcNow - info.Timestamp;
+                await foreach (var info in queue.ReadAllAsync(stoppingToken))
+                {
+                    var lag = DateTime.UtcNow - info.Timestamp;
 
-                logger.LogInformation(
-                    "Diagnostics Stream | Lag={LagMs}ms",
-                    lag.TotalMilliseconds);
+                    logger.LogInformation(
+                        "Diagnostics Stream | Lag={LagMs}ms",
+                        lag.TotalMilliseconds);
 
-                await publisher.PublishAsync(info, stoppingToken);
+                    await publisher.PublishAsync(info, stoppingToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogCritical(ex, $"ConnDiagStreamWorker crashed: {ex}");
+                throw;
             }
         }
     }

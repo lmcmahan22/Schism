@@ -5,7 +5,6 @@
 namespace Schiism.WPF.ViewModels
 {
     using System.Runtime.CompilerServices;
-    using Schiism.Services;
 
     public class ConnSettingsViewModel : BindableBase
     {

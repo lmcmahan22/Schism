@@ -19,6 +19,7 @@ namespace Schiism.Service.Models.Implementations.Modbus
 
         // Private wariables (that which can be manipulated by more than one setter from this class, or non-nullable)
         private string iPAddress;
+        private ushort tcpPort;
         private byte dataLength;
         private ushort startAddress;
         private DataSize selectedDataSize;
@@ -26,10 +27,11 @@ namespace Schiism.Service.Models.Implementations.Modbus
         /// <inheritdoc/>
         public ModbusConfig()
         {
-            iPAddress = "100.100.100.100";
+            iPAddress = "192.168.100.20";
             dataLength = 10;
             startAddress = 0;
             selectedDataSize = DataSize.Bit16;
+            tcpPort = 502;
         }
 
         /// <inheritdoc/>
@@ -128,7 +130,7 @@ namespace Schiism.Service.Models.Implementations.Modbus
         }
 
         /// <inheritdoc/>
-        public ushort TCPPort { get; private set; }
+        public ushort TCPPort { get => tcpPort; private set => tcpPort = value; }
 
         /// <inheritdoc/>
         public int ScanRate { get; private set; }

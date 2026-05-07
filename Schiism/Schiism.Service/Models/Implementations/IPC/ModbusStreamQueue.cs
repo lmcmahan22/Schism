@@ -2,7 +2,7 @@
 {
     using System.Threading.Channels;
     using Schiism.Core.Abstractions.IPC.Streams;
-    using Schiism.Core.Models.DTOs.IPC.Streams;
+    using Schiism.Core.Models.DTOs.IPC_Records.Streams;
     using Schiism.Core.Models.Wrappers;
 
     public class ModbusStreamQueue : IStreamQueue<ModbusData>

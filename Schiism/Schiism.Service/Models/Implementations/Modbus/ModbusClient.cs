@@ -4,13 +4,13 @@
 
 namespace Schiism.Service.Models.Implementations.Modbus
 {
-    using System.Linq;
-    using System.Net.Sockets;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
     using NModbus;
     using Schiism.Core.Abstractions.Modbus;
     using Schiism.Core.Models.Enums;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Sockets;
+    using System.Threading.Tasks;
 
     /// <inheritdoc/>
     public class ModbusClient : IModbusClient
@@ -122,11 +122,14 @@ namespace Schiism.Service.Models.Implementations.Modbus
             // Regex \b0+(\d+) finds leading zeros at word boundaries and keeps the remaining digits
             // string cleanedIP = Regex.Replace(ipAddr, @"\b0+(\d+)", "$1");
 
-            TcpClient client = new TcpClient(ipAddr, tcpPort) // used to be cleanedIP
-            {
-                ReceiveTimeout = tcpTimeout,
-                SendTimeout = tcpTimeout,
-            };
+            var ip = IPAddress.Parse(ipAddr);
+
+            var client = new TcpClient(AddressFamily.InterNetwork);
+
+            client.ReceiveTimeout = tcpTimeout;
+            client.SendTimeout = tcpTimeout;
+
+            client.Connect(ip, tcpPort);
 
             return client;
         }

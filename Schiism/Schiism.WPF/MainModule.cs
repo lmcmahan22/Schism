@@ -13,8 +13,6 @@ namespace Schiism.WPF
     using Prism.Ioc;
     using Prism.Modularity;
     using Prism.Navigation.Regions;
-    using Prism.Unity;
-    using Schiism.ViewModels;
     using Schiism.Views;
 
     // Implements the IModule interface, which is a contract for modules in a Prism application. This class is responsible for initializing the module and registering any types or services that the module provides.

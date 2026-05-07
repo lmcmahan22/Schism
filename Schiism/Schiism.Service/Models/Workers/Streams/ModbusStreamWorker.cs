@@ -1,5 +1,5 @@
 ﻿using Schiism.Core.Abstractions.IPC.Streams;
-using Schiism.Core.Models.DTOs.IPC.Streams;
+using Schiism.Core.Models.DTOs.IPC_Records.Streams;
 
 namespace Schiism.Service.Models.Workers.Streams
 {
@@ -7,16 +7,24 @@ namespace Schiism.Service.Models.Workers.Streams
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await foreach (var data in queue.ReadAllAsync(stoppingToken))
+            try
             {
-                var lag = DateTime.UtcNow - data.Timestamp;
+                await foreach (var data in queue.ReadAllAsync(stoppingToken))
+                {
+                    var lag = DateTime.UtcNow - data.Timestamp;
 
-                logger.LogInformation(
-                    "MODBUS Stream | Device={DeviceId} Lag={LagMs}ms",
-                    data.DeviceId,
-                    lag.TotalMilliseconds);
+                    logger.LogInformation(
+                        "MODBUS Stream | Device={DeviceId} Lag={LagMs}ms",
+                        data.DeviceId,
+                        lag.TotalMilliseconds);
 
-                await publisher.PublishAsync(data, stoppingToken);
+                    await publisher.PublishAsync(data, stoppingToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogCritical(ex, $"ModbusStreamWorker crashed: {ex}");
+                throw;
             }
         }
     }

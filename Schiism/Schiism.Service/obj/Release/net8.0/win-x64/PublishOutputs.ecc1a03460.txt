@@ -2,7 +2,6 @@ C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Service.exe
 C:\Users\lmcmahan\Github\Schism\Exec\appsettings.Development.json
 C:\Users\lmcmahan\Github\Schism\Exec\appsettings.json
 C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Service.dll
-C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Service.deps.json
 C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Service.runtimeconfig.json
 C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Service.pdb
 C:\Users\lmcmahan\Github\Schism\Exec\Microsoft.Extensions.Configuration.dll
@@ -42,4 +41,7 @@ C:\Users\lmcmahan\Github\Schism\Exec\System.ServiceProcess.ServiceController.dll
 C:\Users\lmcmahan\Github\Schism\Exec\System.Text.Encodings.Web.dll
 C:\Users\lmcmahan\Github\Schism\Exec\System.Text.Json.dll
 C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Core.dll
+C:\Users\lmcmahan\Github\Schism\Exec\Schiism.IPC.dll
 C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Core.pdb
+C:\Users\lmcmahan\Github\Schism\Exec\Schiism.IPC.pdb
+C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Service.deps.json

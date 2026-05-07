@@ -1,7 +1,6 @@
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Core\bin\Release\net8.0\Schiism.Core.deps.json
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Core\bin\Release\net8.0\Schiism.Core.dll
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Core\bin\Release\net8.0\Schiism.Core.pdb
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Core\obj\Release\net8.0\Schiism.Core.csproj.AssemblyReference.cache
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Core\obj\Release\net8.0\Schiism.Core.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Core\obj\Release\net8.0\Schiism.Core.AssemblyInfoInputs.cache
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Core\obj\Release\net8.0\Schiism.Core.AssemblyInfo.cs

@@ -1,11 +1,11 @@
 ﻿namespace Schiism.Service.Models.Implementations.IPC
 {
     using Schiism.Core.Abstractions.IPC.Streams;
-    using Schiism.Core.Models.DTOs.IPC.Streams;
+    using Schiism.Core.Models.DTOs.IPC_Records.Streams;
     using Schiism.Core.Models.Wrappers;
     using System.Threading.Channels;
 
-    public class ConnDiagStreamQueue : IStreamQueue<ConnectionDiagnostics>
+    public class ConnDiagStreamNameQueue : IStreamQueue<ConnectionDiagnostics>
     {
         private readonly Channel<ConnectionDiagnostics> channel;
 
@@ -16,7 +16,7 @@
         private DateTime lastEnqueue;
         private DateTime lastDequeue;
 
-        public ConnDiagStreamQueue()
+        public ConnDiagStreamNameQueue()
         {
             this.channel = Channel.CreateBounded<ConnectionDiagnostics>(new BoundedChannelOptions(1000)
             {

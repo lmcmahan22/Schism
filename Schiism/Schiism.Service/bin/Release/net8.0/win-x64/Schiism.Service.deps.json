@@ -10,7 +10,9 @@
       "Schiism.Service/1.0.0": {
         "dependencies": {
           "Microsoft.Extensions.Hosting.WindowsServices": "10.0.7",
-          "Schiism.Core": "1.0.0"
+          "NModbus": "3.0.81",
+          "Schiism.Core": "1.0.0",
+          "Schiism.IPC": "1.0.0"
         },
         "runtime": {
           "Schiism.Service.dll": {}
@@ -462,11 +464,19 @@
         }
       },
       "Schiism.Core/1.0.0": {
-        "dependencies": {
-          "NModbus": "3.0.81"
-        },
         "runtime": {
           "Schiism.Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Schiism.IPC/1.0.0": {
+        "dependencies": {
+          "Schiism.Core": "1.0.0"
+        },
+        "runtime": {
+          "Schiism.IPC.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -726,6 +736,11 @@
       "hashPath": "system.text.json.10.0.7.nupkg.sha512"
     },
     "Schiism.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Schiism.IPC/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

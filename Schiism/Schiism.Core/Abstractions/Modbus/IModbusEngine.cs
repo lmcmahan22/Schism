@@ -10,17 +10,10 @@ namespace Schiism.Core.Abstractions.Modbus
     /// </summary>
     public interface IModbusEngine
     {
-        Task RestartAsync();
+        Task ConnectAsync(CancellationToken token);
 
-        /// <summary>
-        /// RunAsync method defines what the Background Service will be executing on thread 0.
-        /// </summary>
-        /// <param name="token">
-        /// Token defined as a means for stopping the application, when desired.
-        /// </param>
-        /// <returns>
-        /// The Task returned is passed up to the Worker class that calls this method.
-        /// </returns>
-        Task RunAsync(CancellationToken token);
+        Task DisconnectAsync();
+
+        Task PollOnceAsync(CancellationToken token);
     }
 }
