@@ -1,11 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using System.Diagnostics;
-using System.IO.Pipes;
 using Schiism.Core.Models.DTOs.IPC_Records.Streams;
-using Schiism.Core.Models.DTOs.IPC_Records.Commands;
-using Schiism.IPC;
-using Schiism.IPC.Models.Pipes.Streams;
-using Schiism.IPC.Models.Pipes.Commands;
+using Schiism.Service.Models.Implementations.IPC.Pipes.Streams;
+using Schiism.Service.Models.Implementations.IPC;
+using Microsoft.Extensions.Logging;
 
 //1. Build tiny IPC console client
 //2. Fully validate transport/lifecycle
@@ -59,9 +56,26 @@ public class ServiceDebugger
 {
     public static async Task Main(string[] args)
     {
+        using ILoggerFactory loggerFactory =
+            LoggerFactory.Create(builder =>
+            {
+                builder
+                    .SetMinimumLevel(LogLevel.Information)
+                    .AddConsole();
+            });
+
+        ILogger<NamedPipeStreamSubscriber<ModbusData>> modbusLogger =
+            loggerFactory.CreateLogger<
+                NamedPipeStreamSubscriber<ModbusData>>();
+
+        ILogger<NamedPipeStreamSubscriber<ConnectionDiagnostics>> connLogger =
+            loggerFactory.CreateLogger<
+                NamedPipeStreamSubscriber<ConnectionDiagnostics>>();
+
         Console.WriteLine("Starting Service Debugger...");
-        var modbusDataSubscriber = new NamedPipeStreamSubscriber<ModbusData>(PipeConstants.ModbusDataStreamName);
-        var connSettSubscriber = new NamedPipeStreamSubscriber<ConnectionDiagnostics>(PipeConstants.ConnDiagStreamName);
+
+        var modbusDataSubscriber = new NamedPipeStreamSubscriber<ModbusData>(PipeConstants.ModbusDataStreamName, modbusLogger);
+        var connSettSubscriber = new NamedPipeStreamSubscriber<ConnectionDiagnostics>(PipeConstants.ConnDiagStreamName, connLogger);
         // var settCommandPublisher = new NamedPipeCommandClient<SettingsConfig>(PipeConstants.SettingsCommandName);
 
         // Shared cancellation token for all operations, to allow for graceful shutdown.

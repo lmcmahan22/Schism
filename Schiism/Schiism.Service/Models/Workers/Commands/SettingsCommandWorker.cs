@@ -9,7 +9,7 @@ namespace Schiism.Service.Models.Workers.Commands
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
 
-    public class SettingsCommandNameWorker(ICommandServer<SettingsConfig> server, IModbusConfig modbusConfig, ModbusEngineWorker modbusEngineWorker, ILogger<SettingsCommandNameWorker> logger) : BackgroundService
+    public class SettingsCommandNameWorker(ICommandServer<SettingsConfig> server, IModbusConfig modbusConfig, IModbusControl modbusControl, ILogger<SettingsCommandNameWorker> logger) : BackgroundService
     {
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -23,7 +23,7 @@ namespace Schiism.Service.Models.Workers.Commands
 
             // Apply settings and restart MODBUS engine
             modbusConfig.Update(cmd); // or map fields manually
-            await modbusEngineWorker.RequestRestart();
+            modbusControl.RequestRestart();
         }
     }
 }

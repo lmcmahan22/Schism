@@ -12,29 +12,43 @@ namespace Schiism.Service.Models.Implementations.Modbus
 {
     public class ModbusDiagnosticsTracker : IModbusDiagnosticsTracker
     {
-        private readonly ConnectionDiagnostics comms = new();
+        private int numRequests;
+        private int numResponses;
+        private int numOKs;
+        private int numErrors;
+        private string errorMessage;
 
         public void OnRequest()
         {
-            comms.NumRequests++;
+            this.numRequests++;
         }
 
         public void OnSuccess()
         {
-            comms.NumResponses++;
-            comms.NumOKs++;
-            comms.ErrorMessage = string.Empty;
+            this.numResponses++;
+            this.numOKs++;
+            this.errorMessage = string.Empty;
         }
 
         public void OnError(Exception ex)
         {
-            comms.NumResponses++;
-            comms.NumErrors++;
-            comms.ErrorMessage = MapError(ex);
+            this.numResponses++;
+            this.numErrors++;
+            this.errorMessage = MapError(ex);
         }
 
         public ConnectionDiagnostics Snapshot()
-            => comms;
+        {
+            return new ConnectionDiagnostics
+            {
+                Timestamp = DateTime.UtcNow,
+                NumRequests = this.numRequests,
+                NumResponses = this.numResponses,
+                NumOKs = this.numOKs,
+                NumErrors = this.numErrors,
+                ErrorMessage = this.errorMessage,
+            };
+        }
 
         private string MapError(Exception ex)
         {

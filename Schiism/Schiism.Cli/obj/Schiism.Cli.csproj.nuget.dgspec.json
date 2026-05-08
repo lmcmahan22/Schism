@@ -35,8 +35,8 @@
               "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Schiism.Core.csproj": {
                 "projectPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Schiism.Core.csproj"
               },
-              "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.IPC\\Schiism.IPC.csproj": {
-                "projectPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.IPC\\Schiism.IPC.csproj"
+              "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Schiism.Service.csproj": {
+                "projectPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Schiism.Service.csproj"
               }
             }
           }
@@ -51,7 +51,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -78,7 +78,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.107/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
@@ -122,7 +122,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -151,18 +151,18 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.107/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.IPC\\Schiism.IPC.csproj": {
+    "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Schiism.Service.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.IPC\\Schiism.IPC.csproj",
-        "projectName": "Schiism.IPC",
-        "projectPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.IPC\\Schiism.IPC.csproj",
+        "projectUniqueName": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Schiism.Service.csproj",
+        "projectName": "Schiism.Service",
+        "projectPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Schiism.Service.csproj",
         "packagesPath": "C:\\Users\\lmcmahan\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.IPC\\obj\\",
+        "outputPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -199,12 +199,20 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.Extensions.Hosting.WindowsServices": {
+              "target": "Package",
+              "version": "[10.0.7, )"
+            },
+            "NModbus": {
+              "target": "Package",
+              "version": "[3.0.81, )"
+            },
             "StyleCop.Analyzers.Unstable": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -228,7 +236,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.107/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

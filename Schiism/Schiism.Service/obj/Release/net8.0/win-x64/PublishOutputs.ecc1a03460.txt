@@ -41,7 +41,5 @@ C:\Users\lmcmahan\Github\Schism\Exec\System.ServiceProcess.ServiceController.dll
 C:\Users\lmcmahan\Github\Schism\Exec\System.Text.Encodings.Web.dll
 C:\Users\lmcmahan\Github\Schism\Exec\System.Text.Json.dll
 C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Core.dll
-C:\Users\lmcmahan\Github\Schism\Exec\Schiism.IPC.dll
 C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Core.pdb
-C:\Users\lmcmahan\Github\Schism\Exec\Schiism.IPC.pdb
 C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Service.deps.json

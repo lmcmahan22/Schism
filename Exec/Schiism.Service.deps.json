@@ -12,7 +12,7 @@
           "Microsoft.Extensions.Hosting.WindowsServices": "10.0.7",
           "NModbus": "3.0.81",
           "Schiism.Core": "1.0.0",
-          "Schiism.IPC": "1.0.0"
+          "StyleCop.Analyzers.Unstable": "1.2.0.556"
         },
         "runtime": {
           "Schiism.Service.dll": {}
@@ -404,6 +404,7 @@
           }
         }
       },
+      "StyleCop.Analyzers.Unstable/1.2.0.556": {},
       "System.Diagnostics.DiagnosticSource/10.0.7": {
         "runtime": {
           "lib/net8.0/System.Diagnostics.DiagnosticSource.dll": {
@@ -466,17 +467,6 @@
       "Schiism.Core/1.0.0": {
         "runtime": {
           "Schiism.Core.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "Schiism.IPC/1.0.0": {
-        "dependencies": {
-          "Schiism.Core": "1.0.0"
-        },
-        "runtime": {
-          "Schiism.IPC.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -693,6 +683,13 @@
       "path": "nmodbus/3.0.81",
       "hashPath": "nmodbus.3.0.81.nupkg.sha512"
     },
+    "StyleCop.Analyzers.Unstable/1.2.0.556": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-zvn9Mqs/ox/83cpYPignI8hJEM2A93s2HkHs8HYMOAQW0PkampyoErAiIyKxgTLqbbad29HX/shv/6LGSjPJNQ==",
+      "path": "stylecop.analyzers.unstable/1.2.0.556",
+      "hashPath": "stylecop.analyzers.unstable.1.2.0.556.nupkg.sha512"
+    },
     "System.Diagnostics.DiagnosticSource/10.0.7": {
       "type": "package",
       "serviceable": true,
@@ -736,11 +733,6 @@
       "hashPath": "system.text.json.10.0.7.nupkg.sha512"
     },
     "Schiism.Core/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Schiism.IPC/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

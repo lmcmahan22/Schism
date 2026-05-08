@@ -23,15 +23,29 @@ namespace Schiism.Service.Models.Implementations.Modbus
         private byte dataLength;
         private ushort startAddress;
         private DataSize selectedDataSize;
+        private int scanRate;
+        private int tcpTimeout;
+        private byte deviceId;
+        private PollType selectedPollType;
+        private bool asciiEnable;
+        private NumericBase selectedNumericBase;
+        private Endian selectedEndian;
 
         /// <inheritdoc/>
         public ModbusConfig()
         {
-            iPAddress = "192.168.100.20";
-            dataLength = 10;
-            startAddress = 0;
-            selectedDataSize = DataSize.Bit16;
-            tcpPort = 502;
+            this.iPAddress = "127.0.0.1"; // "192.168.100.20" for two device config. Otherwise, just use 127 for a single device localhost double duty build!
+            this.dataLength = 10;
+            this.startAddress = 0;
+            this.selectedDataSize = DataSize.Bit16;
+            this.tcpPort = 1502;
+            this.scanRate = 1000;
+            this.tcpTimeout = 5000;
+            this.deviceId = 1;
+            this.selectedPollType = PollType.CoilStatus;
+            this.asciiEnable = false;
+            this.selectedNumericBase = NumericBase.Decimal;
+            this.selectedEndian = Endian.BigEndian;
         }
 
         /// <inheritdoc/>
@@ -133,25 +147,25 @@ namespace Schiism.Service.Models.Implementations.Modbus
         public ushort TCPPort { get => tcpPort; private set => tcpPort = value; }
 
         /// <inheritdoc/>
-        public int ScanRate { get; private set; }
+        public int ScanRate { get => this.scanRate; private set => this.scanRate = value; }
 
         /// <inheritdoc/>
-        public int TCPTimeout { get; private set; }
+        public int TCPTimeout { get => this.tcpTimeout; private set => this.tcpTimeout = value; }
 
         /// <inheritdoc/>
-        public byte DeviceId { get; private set; }
+        public byte DeviceId { get => this.deviceId; private set => this.deviceId = value; }
 
         /// <inheritdoc/>
-        public PollType SelectedPollType { get; private set; }
+        public PollType SelectedPollType { get => this.selectedPollType; private set => this.selectedPollType = value; }
 
         /// <inheritdoc/>
-        public bool AsciiEnable { get; private set; }
+        public bool AsciiEnable { get => this.asciiEnable; private set => this.asciiEnable = value; }
 
         /// <inheritdoc/>
-        public NumericBase SelectedNumericBase { get; private set; }
+        public NumericBase SelectedNumericBase { get => this.selectedNumericBase; private set => this.selectedNumericBase = value; }
 
         /// <inheritdoc/>
-        public Endian SelectedEndian { get; private set; }
+        public Endian SelectedEndian { get => this.selectedEndian; private set => this.selectedEndian = value; }
 
         // Prevent user from prompting a data overflow simply due to configuring the length and data size poorly
         private byte GetMinLengthForDataSize()

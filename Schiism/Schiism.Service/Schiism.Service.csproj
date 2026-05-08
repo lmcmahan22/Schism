@@ -27,6 +27,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Schiism.Core\Schiism.Core.csproj" />
-    <ProjectReference Include="..\Schiism.IPC\Schiism.IPC.csproj" />
   </ItemGroup>
 </Project>

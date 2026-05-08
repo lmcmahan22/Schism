@@ -10,15 +10,9 @@ namespace Schiism.Service.Models.Workers
     /// <summary>
     /// Worker class runs the MODBUS Engine in a background thread, allowing it to run independently of the main service thread and be restarted on demand.
     /// </summary>
-    public class ModbusEngineWorker(IModbusEngine engine, ILogger<ModbusEngineWorker> logger) : BackgroundService
+    public class ModbusEngineWorker(IModbusEngine engine, IModbusConfig config, IModbusControl modbusControl, ILogger<ModbusEngineWorker> logger) : BackgroundService
     {
         private CancellationTokenSource? sessionCts;
-
-        public async Task RequestRestart()
-        {
-            sessionCts?.Cancel();
-            await Task.CompletedTask;
-        }
 
         protected override async Task ExecuteAsync(CancellationToken ct)
         {
@@ -29,7 +23,6 @@ namespace Schiism.Service.Models.Workers
                 try
                 {
                     await engine.ConnectAsync(sessionCts.Token);
-                    logger.LogInformation("Modbus Engine Connected");
 
                     await RunPollingLoop(sessionCts.Token);
                 }
@@ -46,7 +39,7 @@ namespace Schiism.Service.Models.Workers
                     await engine.DisconnectAsync();
                 }
 
-                await Task.Delay(3000, ct);
+                await Task.Delay(config.ScanRate, ct);
             }
         }
 
@@ -54,7 +47,21 @@ namespace Schiism.Service.Models.Workers
         {
             while (!ct.IsCancellationRequested)
             {
+                // if (!engine.IsConnected)
+                // {
+                //    throw new OperationCanceledException("Client disconnected");
+                // }
+
                 await engine.PollOnceAsync(ct);
+
+                if (modbusControl.RestartRequested)
+                {
+                    modbusControl.ClearRestartRequest();
+                    logger.LogInformation("Modbus restart requested");
+                    throw new OperationCanceledException("Restart requested");
+                }
+
+                await Task.Delay(config.ScanRate, ct);
             }
         }
     }

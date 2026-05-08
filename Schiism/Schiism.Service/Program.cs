@@ -4,6 +4,7 @@
 
 namespace Schiism.Service
 {
+    using System.Diagnostics;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting.WindowsServices;
     using Microsoft.Extensions.Logging;
@@ -13,18 +14,18 @@ namespace Schiism.Service
     using Schiism.Core.Abstractions.Modbus;
     using Schiism.Core.Models.DTOs.IPC_Records.Commands;
     using Schiism.Core.Models.DTOs.IPC_Records.Streams;
-    using Schiism.IPC;
-    using Schiism.IPC.Models.Pipes.Commands;
-    using Schiism.IPC.Models.Pipes.Streams;
     using Schiism.Service.Models.FileLogging;
     using Schiism.Service.Models.Implementations;
     using Schiism.Service.Models.Implementations.IPC;
+    using Schiism.Service.Models.Implementations.IPC.Pipes.Commands;
+    using Schiism.Service.Models.Implementations.IPC.Pipes.Streams;
+    using Schiism.Service.Models.Implementations.IPC.Queues;
     using Schiism.Service.Models.Implementations.Modbus;
     using Schiism.Service.Models.Implementations.Publishers;
     using Schiism.Service.Models.Workers;
     using Schiism.Service.Models.Workers.Commands;
     using Schiism.Service.Models.Workers.Streams;
-    using System.Diagnostics;
+    
 
     /// <summary>
     /// Main Service program that executes the Worker Service, which runs your engine.
@@ -68,6 +69,7 @@ namespace Schiism.Service
 
                 // Control via checkbox in UI when it's ready!
                 ConfigureStartup(true);
+                ConfigureRestart(false);
             }
             else
             {
@@ -79,19 +81,18 @@ namespace Schiism.Service
             // Make this its own method (ChatGPT originally advised making this its own CLASS???)
             builder.Services.AddSingleton<IModbusConfig, ModbusConfig>();
             builder.Services.AddSingleton<IModbusClient, ModbusClient>();
+            builder.Services.AddSingleton<IModbusEngine, ModbusEngine>();
             builder.Services.AddSingleton<IEnginePublisher, EnginePublisher>();
             builder.Services.AddSingleton<IModbusInterpreter, ModbusInterpreter>();
-
-            builder.Services.AddSingleton<ModbusEngineWorker>();
-            builder.Services.AddHostedService(sp =>
-                sp.GetRequiredService<ModbusEngineWorker>());
+            builder.Services.AddSingleton<IModbusControl, ModbusControl>();
 
             // Stream Publishers
-            builder.Services.AddSingleton<IStreamPublisher<ModbusData>>(sp =>
-                new NamedPipeStreamPublisher<ModbusData>(PipeConstants.ModbusDataStreamName));
-
-            builder.Services.AddSingleton<IStreamPublisher<ConnectionDiagnostics>>(sp =>
-                new NamedPipeStreamPublisher<ConnectionDiagnostics>(PipeConstants.ConnDiagStreamName));
+            builder.Services.AddSingleton<IStreamPublisher<ModbusData>, NamedPipeStreamPublisher<ModbusData>>(sp =>
+                new NamedPipeStreamPublisher<ModbusData>
+                (PipeConstants.ModbusDataStreamName, sp.GetRequiredService<ILogger<NamedPipeStreamPublisher<ModbusData>>>()));
+            builder.Services.AddSingleton<IStreamPublisher<ConnectionDiagnostics>, NamedPipeStreamPublisher<ConnectionDiagnostics>>(sp =>
+                new NamedPipeStreamPublisher<ConnectionDiagnostics>
+                (PipeConstants.ConnDiagStreamName, sp.GetRequiredService<ILogger<NamedPipeStreamPublisher<ConnectionDiagnostics>>>()));
 
             // Stream Queues
             builder.Services.AddSingleton<IStreamQueue<ModbusData>, ModbusStreamQueue>();
@@ -99,7 +100,8 @@ namespace Schiism.Service
 
             // Commmand Server
             builder.Services.AddSingleton<ICommandServer<SettingsConfig>, NamedPipeCommandServer<SettingsConfig>>(sp =>
-                new NamedPipeCommandServer<SettingsConfig>(PipeConstants.SettingsCommandName));
+                new NamedPipeCommandServer<SettingsConfig>
+                (PipeConstants.SettingsCommandName, sp.GetRequiredService<ILogger<NamedPipeCommandServer<SettingsConfig>>>()));
 
             // Frontend
             // builder.Services.AddSingleton<ICommandClient<ModbusConfigCommand>>(sp =>
@@ -118,8 +120,10 @@ namespace Schiism.Service
             builder.Services.AddHostedService<ModbusEngineWorker>();
             builder.Services.AddHostedService<ModbusStreamWorker>();
             builder.Services.AddHostedService<ConnDiagStreamNameWorker>();
-            builder.Services.AddHostedService<QueueMonitorWorker>();
             builder.Services.AddHostedService<SettingsCommandNameWorker>();
+
+            // Not used right now, it's just a logger that doesn't actually log correctly atm
+            // builder.Services.AddHostedService<QueueMonitorWorker>();
 
             // In WPF...
             // await commandClient.SendAsync(new ModbusConfigCommand(...));
@@ -150,7 +154,6 @@ namespace Schiism.Service
                 RunSc($"delete {ServiceName}");
                 RunSc($"create {ServiceName} binPath= \"{exePath}\" start= auto");
                 RunSc($"description {ServiceName} \"MODBUS TCP Client\"");
-                ConfigureRestart(true);
                 return;
             }
         }

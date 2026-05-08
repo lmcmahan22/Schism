@@ -14,8 +14,9 @@ namespace Schiism.Service.Models.Workers.Streams
                     var lag = DateTime.UtcNow - data.Timestamp;
 
                     logger.LogInformation(
-                        "MODBUS Stream | Device={DeviceId} Lag={LagMs}ms",
+                        "MODBUS Stream | Device={DeviceId} Data={Data} Lag={LagMs}ms",
                         data.DeviceId,
+                        data.Data,
                         lag.TotalMilliseconds);
 
                     await publisher.PublishAsync(data, stoppingToken);

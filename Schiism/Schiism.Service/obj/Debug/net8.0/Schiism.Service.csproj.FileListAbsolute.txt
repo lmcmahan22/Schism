@@ -45,9 +45,7 @@ C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Debug\net8.0\runtime
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.ServiceProcess.ServiceController.dll
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Debug\net8.0\Schiism.Core.dll
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Debug\net8.0\Schiism.IPC.dll
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Debug\net8.0\Schiism.Core.pdb
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Debug\net8.0\Schiism.IPC.pdb
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Debug\net8.0\Schiism.Service.csproj.AssemblyReference.cache
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Debug\net8.0\Schiism.Service.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Debug\net8.0\Schiism.Service.AssemblyInfoInputs.cache

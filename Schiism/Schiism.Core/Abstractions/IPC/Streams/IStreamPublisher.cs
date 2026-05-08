@@ -9,6 +9,8 @@ namespace Schiism.Core.Abstractions.IPC.Streams
     // Implemented by Service
     public interface IStreamPublisher<T>
     {
+        Task StartAsync(CancellationToken ct);
+
         Task PublishAsync(T data, CancellationToken ct);
     }
 }

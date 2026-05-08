@@ -12,7 +12,7 @@ namespace Schiism.Core.Abstractions.Modbus
     public interface IModbusClient
     {
 
-        Task ConnectAsync(IModbusConfig mC);
+        Task InitializeAsync(IModbusConfig mC);
 
         Task DisconnectAsync();
 

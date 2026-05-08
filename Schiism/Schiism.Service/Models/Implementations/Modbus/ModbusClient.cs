@@ -20,7 +20,7 @@ namespace Schiism.Service.Models.Implementations.Modbus
         private TcpClient? client;
         private IModbusMaster? master;
 
-        public async Task ConnectAsync(IModbusConfig config)
+        public async Task InitializeAsync(IModbusConfig config)
         {
             await connectionLock.WaitAsync();
             try

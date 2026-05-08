@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Schiism.Core\Schiism.Core.csproj" />
-    <ProjectReference Include="..\Schiism.IPC\Schiism.IPC.csproj" />
+    <ProjectReference Include="..\Schiism.Service\Schiism.Service.csproj" />
   </ItemGroup>
 
 </Project>

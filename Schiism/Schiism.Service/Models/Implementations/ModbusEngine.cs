@@ -32,9 +32,9 @@ namespace Schiism.Service.Models.Implementations
         {
             try
             {
-                await client.ConnectAsync(config);
+                await client.InitializeAsync(config);
                 diagnostics.OnSuccess();
-                enginePublisher.Info($"Successfully connected to Modbus device: {config.DeviceId} at {config.IPAddress}:{config.TCPPort}.");
+                enginePublisher.Info($"Successfully initialized Modbus device: {config.DeviceId} at {config.IPAddress}:{config.TCPPort}.");
             }
             catch (Exception e)
             {
@@ -72,13 +72,14 @@ namespace Schiism.Service.Models.Implementations
                     ? interpreter.InterpretRegs(config, rawData)
                     : rawData.Select(x => x.ToString()).ToList();
 
-                var snap = new DataSnapshotDto
-                {
-                    Data = interp,
-                    DeviceId = config.DeviceId,
-                };
+                // Data stream handles this now.
+                // var snap = new DataSnapshotDto
+                // {
+                //    Data = interp,
+                //    DeviceId = config.DeviceId,
+                // };
 
-                dataPublisher.PublishData(snap);
+                // dataPublisher.PublishData(snap);
 
                 await modbusStreamQueue.EnqueueAsync(
                     new ModbusData(config.DeviceId, interp, DateTime.UtcNow),
@@ -89,9 +90,7 @@ namespace Schiism.Service.Models.Implementations
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 diagnostics.OnError(ex);
-                enginePublisher.Error($"Error occurred while polling Modbus device: {config.DeviceId} at {config.IPAddress}:{config.TCPPort}.\nDetails: {diagnostics.Snapshot().ErrorMessage}", ex);
-
-                await connDiagStreamQueue.EnqueueAsync(diagnostics.Snapshot(), ct);
+                enginePublisher.Error($"Error occured while polling Modbus device: {config.DeviceId} at {config.IPAddress}:{config.TCPPort}.\nDetails: {diagnostics.Snapshot().ErrorMessage}", ex);
             }
             finally
             {

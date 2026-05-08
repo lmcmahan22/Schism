@@ -9,7 +9,6 @@ namespace Schiism.Core.Models.DTOs.IPC_Records.Streams
 {
     public record ConnectionDiagnostics
     {
-
         public ConnectionDiagnostics()
         {
             NumRequests = 0;

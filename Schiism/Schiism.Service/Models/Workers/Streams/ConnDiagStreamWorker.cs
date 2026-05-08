@@ -14,7 +14,8 @@ namespace Schiism.Service.Models.Workers.Streams
                     var lag = DateTime.UtcNow - info.Timestamp;
 
                     logger.LogInformation(
-                        "Diagnostics Stream | Lag={LagMs}ms",
+                        "Diagnostics Stream | Diagnostics={info} Lag={LagMs}ms",
+                        info,
                         lag.TotalMilliseconds);
 
                     await publisher.PublishAsync(info, stoppingToken);
