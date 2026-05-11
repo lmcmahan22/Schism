@@ -9,6 +9,6 @@ namespace Schiism.Core.Abstractions.IPC.Streams
     // Implemented by WPF
     public interface IStreamSubscriber<T>
     {
-        Task StartAsync(Func<T, Task> onData, CancellationToken ct);
+        Task SubscribeAsync(Func<T, Task> onData, CancellationToken ct);
     }
 }

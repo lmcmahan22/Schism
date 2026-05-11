@@ -3,32 +3,28 @@
   "WorkspaceRootPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\models\\workers\\streampublisherworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\models\\workers\\streampublisherworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\models\\implementations\\ipc\\pipes\\streams\\streampublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\models\\implementations\\ipc\\pipes\\streams\\streampublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\abstractions\\ipc\\streams\\istreampublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\abstractions\\ipc\\streams\\istreampublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\models\\implementations\\ipc\\pipes\\streams\\namedpipestreamsubscriber.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\models\\implementations\\ipc\\pipes\\streams\\namedpipestreamsubscriber.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\models\\implementations\\ipc\\pipes\\commands\\namedpipecommandclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\models\\implementations\\ipc\\pipes\\commands\\namedpipecommandclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\models\\implementations\\ipc\\pipes\\streams\\namedpipestreampublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\models\\implementations\\ipc\\pipes\\streams\\namedpipestreampublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\models\\implementations\\ipc\\pipes\\commands\\namedpipecommandserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\models\\implementations\\ipc\\pipes\\commands\\namedpipecommandserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}|Schiism.Cli\\Schiism.Cli.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.cli\\servicedebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}|Schiism.Cli\\Schiism.Cli.csproj|solutionrelative:schiism.cli\\servicedebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\models\\implementations\\ipc\\pipes\\commands\\commandserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\models\\implementations\\ipc\\pipes\\commands\\commandserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\models\\implementations\\ipc\\pipes\\commands\\commandclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\models\\implementations\\ipc\\pipes\\commands\\commandclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,116 +34,101 @@
       "DocumentGroups": [
         {
           "DockedHeight": 193,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 4,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            }
-          ]
-        },
-        {
-          "DockedHeight": 163,
-          "SelectedChildIndex": 2,
-          "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{004be353-6879-467c-9d1e-9ac23cdf6d49}"
-            },
-            {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "IStreamPublisher.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamPublisher.cs",
-              "RelativeDocumentMoniker": "Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamPublisher.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamPublisher.cs",
-              "RelativeToolTip": "Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamPublisher.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Title": "StreamPublisher.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Streams\\StreamPublisher.cs",
+              "RelativeDocumentMoniker": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Streams\\StreamPublisher.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Streams\\StreamPublisher.cs",
+              "RelativeToolTip": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Streams\\StreamPublisher.cs",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAAD8AAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-08T20:49:05.746Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Program.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Program.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Program.cs",
-              "RelativeToolTip": "Schiism.Service\\Program.cs",
-              "ViewState": "AgIAACUAAAAAAAAAAAAAAAYAAAAdAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-08T20:40:08.787Z",
+              "WhenOpened": "2026-05-11T20:16:56.556Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "NamedPipeStreamSubscriber.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Streams\\NamedPipeStreamSubscriber.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Streams\\NamedPipeStreamSubscriber.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Streams\\NamedPipeStreamSubscriber.cs",
-              "RelativeToolTip": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Streams\\NamedPipeStreamSubscriber.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAWAAAAAAAAAA==",
+              "Title": "IStreamPublisher.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamPublisher.cs",
+              "RelativeDocumentMoniker": "Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamPublisher.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamPublisher.cs",
+              "RelativeToolTip": "Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamPublisher.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-08T19:18:20.947Z",
+              "WhenOpened": "2026-05-11T20:16:48.87Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "NamedPipeCommandClient.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\NamedPipeCommandClient.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\NamedPipeCommandClient.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\NamedPipeCommandClient.cs",
-              "RelativeToolTip": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\NamedPipeCommandClient.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "StreamPublisherWorker.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Workers\\StreamPublisherWorker.cs",
+              "RelativeDocumentMoniker": "Schiism.Service\\Models\\Workers\\StreamPublisherWorker.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Workers\\StreamPublisherWorker.cs",
+              "RelativeToolTip": "Schiism.Service\\Models\\Workers\\StreamPublisherWorker.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAACMAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-08T19:18:19.094Z",
+              "WhenOpened": "2026-05-11T20:13:06.241Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "NamedPipeStreamPublisher.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Streams\\NamedPipeStreamPublisher.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Streams\\NamedPipeStreamPublisher.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Streams\\NamedPipeStreamPublisher.cs",
-              "RelativeToolTip": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Streams\\NamedPipeStreamPublisher.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAAB4AAABEAAAAAAAAAA==",
+              "Title": "CommandServer.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\CommandServer.cs",
+              "RelativeDocumentMoniker": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\CommandServer.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\CommandServer.cs",
+              "RelativeToolTip": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\CommandServer.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-08T19:18:20.37Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-11T19:59:26.819Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "NamedPipeCommandServer.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\NamedPipeCommandServer.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\NamedPipeCommandServer.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\NamedPipeCommandServer.cs",
-              "RelativeToolTip": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\NamedPipeCommandServer.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAARAAAAAAAAAA==",
+              "Title": "CommandClient.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\CommandClient.cs",
+              "RelativeDocumentMoniker": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\CommandClient.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\CommandClient.cs",
+              "RelativeToolTip": "Schiism.Service\\Models\\Implementations\\IPC\\Pipes\\Commands\\CommandClient.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-08T19:18:19.696Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-11T19:57:08.568Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 3,
               "Title": "ServiceDebugger.cs",
               "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\ServiceDebugger.cs",
               "RelativeDocumentMoniker": "Schiism.Cli\\ServiceDebugger.cs",
               "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\ServiceDebugger.cs",
               "RelativeToolTip": "Schiism.Cli\\ServiceDebugger.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAA/AAAAAAAAAA==",
+              "ViewState": "AgIAACQAAAAAAAAAAAApwEIAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-08T19:46:02.907Z",
+              "WhenOpened": "2026-05-11T19:44:15.683Z",
               "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedHeight": 163,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{004be353-6879-467c-9d1e-9ac23cdf6d49}"
             }
           ]
         }

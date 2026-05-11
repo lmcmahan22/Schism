@@ -3,6 +3,9 @@ using Schiism.Core.Models.DTOs.IPC_Records.Streams;
 using Schiism.Service.Models.Implementations.IPC.Pipes.Streams;
 using Schiism.Service.Models.Implementations.IPC;
 using Microsoft.Extensions.Logging;
+using Schiism.Service.Models.Implementations.IPC.Pipes.Commands;
+using Schiism.Core.Models.DTOs.IPC_Records.Commands;
+using Schiism.Core.Models.Enums;
 
 //1. Build tiny IPC console client
 //2. Fully validate transport/lifecycle
@@ -54,6 +57,23 @@ using Microsoft.Extensions.Logging;
 
 public class ServiceDebugger
 {
+
+    static SettingsConfig currentConfig = new SettingsConfig
+    {
+        IPAddress = "127.0.0.1",
+        StartAddress = 0,
+        DataLength = 10,
+        DeviceId = 1,
+        ScanRate = 1000,
+        SelectedPollType = PollType.CoilStatus,
+        SelectedDataSize = DataSize.Bit16,
+        SelectedEndian = Endian.BigEndian,
+        SelectedNumericBase = NumericBase.Decimal,
+        TCPPort = 502,
+        TCPTimeout = 2000,
+        AsciiEnable = false
+    };
+
     public static async Task Main(string[] args)
     {
         using ILoggerFactory loggerFactory =
@@ -64,19 +84,23 @@ public class ServiceDebugger
                     .AddConsole();
             });
 
-        ILogger<NamedPipeStreamSubscriber<ModbusData>> modbusLogger =
+        ILogger<StreamSubscriber<ModbusData>> modbusLogger =
             loggerFactory.CreateLogger<
-                NamedPipeStreamSubscriber<ModbusData>>();
+                StreamSubscriber<ModbusData>>();
 
-        ILogger<NamedPipeStreamSubscriber<ConnectionDiagnostics>> connLogger =
+        ILogger<StreamSubscriber<ConnectionDiagnostics>> connLogger =
             loggerFactory.CreateLogger<
-                NamedPipeStreamSubscriber<ConnectionDiagnostics>>();
+                StreamSubscriber<ConnectionDiagnostics>>();
+
+        ILogger<CommandClient<SettingsConfig>> commandLogger =
+            loggerFactory.CreateLogger<
+                CommandClient<SettingsConfig>>();
 
         Console.WriteLine("Starting Service Debugger...");
 
-        var modbusDataSubscriber = new NamedPipeStreamSubscriber<ModbusData>(PipeConstants.ModbusDataStreamName, modbusLogger);
-        var connSettSubscriber = new NamedPipeStreamSubscriber<ConnectionDiagnostics>(PipeConstants.ConnDiagStreamName, connLogger);
-        // var settCommandPublisher = new NamedPipeCommandClient<SettingsConfig>(PipeConstants.SettingsCommandName);
+        var modbusDataSubscriber = new StreamSubscriber<ModbusData>(PipeConstants.ModbusDataStreamName, modbusLogger);
+        var connSettSubscriber = new StreamSubscriber<ConnectionDiagnostics>(PipeConstants.ConnDiagStreamName, connLogger);
+        var settCommandPublisher = new CommandClient<SettingsConfig>(PipeConstants.SettingsCommandName, commandLogger);
 
         // Shared cancellation token for all operations, to allow for graceful shutdown.
         CancellationTokenSource cts = new();
@@ -87,20 +111,181 @@ public class ServiceDebugger
         };
 
         Console.WriteLine("Starting subscribers...");
-        Task modbusDataTask = modbusDataSubscriber.StartAsync(HandleModbusAsync, cts.Token);
-        Task connSettTask = connSettSubscriber.StartAsync(HandleConnDiagAsync, cts.Token);
-        await Task.WhenAll(modbusDataTask, connSettTask);
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await modbusDataSubscriber.SubscribeAsync(HandleModbusAsync, cts.Token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ModbusData stream subscription start failure");
+                Console.WriteLine(ex);
+            }
+        });
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await connSettSubscriber.SubscribeAsync(HandleConnDiagAsync, cts.Token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("CommsDiag stream subscription start failure");
+                Console.WriteLine(ex);
+            }
+        });
+
+        while (!cts.IsCancellationRequested)
+        {
+            Console.Write("> ");
+
+            var input = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                continue;
+            }
+
+            var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            switch (parts[0].ToLower())
+            {
+                case "show":
+                    ShowConfig(currentConfig);
+                    break;
+
+                case "set":
+                    await HandleSetCommand(parts, currentConfig, settCommandPublisher, cts);
+                    break;
+
+                case "quit":
+                    cts.Cancel();
+                    break;
+            }
+        }
+        
+        await Task.Delay(Timeout.Infinite, cts.Token);
     }
 
-    static Task HandleModbusAsync(ModbusData msg)
+    private static async Task HandleSetCommand(string[] parts, SettingsConfig cfg, CommandClient<SettingsConfig> settCommandPublisher, CancellationTokenSource cts)
     {
-        Console.WriteLine($"Data: {msg}");
+        if (parts.Length < 3)
+        {
+            Console.WriteLine("Usage: set <field> <value>");
+            Console.WriteLine("Fields: scanrate, datalength, ip, port, timeout, deviceid, datasize, endian, numericbase, polltype, ascii");
+            return;
+        }
+
+        var field = parts[1].ToLower();
+        var value = parts[2];
+
+        switch (field)
+        {
+            case "deviceid":
+                cfg.DeviceId = byte.Parse(value);
+                Console.WriteLine($"Updated {field} to {value}");
+                break;
+
+            case "ip":
+                cfg.IPAddress = value;
+                Console.WriteLine($"Updated {field} to {value}");
+                break;
+
+            case "port":
+                cfg.TCPPort = ushort.Parse(value);
+                Console.WriteLine($"Updated {field} to {value}");
+                break;
+
+            case "timeout":
+                cfg.TCPTimeout = int.Parse(value);
+                Console.WriteLine($"Updated {field} to {value}");
+                break;
+
+            case "scanrate":
+                cfg.ScanRate = int.Parse(value);
+                Console.WriteLine($"Updated {field} to {value}");
+                break;
+
+            case "datalength":
+                cfg.DataLength = byte.Parse(value);
+                Console.WriteLine($"Updated {field} to {value}");
+                break;
+
+            case "startaddress":
+                cfg.StartAddress = ushort.Parse(value);
+                Console.WriteLine($"Updated {field} to {value}");
+                break;
+
+            case "datasize":
+                cfg.SelectedDataSize = Enum.Parse<DataSize>(value, true);
+                Console.WriteLine($"Updated {field} to {value}");
+                break;
+
+            case "endian":
+                cfg.SelectedEndian = Enum.Parse<Endian>(value, true);
+                Console.WriteLine($"Updated {field} to {value}");
+                break;
+
+            case "numericbase":
+                cfg.SelectedNumericBase = Enum.Parse<NumericBase>(value, true);
+                Console.WriteLine($"Updated {field} to {value}");
+                break;
+
+            case "polltype":
+                cfg.SelectedPollType = Enum.Parse<PollType>(value, true);
+                Console.WriteLine($"Updated {field} to {value}");
+                break;
+
+            case "ascii":
+                cfg.AsciiEnable = bool.Parse(value);
+                Console.WriteLine($"Updated {field} to {value}");
+                break;
+
+            default:
+                Console.WriteLine($"Unknown field: {field}");
+                break;
+        }
+
+        try
+        {
+            await settCommandPublisher.SendAsync(currentConfig, cts.Token);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("SettComms command client failure");
+            Console.WriteLine(ex);
+        }
+    }
+
+    private static void ShowConfig(SettingsConfig cfg)
+    {
+        Console.WriteLine("--------------------------------");
+        Console.WriteLine($"DeviceId      : {cfg.DeviceId}");
+        Console.WriteLine($"IPAddress     : {cfg.IPAddress}");
+        Console.WriteLine($"Port          : {cfg.TCPPort}");
+        Console.WriteLine($"TCPTimeoutMs  : {cfg.TCPTimeout}");
+        Console.WriteLine($"StartAddress  : {cfg.StartAddress}");
+        Console.WriteLine($"ScanRateMs    : {cfg.ScanRate}");
+        Console.WriteLine($"DataLength    : {cfg.DataLength}");
+        Console.WriteLine($"DataSize      : {cfg.SelectedDataSize}");
+        Console.WriteLine($"Endian        : {cfg.SelectedEndian}");
+        Console.WriteLine($"NumericBase   : {cfg.SelectedNumericBase}");
+        Console.WriteLine($"PollType      : {cfg.SelectedPollType}");
+        Console.WriteLine($"ASCII         : {cfg.AsciiEnable}");
+        Console.WriteLine("--------------------------------");
+    }
+
+    private static Task HandleModbusAsync(ModbusData msg)
+    {
+        // Console.WriteLine($"Data: {msg}");
         return Task.CompletedTask;
     }
 
-    static Task HandleConnDiagAsync(ConnectionDiagnostics msg)
+    private static Task HandleConnDiagAsync(ConnectionDiagnostics msg)
     {
-        Console.WriteLine($"Diagnostics: {msg}");
+        // Console.WriteLine($"Diagnostics: {msg}");
         return Task.CompletedTask;
     }
 }

@@ -2,8 +2,6 @@
 
 namespace Schiism.Service.Models.Implementations.Modbus
 {
-    using System.Threading;
-
     public class ModbusControl : IModbusControl
     {
         public bool RestartRequested { get; private set; }

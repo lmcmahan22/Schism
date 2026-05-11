@@ -1,5 +1,4 @@
-﻿
-namespace Schiism.Service.Models.Workers.Commands
+﻿namespace Schiism.Service.Models.Workers
 {
     using Schiism.Core.Abstractions.IPC.Commands;
     using Schiism.Core.Abstractions.Modbus;
@@ -9,12 +8,19 @@ namespace Schiism.Service.Models.Workers.Commands
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
 
-    public class SettingsCommandNameWorker(ICommandServer<SettingsConfig> server, IModbusConfig modbusConfig, IModbusControl modbusControl, ILogger<SettingsCommandNameWorker> logger) : BackgroundService
+    public class CommandServerWorker(ICommandServer<SettingsConfig> server, IModbusConfig modbusConfig, IModbusControl modbusControl, ILogger<CommandServerWorker> logger) : BackgroundService
     {
-
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await server.StartAsync(this.HandleCommandAsync, stoppingToken);
+            try
+            {
+                logger.LogInformation("Starting command server worker");
+                await server.HandleClient(this.HandleCommandAsync, stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Command server worker crashed");
+            }
         }
 
         private async Task HandleCommandAsync(SettingsConfig cmd)

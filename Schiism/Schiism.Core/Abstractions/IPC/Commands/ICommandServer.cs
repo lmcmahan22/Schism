@@ -9,6 +9,6 @@ namespace Schiism.Core.Abstractions.IPC.Commands
     // Implemented by Service (In Named Pipes, the receiver hosts the server)
     public interface ICommandServer<TCommand>
     {
-        Task StartAsync(Func<TCommand, Task> handler, CancellationToken ct);
+        Task HandleClient(Func<TCommand, Task> handler, CancellationToken ct);
     }
 }

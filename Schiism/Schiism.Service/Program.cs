@@ -23,9 +23,7 @@ namespace Schiism.Service
     using Schiism.Service.Models.Implementations.Modbus;
     using Schiism.Service.Models.Implementations.Publishers;
     using Schiism.Service.Models.Workers;
-    using Schiism.Service.Models.Workers.Commands;
-    using Schiism.Service.Models.Workers.Streams;
-    
+
 
     /// <summary>
     /// Main Service program that executes the Worker Service, which runs your engine.
@@ -87,21 +85,19 @@ namespace Schiism.Service
             builder.Services.AddSingleton<IModbusControl, ModbusControl>();
 
             // Stream Publishers
-            builder.Services.AddSingleton<IStreamPublisher<ModbusData>, NamedPipeStreamPublisher<ModbusData>>(sp =>
-                new NamedPipeStreamPublisher<ModbusData>
-                (PipeConstants.ModbusDataStreamName, sp.GetRequiredService<ILogger<NamedPipeStreamPublisher<ModbusData>>>()));
-            builder.Services.AddSingleton<IStreamPublisher<ConnectionDiagnostics>, NamedPipeStreamPublisher<ConnectionDiagnostics>>(sp =>
-                new NamedPipeStreamPublisher<ConnectionDiagnostics>
-                (PipeConstants.ConnDiagStreamName, sp.GetRequiredService<ILogger<NamedPipeStreamPublisher<ConnectionDiagnostics>>>()));
+            builder.Services.AddSingleton<IStreamPublisher<ModbusData>, StreamPublisher<ModbusData>>(sp => new StreamPublisher<ModbusData>
+                (PipeConstants.ModbusDataStreamName, sp.GetRequiredService<ILogger<StreamPublisher<ModbusData>>>()));
+            builder.Services.AddSingleton<IStreamPublisher<ConnectionDiagnostics>, StreamPublisher<ConnectionDiagnostics>>(sp => new StreamPublisher<ConnectionDiagnostics>
+                (PipeConstants.ConnDiagStreamName, sp.GetRequiredService<ILogger<StreamPublisher<ConnectionDiagnostics>>>()));
 
             // Stream Queues
-            builder.Services.AddSingleton<IStreamQueue<ModbusData>, ModbusStreamQueue>();
-            builder.Services.AddSingleton<IStreamQueue<ConnectionDiagnostics>, ConnDiagStreamNameQueue>();
+            builder.Services.AddSingleton<IStreamQueue<ModbusData>, StreamQueue<ModbusData>>();
+            builder.Services.AddSingleton<IStreamQueue<ConnectionDiagnostics>, StreamQueue<ConnectionDiagnostics>>();
 
             // Commmand Server
-            builder.Services.AddSingleton<ICommandServer<SettingsConfig>, NamedPipeCommandServer<SettingsConfig>>(sp =>
-                new NamedPipeCommandServer<SettingsConfig>
-                (PipeConstants.SettingsCommandName, sp.GetRequiredService<ILogger<NamedPipeCommandServer<SettingsConfig>>>()));
+            builder.Services.AddSingleton<ICommandServer<SettingsConfig>, CommandServer<SettingsConfig>>(sp =>
+                new CommandServer<SettingsConfig>
+                (PipeConstants.SettingsCommandName, sp.GetRequiredService<ILogger<CommandServer<SettingsConfig>>>()));
 
             // Frontend
             // builder.Services.AddSingleton<ICommandClient<ModbusConfigCommand>>(sp =>
@@ -118,9 +114,9 @@ namespace Schiism.Service
 
             // Add an instance of the Worker classes as the hosted services (1 engine, 2 stream workers, 1 stream queue worker, 1 command worker)
             builder.Services.AddHostedService<ModbusEngineWorker>();
-            builder.Services.AddHostedService<ModbusStreamWorker>();
-            builder.Services.AddHostedService<ConnDiagStreamNameWorker>();
-            builder.Services.AddHostedService<SettingsCommandNameWorker>();
+            builder.Services.AddHostedService<StreamPublisherWorker<ModbusData>>();
+            builder.Services.AddHostedService<StreamPublisherWorker<ConnectionDiagnostics>>();
+            builder.Services.AddHostedService<CommandServerWorker>();
 
             // Not used right now, it's just a logger that doesn't actually log correctly atm
             // builder.Services.AddHostedService<QueueMonitorWorker>();
@@ -131,8 +127,7 @@ namespace Schiism.Service
             // Build and run!
             var host = builder.Build();
 
-            ILogger<Program> logger =
-            host.Services.GetRequiredService<ILogger<Program>>();
+            ILogger<Program> logger = host.Services.GetRequiredService<ILogger<Program>>();
 
             try
             {

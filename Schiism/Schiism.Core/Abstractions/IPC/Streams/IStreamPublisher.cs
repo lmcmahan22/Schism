@@ -12,5 +12,7 @@ namespace Schiism.Core.Abstractions.IPC.Streams
         Task StartAsync(CancellationToken ct);
 
         Task PublishAsync(T data, CancellationToken ct);
+
+        Task AcceptLoopAsync(CancellationToken ct);
     }
 }
