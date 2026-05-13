@@ -67,9 +67,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Schiism.Core\Schiism.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Views\Themes.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="IPC\" />
   </ItemGroup>
 
 </Project>

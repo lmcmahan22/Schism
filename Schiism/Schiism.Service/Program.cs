@@ -6,23 +6,18 @@ namespace Schiism.Service
 {
     using System.Diagnostics;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting.WindowsServices;
     using Microsoft.Extensions.Logging;
     using Schiism.Core.Abstractions.IPC.Commands;
     using Schiism.Core.Abstractions.IPC.Streams;
-    using Schiism.Core.Abstractions.Logging;
     using Schiism.Core.Abstractions.Modbus;
-    using Schiism.Core.Models.DTOs.IPC_Records.Commands;
-    using Schiism.Core.Models.DTOs.IPC_Records.Streams;
-    using Schiism.Service.Models.FileLogging;
-    using Schiism.Service.Models.Implementations;
-    using Schiism.Service.Models.Implementations.IPC;
-    using Schiism.Service.Models.Implementations.IPC.Pipes.Commands;
-    using Schiism.Service.Models.Implementations.IPC.Pipes.Streams;
-    using Schiism.Service.Models.Implementations.IPC.Queues;
-    using Schiism.Service.Models.Implementations.Modbus;
-    using Schiism.Service.Models.Implementations.Publishers;
-    using Schiism.Service.Models.Workers;
+    using Schiism.Core.Models.IPC;
+    using Schiism.Core.Models.IPC.DTOs.Commands;
+    using Schiism.Core.Models.IPC.DTOs.Streams;
+    using Schiism.Service.FileLogging;
+    using Schiism.Service.Implementations;
+    using Schiism.Service.Implementations.IPC;
+    using Schiism.Service.Implementations.Modbus;
+    using Schiism.Service.Workers;
 
 
     /// <summary>
@@ -57,30 +52,19 @@ namespace Schiism.Service
         {
             HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
-            bool isService = WindowsServiceHelpers.IsWindowsService();
-            if (isService)
-            {
-                builder.Services.AddWindowsService();
-                builder.Logging.ClearProviders();
-                builder.Logging.AddProvider(new FileLoggerProvider($"C:\\Users\\lmcmahan\\OneDrive - Precision Valve and Automation\\Desktop\\SchiismLogs"));
-                builder.Services.AddSingleton<IDataPublisher, IPCDataPublisher>();
+            builder.Services.AddWindowsService();
+            builder.Logging.ClearProviders();
+            builder.Logging.AddProvider(new FileLoggerProvider($"C:\\Users\\lmcmahan\\OneDrive - Precision Valve and Automation\\Desktop\\SchiismLogs"));
 
-                // Control via checkbox in UI when it's ready!
-                ConfigureStartup(true);
-                ConfigureRestart(false);
-            }
-            else
-            {
-                builder.Logging.AddConsole();
-                builder.Services.AddSingleton<IDataPublisher, ConsoleDataPublisher>();
-            }
+            // Control via checkboxes in UI when it's ready!
+            ConfigureStartup(true);
+            ConfigureRestart(false);
 
             // Define Core Services (Builder.Services is a dependency container)
             // Make this its own method (ChatGPT originally advised making this its own CLASS???)
             builder.Services.AddSingleton<IModbusConfig, ModbusConfig>();
             builder.Services.AddSingleton<IModbusClient, ModbusClient>();
-            builder.Services.AddSingleton<IModbusEngine, ModbusEngine>();
-            builder.Services.AddSingleton<IEnginePublisher, EnginePublisher>();
+            builder.Services.AddSingleton<IEngine, Engine>();
             builder.Services.AddSingleton<IModbusInterpreter, ModbusInterpreter>();
             builder.Services.AddSingleton<IModbusControl, ModbusControl>();
 

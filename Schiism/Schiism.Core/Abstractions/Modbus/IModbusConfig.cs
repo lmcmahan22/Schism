@@ -4,8 +4,8 @@
 
 namespace Schiism.Core.Abstractions.Modbus
 {
-    using Schiism.Core.Models.DTOs.IPC_Records.Commands;
-    using Schiism.Core.Models.Enums;
+    using Schiism.Core.Enums;
+    using Schiism.Core.Models.IPC.DTOs.Commands;
 
     /// <summary>
     /// Interface for defining what the MODBUS Configuration.

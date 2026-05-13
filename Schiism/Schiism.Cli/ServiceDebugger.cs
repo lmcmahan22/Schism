@@ -1,11 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using Schiism.Core.Models.DTOs.IPC_Records.Streams;
-using Schiism.Service.Models.Implementations.IPC.Pipes.Streams;
-using Schiism.Service.Models.Implementations.IPC;
 using Microsoft.Extensions.Logging;
-using Schiism.Service.Models.Implementations.IPC.Pipes.Commands;
-using Schiism.Core.Models.DTOs.IPC_Records.Commands;
-using Schiism.Core.Models.Enums;
+using Schiism.Cli.IPC;
+using Schiism.Core.Enums;
+using Schiism.Core.Models.IPC;
+using Schiism.Core.Models.IPC.DTOs.Commands;
+using Schiism.Core.Models.IPC.DTOs.Streams;
+using System.Security.Principal;
 
 //1. Build tiny IPC console client
 //2. Fully validate transport/lifecycle
@@ -57,50 +57,35 @@ using Schiism.Core.Models.Enums;
 
 public class ServiceDebugger
 {
-
-    static SettingsConfig currentConfig = new SettingsConfig
-    {
-        IPAddress = "127.0.0.1",
-        StartAddress = 0,
-        DataLength = 10,
-        DeviceId = 1,
-        ScanRate = 1000,
-        SelectedPollType = PollType.CoilStatus,
-        SelectedDataSize = DataSize.Bit16,
-        SelectedEndian = Endian.BigEndian,
-        SelectedNumericBase = NumericBase.Decimal,
-        TCPPort = 502,
-        TCPTimeout = 2000,
-        AsciiEnable = false
-    };
+    // Local variables to hold current config values for display and command sending. Initialized with defaults matching the Service's default config.
+    private static string ipAddress = "127.0.0.1";
+    private static ushort startAddress = 0;
+    private static byte dataLength = 10;
+    private static byte deviceId = 1;
+    private static int scanRate = 1000;
+    private static PollType selectedPollType = PollType.CoilStatus;
+    private static DataSize selectedDataSize = DataSize.Bit16;
+    private static Endian selectedEndian = Endian.BigEndian;
+    private static NumericBase selectedNumericBase = NumericBase.Decimal;
+    private static ushort tCPPort = 1502;
+    private static int tCPTimeout = 2000;
+    private static bool asciiEnable = false;
 
     public static async Task Main(string[] args)
     {
-        using ILoggerFactory loggerFactory =
-            LoggerFactory.Create(builder =>
-            {
-                builder
-                    .SetMinimumLevel(LogLevel.Information)
-                    .AddConsole();
-            });
+        // var identity = WindowsIdentity.GetCurrent();
+        // var principal = new WindowsPrincipal(identity);
 
-        ILogger<StreamSubscriber<ModbusData>> modbusLogger =
-            loggerFactory.CreateLogger<
-                StreamSubscriber<ModbusData>>();
-
-        ILogger<StreamSubscriber<ConnectionDiagnostics>> connLogger =
-            loggerFactory.CreateLogger<
-                StreamSubscriber<ConnectionDiagnostics>>();
-
-        ILogger<CommandClient<SettingsConfig>> commandLogger =
-            loggerFactory.CreateLogger<
-                CommandClient<SettingsConfig>>();
+        // Console.WriteLine(
+        //    principal.IsInRole(WindowsBuiltInRole.Administrator)
+        //        ? "Running elevated"
+        //        : "Not elevated");
 
         Console.WriteLine("Starting Service Debugger...");
 
-        var modbusDataSubscriber = new StreamSubscriber<ModbusData>(PipeConstants.ModbusDataStreamName, modbusLogger);
-        var connSettSubscriber = new StreamSubscriber<ConnectionDiagnostics>(PipeConstants.ConnDiagStreamName, connLogger);
-        var settCommandPublisher = new CommandClient<SettingsConfig>(PipeConstants.SettingsCommandName, commandLogger);
+        var modbusDataSubscriber = new StreamSubscriber<ModbusData>(PipeConstants.ModbusDataStreamName);
+        var connSettSubscriber = new StreamSubscriber<ConnectionDiagnostics>(PipeConstants.ConnDiagStreamName);
+        var settCommandPublisher = new CommandClient<SettingsConfig>(PipeConstants.SettingsCommandName);
 
         // Shared cancellation token for all operations, to allow for graceful shutdown.
         CancellationTokenSource cts = new();
@@ -153,11 +138,11 @@ public class ServiceDebugger
             switch (parts[0].ToLower())
             {
                 case "show":
-                    ShowConfig(currentConfig);
+                    ShowConfig();
                     break;
 
                 case "set":
-                    await HandleSetCommand(parts, currentConfig, settCommandPublisher, cts);
+                    await HandleSetCommand(parts, settCommandPublisher, cts);
                     break;
 
                 case "quit":
@@ -169,7 +154,7 @@ public class ServiceDebugger
         await Task.Delay(Timeout.Infinite, cts.Token);
     }
 
-    private static async Task HandleSetCommand(string[] parts, SettingsConfig cfg, CommandClient<SettingsConfig> settCommandPublisher, CancellationTokenSource cts)
+    private static async Task HandleSetCommand(string[] parts, CommandClient<SettingsConfig> settCommandPublisher, CancellationTokenSource cts)
     {
         if (parts.Length < 3)
         {
@@ -184,62 +169,62 @@ public class ServiceDebugger
         switch (field)
         {
             case "deviceid":
-                cfg.DeviceId = byte.Parse(value);
+                deviceId = byte.Parse(value);
                 Console.WriteLine($"Updated {field} to {value}");
                 break;
 
             case "ip":
-                cfg.IPAddress = value;
+                ipAddress = value;
                 Console.WriteLine($"Updated {field} to {value}");
                 break;
 
             case "port":
-                cfg.TCPPort = ushort.Parse(value);
+                tCPPort = ushort.Parse(value);
                 Console.WriteLine($"Updated {field} to {value}");
                 break;
 
             case "timeout":
-                cfg.TCPTimeout = int.Parse(value);
+                tCPTimeout = int.Parse(value);
                 Console.WriteLine($"Updated {field} to {value}");
                 break;
 
             case "scanrate":
-                cfg.ScanRate = int.Parse(value);
+                scanRate = int.Parse(value);
                 Console.WriteLine($"Updated {field} to {value}");
                 break;
 
             case "datalength":
-                cfg.DataLength = byte.Parse(value);
+                dataLength = byte.Parse(value);
                 Console.WriteLine($"Updated {field} to {value}");
                 break;
 
             case "startaddress":
-                cfg.StartAddress = ushort.Parse(value);
+                startAddress = ushort.Parse(value);
                 Console.WriteLine($"Updated {field} to {value}");
                 break;
 
             case "datasize":
-                cfg.SelectedDataSize = Enum.Parse<DataSize>(value, true);
+                selectedDataSize = Enum.Parse<DataSize>(value, true);
                 Console.WriteLine($"Updated {field} to {value}");
                 break;
 
             case "endian":
-                cfg.SelectedEndian = Enum.Parse<Endian>(value, true);
+                selectedEndian = Enum.Parse<Endian>(value, true);
                 Console.WriteLine($"Updated {field} to {value}");
                 break;
 
             case "numericbase":
-                cfg.SelectedNumericBase = Enum.Parse<NumericBase>(value, true);
+                selectedNumericBase = Enum.Parse<NumericBase>(value, true);
                 Console.WriteLine($"Updated {field} to {value}");
                 break;
 
             case "polltype":
-                cfg.SelectedPollType = Enum.Parse<PollType>(value, true);
+                selectedPollType = Enum.Parse<PollType>(value, true);
                 Console.WriteLine($"Updated {field} to {value}");
                 break;
 
             case "ascii":
-                cfg.AsciiEnable = bool.Parse(value);
+                asciiEnable = bool.Parse(value);
                 Console.WriteLine($"Updated {field} to {value}");
                 break;
 
@@ -250,7 +235,12 @@ public class ServiceDebugger
 
         try
         {
-            await settCommandPublisher.SendAsync(currentConfig, cts.Token);
+            SettingsConfig cfg = new SettingsConfig(
+                ipAddress, dataLength, startAddress,
+                tCPPort, scanRate, tCPTimeout,
+                deviceId, selectedDataSize, selectedPollType,
+                asciiEnable, selectedNumericBase, selectedEndian);
+            await settCommandPublisher.SendAsync(cfg, cts.Token);
         }
         catch (Exception ex)
         {
@@ -259,21 +249,21 @@ public class ServiceDebugger
         }
     }
 
-    private static void ShowConfig(SettingsConfig cfg)
+    private static void ShowConfig()
     {
         Console.WriteLine("--------------------------------");
-        Console.WriteLine($"DeviceId      : {cfg.DeviceId}");
-        Console.WriteLine($"IPAddress     : {cfg.IPAddress}");
-        Console.WriteLine($"Port          : {cfg.TCPPort}");
-        Console.WriteLine($"TCPTimeoutMs  : {cfg.TCPTimeout}");
-        Console.WriteLine($"StartAddress  : {cfg.StartAddress}");
-        Console.WriteLine($"ScanRateMs    : {cfg.ScanRate}");
-        Console.WriteLine($"DataLength    : {cfg.DataLength}");
-        Console.WriteLine($"DataSize      : {cfg.SelectedDataSize}");
-        Console.WriteLine($"Endian        : {cfg.SelectedEndian}");
-        Console.WriteLine($"NumericBase   : {cfg.SelectedNumericBase}");
-        Console.WriteLine($"PollType      : {cfg.SelectedPollType}");
-        Console.WriteLine($"ASCII         : {cfg.AsciiEnable}");
+        Console.WriteLine($"DeviceId      : {deviceId}");
+        Console.WriteLine($"IPAddress     : {ipAddress}");
+        Console.WriteLine($"Port          : {tCPPort}");
+        Console.WriteLine($"TCPTimeoutMs  : {tCPTimeout}");
+        Console.WriteLine($"StartAddress  : {startAddress}");
+        Console.WriteLine($"ScanRateMs    : {scanRate}");
+        Console.WriteLine($"DataLength    : {dataLength}");
+        Console.WriteLine($"DataSize      : {selectedDataSize}");
+        Console.WriteLine($"Endian        : {selectedEndian}");
+        Console.WriteLine($"NumericBase   : {selectedNumericBase}");
+        Console.WriteLine($"PollType      : {selectedPollType}");
+        Console.WriteLine($"ASCII         : {asciiEnable}");
         Console.WriteLine("--------------------------------");
     }
 

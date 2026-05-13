@@ -209,6 +209,16 @@
             "related": ".pdb"
           }
         }
+      },
+      "Schiism.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/Schiism.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Schiism.Core.dll": {}
+        }
       }
     }
   },
@@ -569,6 +579,11 @@
         "unity.container.5.11.11.nupkg.sha512",
         "unity.container.nuspec"
       ]
+    },
+    "Schiism.Core/1.0.0": {
+      "type": "project",
+      "path": "../Schiism.Core/Schiism.Core.csproj",
+      "msbuildProject": "../Schiism.Core/Schiism.Core.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -576,6 +591,7 @@
       "Prism.Core >= 9.0.537",
       "Prism.Unity >= 9.0.537",
       "Prism.Wpf >= 9.0.537",
+      "Schiism.Core >= 1.0.0",
       "StyleCop.Analyzers.Unstable >= 1.2.0.556"
     ]
   },
@@ -610,7 +626,11 @@
       "frameworks": {
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Schiism.Core.csproj": {
+              "projectPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Schiism.Core.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -623,7 +643,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "10.0.100"
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net8.0-windows7.0": {
@@ -667,7 +687,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.107/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
