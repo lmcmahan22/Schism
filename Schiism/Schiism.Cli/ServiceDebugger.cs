@@ -1,11 +1,9 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using Microsoft.Extensions.Logging;
 using Schiism.Cli.IPC;
 using Schiism.Core.Enums;
 using Schiism.Core.Models.IPC;
 using Schiism.Core.Models.IPC.DTOs.Commands;
 using Schiism.Core.Models.IPC.DTOs.Streams;
-using System.Security.Principal;
 
 //1. Build tiny IPC console client
 //2. Fully validate transport/lifecycle
@@ -83,9 +81,13 @@ public class ServiceDebugger
 
         Console.WriteLine("Starting Service Debugger...");
 
-        var modbusDataSubscriber = new StreamSubscriber<ModbusData>(PipeConstants.ModbusDataStreamName);
-        var connSettSubscriber = new StreamSubscriber<ConnectionDiagnostics>(PipeConstants.ConnDiagStreamName);
-        var settCommandPublisher = new CommandClient<SettingsConfig>(PipeConstants.SettingsCommandName);
+        // Streams
+        var modbusDataSubscriber = new FEStreamSubscriber<ModbusData>(PipeConstants.ModbusDataStreamName);
+        var connSettSubscriber = new FEStreamSubscriber<ConnectionDiagnostics>(PipeConstants.ConnDiagStreamName);
+
+        // Commands
+        var settingsCommandSender = new FECommandSender<SettingsConfig>(PipeConstants.SettingsCommandName);
+        var initSettingsCommandReceiver = new FECommandReceiver<SettingsConfig>(PipeConstants.InitSettingsCommandName);
 
         // Shared cancellation token for all operations, to allow for graceful shutdown.
         CancellationTokenSource cts = new();
@@ -95,32 +97,21 @@ public class ServiceDebugger
             cts.Cancel();
         };
 
-        Console.WriteLine("Starting subscribers...");
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await modbusDataSubscriber.SubscribeAsync(HandleModbusAsync, cts.Token);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("ModbusData stream subscription start failure");
-                Console.WriteLine(ex);
-            }
-        });
+        // Wait for initial settings command reciept before proceeding further.
+        // While doesn't appear this way, this effectively hangs before proceeding to the later operations!
+        await initSettingsCommandReceiver.ReceiveAsync(HandleInitSettCommandAsync, cts.Token);
 
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await connSettSubscriber.SubscribeAsync(HandleConnDiagAsync, cts.Token);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("CommsDiag stream subscription start failure");
-                Console.WriteLine(ex);
-            }
-        });
+        Console.WriteLine("Starting subscribers...");
+
+        Task modbusTask = StartSubscriptionLoopAsync(
+            "ModbusData",
+            token => modbusDataSubscriber.SubscribeAsync(HandleModbusAsync, token),
+            cts.Token);
+
+        Task connTask = StartSubscriptionLoopAsync(
+            "CommsDiagnostics",
+            token => connSettSubscriber.SubscribeAsync(HandleConnDiagAsync, token),
+            cts.Token);
 
         while (!cts.IsCancellationRequested)
         {
@@ -142,7 +133,7 @@ public class ServiceDebugger
                     break;
 
                 case "set":
-                    await HandleSetCommand(parts, settCommandPublisher, cts);
+                    await HandleSetCommand(parts, settingsCommandSender, cts);
                     break;
 
                 case "quit":
@@ -154,7 +145,37 @@ public class ServiceDebugger
         await Task.Delay(Timeout.Infinite, cts.Token);
     }
 
-    private static async Task HandleSetCommand(string[] parts, CommandClient<SettingsConfig> settCommandPublisher, CancellationTokenSource cts)
+    private static async Task StartSubscriptionLoopAsync(string name, Func<CancellationToken, Task> subscribeFunc, CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            try
+            {
+                // Console.WriteLine($"Attempting {name} subscription...");
+
+                await subscribeFunc(token);
+
+                // Console.WriteLine($"{name} subscription established.");
+
+                return; // success
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine($"{name} subscription cancelled.");
+                return;
+            }
+            catch (Exception ex)
+            {
+                // Console.WriteLine($"{name} stream subscription start failure");
+                // Console.WriteLine(ex);
+
+                // Prevent tight retry loop
+                await Task.Delay(TimeSpan.FromSeconds(5), token);
+            }
+        }
+    }
+
+    private static async Task HandleSetCommand(string[] parts, FECommandSender<SettingsConfig> settCommandSender, CancellationTokenSource cts)
     {
         if (parts.Length < 3)
         {
@@ -240,7 +261,7 @@ public class ServiceDebugger
                 tCPPort, scanRate, tCPTimeout,
                 deviceId, selectedDataSize, selectedPollType,
                 asciiEnable, selectedNumericBase, selectedEndian);
-            await settCommandPublisher.SendAsync(cfg, cts.Token);
+            await settCommandSender.SendAsync(cfg, _ => Task.CompletedTask, cts.Token);
         }
         catch (Exception ex)
         {
@@ -276,6 +297,27 @@ public class ServiceDebugger
     private static Task HandleConnDiagAsync(ConnectionDiagnostics msg)
     {
         // Console.WriteLine($"Diagnostics: {msg}");
+        return Task.CompletedTask;
+    }
+
+    private static Task HandleInitSettCommandAsync(SettingsConfig cfg)
+    {
+        // Acquire initial data
+        ipAddress = cfg.IPAddress ?? ipAddress;
+        dataLength = cfg.DataLength ?? dataLength;
+        startAddress = cfg.StartAddress ?? startAddress;
+        tCPPort = cfg.TCPPort ?? tCPPort;
+        scanRate = cfg.ScanRate ?? scanRate;
+        tCPTimeout = cfg.TCPTimeout ?? tCPTimeout;
+        deviceId = cfg.DeviceId ?? deviceId;
+        selectedDataSize = cfg.SelectedDataSize ?? selectedDataSize;
+        selectedPollType = cfg.SelectedPollType ?? selectedPollType;
+        asciiEnable = cfg.AsciiEnable ?? asciiEnable;
+        selectedNumericBase = cfg.SelectedNumericBase ?? selectedNumericBase;
+
+        Console.WriteLine("Received initial settings:");
+        ShowConfig();
+
         return Task.CompletedTask;
     }
 }

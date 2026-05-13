@@ -11,5 +11,6 @@ namespace Schiism.Core.Models.IPC
         public const string ModbusDataStreamName = "schiism.modbusData.stream.v1";
         public const string ConnDiagStreamName = "schiism.connDiag.stream.v1";
         public const string SettingsCommandName = "schiism.settings.cmd.v1";
+        public const string InitSettingsCommandName = "schiism.initSettings.cmd.v1";
     }
 }

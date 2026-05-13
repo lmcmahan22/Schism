@@ -79,9 +79,14 @@ namespace Schiism.Service
             builder.Services.AddSingleton<IStreamQueue<ConnectionDiagnostics>, StreamQueue<ConnectionDiagnostics>>();
 
             // Commmand Server
-            builder.Services.AddSingleton<ICommandServer<SettingsConfig>, CommandServer<SettingsConfig>>(sp =>
-                new CommandServer<SettingsConfig>
-                (PipeConstants.SettingsCommandName, sp.GetRequiredService<ILogger<CommandServer<SettingsConfig>>>()));
+            builder.Services.AddSingleton<ICommandReceiver<SettingsConfig>, ServiceCommandReceiver<SettingsConfig>>(sp =>
+                new ServiceCommandReceiver<SettingsConfig>
+                (PipeConstants.SettingsCommandName, sp.GetRequiredService<ILogger<ServiceCommandReceiver<SettingsConfig>>>()));
+
+            // Command Client (for first config population)
+            builder.Services.AddSingleton<ICommandSender<SettingsConfig>, ServiceCommandSender<SettingsConfig>>(sp =>
+                new ServiceCommandSender<SettingsConfig>
+                (PipeConstants.InitSettingsCommandName, sp.GetRequiredService<ILogger<ServiceCommandSender<SettingsConfig>>>()));
 
             // Frontend
             // builder.Services.AddSingleton<ICommandClient<ModbusConfigCommand>>(sp =>
@@ -100,7 +105,7 @@ namespace Schiism.Service
             builder.Services.AddHostedService<ModbusEngineWorker>();
             builder.Services.AddHostedService<StreamPublisherWorker<ModbusData>>();
             builder.Services.AddHostedService<StreamPublisherWorker<ConnectionDiagnostics>>();
-            builder.Services.AddHostedService<CommandServerWorker>();
+            builder.Services.AddHostedService<CommandsWorker>();
 
             // Not used right now, it's just a logger that doesn't actually log correctly atm
             // builder.Services.AddHostedService<QueueMonitorWorker>();

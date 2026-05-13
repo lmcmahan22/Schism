@@ -4,7 +4,7 @@ using System.IO.Pipes;
 
 namespace Schiism.Cli.IPC
 {
-    public class StreamSubscriber<T>(string pipeName) : IStreamSubscriber<T>
+    public class FEStreamSubscriber<T>(string pipeName) : IStreamSubscriber<T>
     {
         private PipeSerializer Serializer => new();
 
@@ -20,16 +20,16 @@ namespace Schiism.Cli.IPC
                         PipeDirection.In,
                         PipeOptions.Asynchronous);
 
-                    Console.WriteLine($"Waiting for server connection on {pipeName}");
+                    // Console.WriteLine($"Attempting connection to {pipeName}");
+                    
                     await pipe.ConnectAsync(ct);
-                    Console.WriteLine($"Client connected to {pipeName}");
+                    
+                    // Console.WriteLine($"Connected to {pipeName}");
 
                     while (pipe.IsConnected && !ct.IsCancellationRequested)
                     {
-                        Console.WriteLine($"Waiting for diagnostics on {pipeName}");
                         var data = await Serializer.DeserializeAsync<T>(pipe, ct);
                         await onData(data);
-                        Console.WriteLine($"Received data on {pipeName}: {data}");
                     }
                 }
                 catch (OperationCanceledException)

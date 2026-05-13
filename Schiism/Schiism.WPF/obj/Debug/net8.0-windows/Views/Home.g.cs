@@ -17,7 +17,6 @@ using Prism.Navigation.Regions;
 using Prism.Navigation.Regions.Behaviors;
 using Prism.Unity;
 using Schiism.Helpers;
-using Schiism.ViewModels;
 using System;
 using System.Diagnostics;
 using System.Windows;

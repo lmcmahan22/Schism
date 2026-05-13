@@ -35,15 +35,15 @@ namespace Schiism.Service.Implementations.Modbus
         public ModbusConfig()
         {
             iPAddress = "127.0.0.1"; // "192.168.100.20" for two device config. Otherwise, just use 127 for a single device localhost double duty build!
-            dataLength = 10;
+            dataLength = 15;
             startAddress = 0;
             selectedDataSize = DataSize.Bit16;
             tcpPort = 1502;
-            scanRate = 1000;
+            scanRate = 2000;
             tcpTimeout = 5000;
-            deviceId = 1;
-            selectedPollType = PollType.CoilStatus;
-            asciiEnable = false;
+            deviceId = 5;
+            selectedPollType = PollType.HoldingRegisters;
+            asciiEnable = true;
             selectedNumericBase = NumericBase.Decimal;
             selectedEndian = Endian.BigEndian;
         }

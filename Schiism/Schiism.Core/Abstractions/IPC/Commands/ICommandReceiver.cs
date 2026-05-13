@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace Schiism.Core.Abstractions.IPC.Commands
 {
     // Implemented by Service (In Named Pipes, the receiver hosts the server)
-    public interface ICommandServer<TCommand>
+    public interface ICommandReceiver<TCommand>
     {
-        Task HandleClient(Func<TCommand, Task> handler, CancellationToken ct);
+        Task ReceiveAsync(Func<TCommand, Task> handler, CancellationToken ct);
     }
 }

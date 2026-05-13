@@ -8,8 +8,8 @@ namespace Schiism.Core.Abstractions.IPC.Commands
 {
     // Implemented by WPF
     // Implemented by Service (In Named Pipes, the sender hosts the client)
-    public interface ICommandClient<TCommand>
+    public interface ICommandSender<TCommand>
     {
-        Task SendAsync(TCommand command, CancellationToken ct);
+        Task SendAsync(TCommand command, Func<TCommand, Task> handler, CancellationToken ct);
     }
 }

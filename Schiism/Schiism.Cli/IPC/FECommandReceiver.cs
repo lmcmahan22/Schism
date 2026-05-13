@@ -1,4 +1,4 @@
-﻿namespace Schiism.Service.Implementations.IPC
+﻿namespace Schiism.Cli.IPC
 {
     using Schiism.Core.Abstractions.IPC.Commands;
     using Schiism.Core.Abstractions.Modbus;
@@ -8,19 +8,17 @@
     using System.IO.Pipes;
     using System.Threading.Tasks;
 
-    public class CommandServer<T>(string pipeName, ILogger<CommandServer<T>> logger) : ICommandServer<T>
+    public class FECommandReceiver<T>(string pipeName) : ICommandReceiver<T>
     {
         private PipeSerializer Serializer => new();
 
-        public async Task HandleClient(Func<T, Task> handler, CancellationToken ct)
+        public async Task ReceiveAsync(Func<T, Task> handler, CancellationToken ct)
         {
             while (!ct.IsCancellationRequested)
             {
                 try
                 {
-                    logger.LogInformation(
-                        "Creating named pipe for {PipeName}",
-                        pipeName);
+                    Console.WriteLine($"Creating named pipe for {pipeName}");
 
                     using var pipe = new NamedPipeServerStream(
                         pipeName,
@@ -29,36 +27,33 @@
                         PipeTransmissionMode.Byte,
                         PipeOptions.Asynchronous);
 
-                    logger.LogInformation(
-                        "Waiting for client connection on {PipeName}",
-                        pipeName);
+                    Console.WriteLine($"Waiting for sender connection on {pipeName}");
 
                     await pipe.WaitForConnectionAsync(ct);
 
-                    logger.LogInformation(
-                        "Client connected to {PipeName}",
-                        pipeName);
-
+                    Console.WriteLine($"Sender connected to {pipeName}");
                     while (pipe.IsConnected && !ct.IsCancellationRequested)
                     {
                         var cmd = await Serializer.DeserializeAsync<T>(pipe, ct);
 
-                        logger.LogInformation("Received command: {Command}", cmd);
+                        Console.WriteLine($"Received command: {cmd}");
 
                         await handler(cmd);
+
+                        return; // Single reciept complete! Get out of here!
                     }
                 }
                 catch (EndOfStreamException)
                 {
-                    logger.LogInformation("Client disconnected from {PipeName}", pipeName);
+                    Console.WriteLine($"Client disconnected from {pipeName}");
                 }
                 catch (OperationCanceledException)
                 {
-                    logger.LogInformation("Command server shutting down");
+                    Console.WriteLine($"Command server shutting down for {pipeName}");
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Command server error");
+                    Console.WriteLine($"Error in command server for {pipeName}: {ex.Message}");
                 }
             }
         }
