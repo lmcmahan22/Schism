@@ -1,59 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Threading.Channels;
 using Schiism.Cli.IPC;
 using Schiism.Core.Enums;
 using Schiism.Core.Models.IPC;
 using Schiism.Core.Models.IPC.DTOs.Commands;
 using Schiism.Core.Models.IPC.DTOs.Streams;
 
-//1. Build tiny IPC console client
-//2. Fully validate transport/lifecycle
-//3. Harden reconnect behavior
-//4. THEN integrate WPF
-
-// Console app should validate working Service and IPC connectivity
-// Test the following:
-
-//Command Flow
-
-//Test:
-
-//restart engine
-//connect/disconnect modbus
-//configuration updates
-//ping/pong
-
-//Verify:
-
-//responses
-//logging
-//exception handling
-
-//Streaming Data
-
-//Verify:
-
-//telemetry arrives
-//no deadlocks
-//no blocking
-//timing acceptable
-
-//Disconnect Handling
-
-//Test:
-
-//client exits abruptly
-//forced pipe close
-//repeated reconnects
-
-//Verify:
-
-//service survives
-//client cleanup works
-//no stale references
-
-// Use Pipe names from .Core PipeConstants!
-
-public class ServiceDebugger
+public class ServiceControlDebugger
 {
     // Local variables to hold current config values for display and command sending. Initialized with defaults matching the Service's default config.
     private static string ipAddress = "127.0.0.1";
@@ -71,60 +24,122 @@ public class ServiceDebugger
 
     public static async Task Main(string[] args)
     {
-        // var identity = WindowsIdentity.GetCurrent();
-        // var principal = new WindowsPrincipal(identity);
+        using CancellationTokenSource cts = new();
 
-        // Console.WriteLine(
-        //    principal.IsInRole(WindowsBuiltInRole.Administrator)
-        //        ? "Running elevated"
-        //        : "Not elevated");
-
-        Console.WriteLine("Starting Service Debugger...");
-
-        // Streams
-        var modbusDataSubscriber = new FEStreamSubscriber<ModbusData>(PipeConstants.ModbusDataStreamName);
-        var connSettSubscriber = new FEStreamSubscriber<ConnectionDiagnostics>(PipeConstants.ConnDiagStreamName);
-
-        // Commands
-        var settingsCommandSender = new FECommandSender<SettingsConfig>(PipeConstants.SettingsCommandName);
-        var initSettingsCommandReceiver = new FECommandReceiver<SettingsConfig>(PipeConstants.InitSettingsCommandName);
-
-        // Shared cancellation token for all operations, to allow for graceful shutdown.
-        CancellationTokenSource cts = new();
         Console.CancelKeyPress += (_, e) =>
         {
             e.Cancel = true;
             cts.Cancel();
         };
 
-        // Wait for initial settings command reciept before proceeding further.
-        // While doesn't appear this way, this effectively hangs before proceeding to the later operations!
-        await initSettingsCommandReceiver.ReceiveAsync(HandleInitSettCommandAsync, cts.Token);
+        Console.WriteLine("Starting Service Debugger...");
 
-        Console.WriteLine("Starting subscribers...");
+        while (!cts.Token.IsCancellationRequested)
+        {
+            try
+            {
+                await RunSessionAsync(cts);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(
+                    $"IPC session lost: {ex.Message}");
 
-        Task modbusTask = StartSubscriptionLoopAsync(
-            "ModbusData",
-            token => modbusDataSubscriber.SubscribeAsync(HandleModbusAsync, token),
+                Console.WriteLine(
+                    "Waiting for backend recovery...");
+
+                await Task.Delay(2000, cts.Token);
+            }
+        }
+    }
+
+    private static async Task RunSessionAsync(
+    CancellationTokenSource cts)
+    {
+        // Streams
+        var modbusDataSubscriber =
+            new FEStreamSubscriber<ModbusData>(
+                PipeConstants.ModbusDataStreamName);
+
+        var connSettSubscriber =
+            new FEStreamSubscriber<ConnectionDiagnostics>(
+                PipeConstants.ConnDiagStreamName);
+
+        // Commands
+        var settingsCommandSender =
+            new FECommandSender<SettingsConfig>(
+                PipeConstants.SettingsCommandName);
+
+        var initSettingsCommandReceiver =
+            new FECommandReceiver<SettingsConfig>(
+                PipeConstants.InitSettingsCommandName);
+
+        Console.WriteLine(
+            "Waiting for initialization settings...");
+
+        await initSettingsCommandReceiver.ReceiveAsync(
+            HandleInitSettCommandAsync,
             cts.Token);
 
-        Task connTask = StartSubscriptionLoopAsync(
-            "CommsDiagnostics",
-            token => connSettSubscriber.SubscribeAsync(HandleConnDiagAsync, token),
+        Console.WriteLine("Connected to backend.");
+
+        // Start subscriptions
+        Task modbusTask =
+            modbusDataSubscriber.SubscribeAsync(
+                HandleModbusAsync,
+                cts.Token);
+
+        Task connTask =
+            connSettSubscriber.SubscribeAsync(
+                HandleConnDiagAsync,
+                cts.Token);
+
+        var inputChannel = Channel.CreateUnbounded<string>();
+
+        Task inputTask = StartConsoleInputAsync(
+            inputChannel.Writer,
             cts.Token);
 
-        while (!cts.IsCancellationRequested)
+        var quitTcs = new TaskCompletionSource();
+
+        // Input loop
+        while (!cts.Token.IsCancellationRequested)
         {
             Console.Write("> ");
 
-            var input = Console.ReadLine();
+            var inputReadTask = inputChannel.Reader.ReadAsync(cts.Token).AsTask();
 
-            if (string.IsNullOrWhiteSpace(input))
+            var completed = await Task.WhenAny(
+                inputReadTask,
+                quitTcs.Task,
+                modbusTask,
+                connTask);
+
+            // quit if this task completed
+            if (completed == quitTcs.Task)
             {
-                continue;
+                cts.Cancel();
+                return;
             }
 
-            var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            // Subscription died if one of these two was the completed task
+            if (completed == modbusTask ||
+                completed == connTask)
+            {
+                throw new Exception(
+                    "IPC subscriptions disconnected.");
+            }
+
+            // Input received
+            var input = await inputReadTask;
+
+            var parts = input.Split(
+                ' ',
+                StringSplitOptions.RemoveEmptyEntries);
 
             switch (parts[0].ToLower())
             {
@@ -133,44 +148,26 @@ public class ServiceDebugger
                     break;
 
                 case "set":
-                    await HandleSetCommand(parts, settingsCommandSender, cts);
+                    await HandleSetCommand(
+                        parts,
+                        settingsCommandSender,
+                        cts);
                     break;
 
                 case "quit":
+                    quitTcs.TrySetResult();
                     cts.Cancel();
-                    break;
+                    return;
             }
-        }
-        
-        await Task.Delay(Timeout.Infinite, cts.Token);
-    }
 
-    private static async Task StartSubscriptionLoopAsync(string name, Func<CancellationToken, Task> subscribeFunc, CancellationToken token)
-    {
-        while (!token.IsCancellationRequested)
-        {
-            try
+            // Detect subscription failure
+            if (modbusTask.IsFaulted ||
+                connTask.IsFaulted ||
+                modbusTask.IsCompleted ||
+                connTask.IsCompleted)
             {
-                // Console.WriteLine($"Attempting {name} subscription...");
-
-                await subscribeFunc(token);
-
-                // Console.WriteLine($"{name} subscription established.");
-
-                return; // success
-            }
-            catch (OperationCanceledException)
-            {
-                Console.WriteLine($"{name} subscription cancelled.");
-                return;
-            }
-            catch (Exception ex)
-            {
-                // Console.WriteLine($"{name} stream subscription start failure");
-                // Console.WriteLine(ex);
-
-                // Prevent tight retry loop
-                await Task.Delay(TimeSpan.FromSeconds(5), token);
+                throw new Exception(
+                    "Subscription connection lost.");
             }
         }
     }
@@ -314,46 +311,31 @@ public class ServiceDebugger
         selectedPollType = cfg.SelectedPollType ?? selectedPollType;
         asciiEnable = cfg.AsciiEnable ?? asciiEnable;
         selectedNumericBase = cfg.SelectedNumericBase ?? selectedNumericBase;
+        selectedEndian = cfg.SelectedEndian ?? selectedEndian;
 
         Console.WriteLine("Received initial settings:");
         ShowConfig();
 
         return Task.CompletedTask;
     }
+
+    private static Task StartConsoleInputAsync(
+    ChannelWriter<string> writer,
+    CancellationToken ct)
+    {
+        return Task.Run(async () =>
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                string? line = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    continue;
+                }
+
+                await writer.WriteAsync(line, ct);
+            }
+        }, ct);
+    }
 }
-//Then add:
-
-//StreamReader
-//StreamWriter
-//async receive loop
-
-// Testing in a console isolates IPC related bugs to the Service. This additionally allows you to find Service functionality bugs sooner.
-
-// Consider a command shell, where you can simply enter commands in order to test the Service in isolation! Production systems often keep these permanantly, just for future use!
-//> ping
-//Pong
-
-//> restart
-//Restart acknowledged
-
-//> status
-//Connected: True
-//Polling: True
-
-//Once basic IPC works:
-
-//Simulate failure conditions
-//Kill service mid-stream
-
-//Verify reconnect logic.
-
-//Spam commands rapidly
-
-//Look for:
-
-//race conditions
-//deadlocks
-//pipe corruption
-//Disconnect during publish
-
-//Validate cleanup.

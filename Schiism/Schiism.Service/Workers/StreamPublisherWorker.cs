@@ -1,4 +1,5 @@
-﻿using Schiism.Core.Abstractions.IPC.Streams;
+﻿using Schiism.Core.Abstractions.IPC;
+using Schiism.Core.Abstractions.IPC.Streams;
 using Schiism.Core.Models.IPC.DTOs.Streams;
 
 namespace Schiism.Service.Workers
@@ -9,6 +10,7 @@ namespace Schiism.Service.Workers
     /// <typeparam name="T">The type of the stream item, either ModbusData or ConnectionDiagnostics.</typeparam>
     public class StreamPublisherWorker<T>(IStreamQueue<T> queue, IStreamPublisher<T> publisher, ILogger<StreamPublisherWorker<T>> logger) : BackgroundService
     {
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             logger.LogInformation(
@@ -21,22 +23,28 @@ namespace Schiism.Service.Workers
             {
                 try
                 {
+
                     var item = await queue.DequeueAsync(stoppingToken);
 
-                    await publisher.PublishAsync(item, stoppingToken);
+                    // Save to a MODBUS Data log file!
 
-                    if (item is ModbusData modbusData)
+                    if (publisher.IsConnected)
                     {
-                        string data = string.Empty;
-                        for (int i = 0; i < modbusData.Data.Count; i++)
-                            {
-                            data += $"Data[{i}]: {modbusData.Data[i]} ";
-                        }
+                        await publisher.PublishAsync(item, stoppingToken);
 
-                        logger.LogInformation(
-                            "Published {Type}: Data: {Data}",
-                            typeof(T).Name,
-                            data);
+                        if (item is ModbusData modbusData)
+                        {
+                            string data = string.Empty;
+                            for (int i = 0; i < modbusData.Data.Count; i++)
+                            {
+                                data += $"Data[{i}]: {modbusData.Data[i]} ";
+                            }
+
+                            logger.LogInformation(
+                                "Published {Type}: Data: {Data}",
+                                typeof(T).Name,
+                                data);
+                        }
                     }
 
                     // else if (item is ConnectionDiagnostics diagnostics)

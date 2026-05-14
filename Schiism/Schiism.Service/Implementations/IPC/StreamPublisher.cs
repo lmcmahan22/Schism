@@ -1,57 +1,23 @@
-﻿using Schiism.Core.Abstractions.IPC.Streams;
+﻿using Schiism.Core.Abstractions.IPC;
+using Schiism.Core.Abstractions.IPC.Streams;
 using Schiism.Core.Models.IPC;
 using System.IO.Pipes;
-using System.Security.AccessControl;
-using System.Security.Principal;
 
 namespace Schiism.Service.Implementations.IPC
 {
-    public class StreamPublisher<T>(string pipeName, ILogger<StreamPublisher<T>> logger) : IStreamPublisher<T>
+    public class StreamPublisher<T>(string pipeName, IFrontendInitState fEInitState, ILogger<StreamPublisher<T>> logger) : IStreamPublisher<T>
     {
+
         private readonly List<NamedPipeServerStream> clients = [];
         private readonly PipeSerializer serializer = new();
+        private bool isConnected;
+
+        public bool IsConnected => isConnected;
 
         public Task StartAsync(CancellationToken ct)
         {
             _ = Task.Run(() => AcceptLoopAsync(ct), ct);
             return Task.CompletedTask;
-        }
-
-        public async Task PublishAsync(T data, CancellationToken ct)
-        {
-            if (clients.Count == 0)
-            {
-                return;
-            }
-
-            var disconnectedClients = new List<NamedPipeServerStream>();
-            foreach (var client in clients)
-            {
-                try
-                {
-                    if (!client.IsConnected)
-                    {
-                        disconnectedClients.Add(client);
-                        continue;
-                    }
-
-                    await serializer.SerializeAsync(client, data, ct);
-                    await client.FlushAsync(ct);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogWarning(
-                        ex,
-                        "Removing disconnected client from {PipeName}", pipeName);
-                    disconnectedClients.Add(client);
-                }
-            }
-
-            foreach (var client in disconnectedClients)
-            {
-                client.Dispose();
-                clients.Remove(client);
-            }
         }
 
         public async Task AcceptLoopAsync(CancellationToken ct)
@@ -77,6 +43,8 @@ namespace Schiism.Service.Implementations.IPC
                     logger.LogInformation(
                         "Subscriber connected on {PipeName}", pipeName);
 
+                    this.isConnected = true;
+
                     clients.Add(client);
                 }
                 catch (OperationCanceledException)
@@ -88,6 +56,43 @@ namespace Schiism.Service.Implementations.IPC
                     logger.LogError(
                         ex,
                         "Pipe accept loop error for {PipeName}", pipeName);
+                }
+            }
+        }
+
+        public async Task PublishAsync(T data, CancellationToken ct)
+        {
+            if (clients.Count == 0)
+            {
+                return;
+            }
+
+            var disconnectedClients = new List<NamedPipeServerStream>();
+            foreach (var client in clients)
+            {
+                try
+                {
+                    await serializer.SerializeAsync(client, data, ct);
+                    await client.FlushAsync(ct);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogInformation(
+                        ex,
+                        "Removing disconnected client from {PipeName}", pipeName);
+                    disconnectedClients.Add(client);
+                }
+            }
+
+            foreach (var client in disconnectedClients)
+            {
+                client.Dispose();
+                clients.Remove(client);
+                this.isConnected = false;
+                if (fEInitState.IsInitialized)
+                {
+                    fEInitState.SetInitialized(false); // This works for just one client connected to the stream publisher, but your future-considerate` one to many layout here goes against this implementation.
+                    logger.LogInformation("Frontend Initialization State set to False!");
                 }
             }
         }

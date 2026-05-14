@@ -7,11 +7,10 @@
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
     using Schiism.Core.Models.IPC.DTOs.Commands;
+    using Schiism.Core.Abstractions.IPC;
 
-    public class CommandsWorker(ICommandReceiver<SettingsConfig> receive, ICommandSender<SettingsConfig> initSender, IModbusConfig modbusConfig, IModbusControl modbusControl, ILogger<CommandsWorker> logger) : BackgroundService
+    public class CommandsWorker(ICommandReceiver<SettingsConfig> receive, ICommandSender<SettingsConfig> initSender, IModbusConfig modbusConfig, IModbusControl modbusControl, IFrontendInitState fEInitState, ILogger<CommandsWorker> logger) : BackgroundService
     {
-        private volatile bool initReceived = false;
-
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var sendTask = this.RunSenderLoopAsync(stoppingToken);
@@ -22,30 +21,40 @@
 
         private async Task RunSenderLoopAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested && !this.initReceived)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    logger.LogInformation("Sending initialization command");
+                    if (!fEInitState.IsInitialized)
+                    {
+                        logger.LogInformation("Sending initialization command");
 
-                    var initConf = new SettingsConfig(
-                        modbusConfig.IPAddress,
-                        modbusConfig.DataLength,
-                        modbusConfig.StartAddress,
-                        modbusConfig.TCPPort,
-                        modbusConfig.ScanRate,
-                        modbusConfig.TCPTimeout,
-                        modbusConfig.DeviceId,
-                        modbusConfig.SelectedDataSize,
-                        modbusConfig.SelectedPollType,
-                        modbusConfig.AsciiEnable,
-                        modbusConfig.SelectedNumericBase,
-                        modbusConfig.SelectedEndian);
+                        var initConf = new SettingsConfig(
+                            modbusConfig.IPAddress,
+                            modbusConfig.DataLength,
+                            modbusConfig.StartAddress,
+                            modbusConfig.TCPPort,
+                            modbusConfig.ScanRate,
+                            modbusConfig.TCPTimeout,
+                            modbusConfig.DeviceId,
+                            modbusConfig.SelectedDataSize,
+                            modbusConfig.SelectedPollType,
+                            modbusConfig.AsciiEnable,
+                            modbusConfig.SelectedNumericBase,
+                            modbusConfig.SelectedEndian);
 
-                    await initSender.SendAsync(initConf, this.HandleCommandSendAsync, stoppingToken);
+                        await initSender.SendAsync(initConf, this.HandleCommandSendAsync, stoppingToken);
+                        fEInitState.SetInitialized(true);
+                        logger.LogWarning("Frontend Initialization State set to True!");
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
                 }
                 catch (Exception ex)
                 {
+                    // fEInitState.SetConnected(false);
                     logger.LogError(ex, "Failed to send init command. Trying again...");
                 }
 
@@ -68,11 +77,7 @@
 
         private async Task HandleCommandSendAsync(SettingsConfig cmd)
         {
-            if (!this.initReceived)
-            {
-                logger.LogInformation("Front end received initial config successfully");
-                this.initReceived = true;
-            }
+            logger.LogInformation("Front end received initial config successfully");
         }
 
         private async Task HandleCommandReceiptAsync(SettingsConfig cmd)

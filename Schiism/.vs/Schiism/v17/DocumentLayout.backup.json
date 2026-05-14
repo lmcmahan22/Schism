@@ -3,12 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\implementations\\modbus\\modbusconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\implementations\\modbus\\modbusconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}|Schiism.Cli\\Schiism.Cli.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.cli\\servicedatadebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}|Schiism.Cli\\Schiism.Cli.csproj|solutionrelative:schiism.cli\\servicedatadebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}|Schiism.Cli\\Schiism.Cli.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.cli\\servicedebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}|Schiism.Cli\\Schiism.Cli.csproj|solutionrelative:schiism.cli\\servicedebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}|Schiism.Cli\\Schiism.Cli.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.cli\\servicecontroldebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}|Schiism.Cli\\Schiism.Cli.csproj|solutionrelative:schiism.cli\\servicecontroldebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\abstractions\\ipc\\streams\\istreamsubscriber.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\abstractions\\ipc\\streams\\istreamsubscriber.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}|Schiism.Cli\\Schiism.Cli.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.cli\\ipc\\festreamsubscriber.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -26,49 +30,62 @@
           "Children": [
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "ModbusConfig.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\Modbus\\ModbusConfig.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Implementations\\Modbus\\ModbusConfig.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\Modbus\\ModbusConfig.cs",
-              "RelativeToolTip": "Schiism.Service\\Implementations\\Modbus\\ModbusConfig.cs",
-              "ViewState": "AgIAABYAAAAAAAAAAAAMwCoAAAAeAAAAAAAAAA==",
+              "Title": "ServiceDataDebugger.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\ServiceDataDebugger.cs",
+              "RelativeDocumentMoniker": "Schiism.Cli\\ServiceDataDebugger.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\ServiceDataDebugger.cs",
+              "RelativeToolTip": "Schiism.Cli\\ServiceDataDebugger.cs",
+              "ViewState": "AgIAAIQAAAAAAAAAAAAAAKIAAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-13T20:15:20.319Z",
+              "WhenOpened": "2026-05-14T20:15:09.265Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "FEStreamSubscriber.cs",
               "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\IPC\\FEStreamSubscriber.cs",
               "RelativeDocumentMoniker": "Schiism.Cli\\IPC\\FEStreamSubscriber.cs",
               "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\IPC\\FEStreamSubscriber.cs",
               "RelativeToolTip": "Schiism.Cli\\IPC\\FEStreamSubscriber.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAAAACAAAAAVAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD4AAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-13T20:13:35.634Z",
+              "WhenOpened": "2026-05-14T18:14:50.814Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IStreamSubscriber.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamSubscriber.cs",
+              "RelativeDocumentMoniker": "Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamSubscriber.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamSubscriber.cs",
+              "RelativeToolTip": "Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamSubscriber.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-14T19:27:55.464Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "ServiceDebugger.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\ServiceDebugger.cs",
-              "RelativeDocumentMoniker": "Schiism.Cli\\ServiceDebugger.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\ServiceDebugger.cs",
-              "RelativeToolTip": "Schiism.Cli\\ServiceDebugger.cs",
-              "ViewState": "AgIAADAAAAAAAAAAAAD4vzoAAAAnAAAAAAAAAA==",
+              "Title": "ServiceControlDebugger.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\ServiceControlDebugger.cs",
+              "RelativeDocumentMoniker": "Schiism.Cli\\ServiceControlDebugger.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\ServiceControlDebugger.cs",
+              "RelativeToolTip": "Schiism.Cli\\ServiceControlDebugger.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAJIAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-13T16:08:19.602Z",
+              "WhenOpened": "2026-05-14T15:32:02.496Z",
               "EditorCaption": ""
             }
           ]

@@ -1,4 +1,5 @@
-﻿using Schiism.Core.Abstractions.IPC.Streams;
+﻿using Microsoft.Extensions.Logging;
+using Schiism.Core.Abstractions.IPC.Streams;
 using Schiism.Core.Models.IPC;
 using System.IO.Pipes;
 
@@ -12,9 +13,12 @@ namespace Schiism.Cli.IPC
         {
             while (!ct.IsCancellationRequested)
             {
+
+                NamedPipeClientStream? pipe = null;
+
                 try
                 {
-                    using var pipe = new NamedPipeClientStream(
+                    pipe = new NamedPipeClientStream(
                         ".",
                         pipeName,
                         PipeDirection.In,
@@ -26,10 +30,16 @@ namespace Schiism.Cli.IPC
                     
                     // Console.WriteLine($"Connected to {pipeName}");
 
-                    while (pipe.IsConnected && !ct.IsCancellationRequested)
+                    var data = await Serializer.DeserializeAsync<T>(pipe, ct);
+                    try
                     {
-                        var data = await Serializer.DeserializeAsync<T>(pipe, ct);
                         await onData(data);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(
+                            "Subscriber callback failed for {PipeName}: {ex}",
+                            pipeName, ex);
                     }
                 }
                 catch (OperationCanceledException)
@@ -37,10 +47,19 @@ namespace Schiism.Cli.IPC
                     Console.WriteLine($"Subscription to {pipeName} cancelled");
                     break;
                 }
+                catch (EndOfStreamException)
+                {
+                    Console.WriteLine($"Subscription to {pipeName} dropped unexpectedly");
+                    throw;
+                }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error in subscription to {pipeName}: {ex}");
-                    await Task.Delay(1000, ct);
+                    Console.WriteLine($"Unknown error in subscription to {pipeName}: {ex}");
+                    throw;
+                }
+                finally
+                {
+                    pipe?.Dispose();
                 }
             }
         }
