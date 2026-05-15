@@ -10,7 +10,7 @@ namespace Schiism.Service.Workers
     /// <summary>
     /// Worker class runs the MODBUS Engine in a background thread, allowing it to run independently of the main service thread and be restarted on demand.
     /// </summary>
-    public class ModbusEngineWorker(IEngine engine, IModbusConfig config, IModbusControl modbusControl, ILogger<ModbusEngineWorker> logger) : BackgroundService
+    public class EngineWorker(IEngine engine, IModbusConfig config, IModbusControl modbusControl, ILogger<EngineWorker> logger) : BackgroundService
     {
         private CancellationTokenSource? sessionCts;
 
@@ -26,18 +26,24 @@ namespace Schiism.Service.Workers
 
                     await RunPollingLoop(sessionCts.Token);
                 }
-                catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+                catch (TaskCanceledException)
                 {
-                    logger.LogInformation("Modbus Engine session restarted");
+                    logger.LogInformation("Modbus Server has closed. Attempting Reconnect...");
+                }
+                catch (OperationCanceledException)
+                {
+                    logger.LogInformation("Modbus Engine session restarted. Attempting Reconnect...");
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError($"Modbus Engine failure: {ex}");
-                }
-                finally
-                {
+                    logger.LogError(ex, "Modbus Engine failure");
                     await engine.DisconnectAsync();
                 }
+
+                // finally
+                // {
+                //    await engine.DisconnectAsync();
+                // }
 
                 await Task.Delay(config.ScanRate, ct);
             }

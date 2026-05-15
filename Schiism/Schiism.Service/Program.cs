@@ -20,7 +20,6 @@ namespace Schiism.Service
     using Schiism.Service.Workers;
     using System.Diagnostics;
 
-
     /// <summary>
     /// Main Service program that executes the Worker Service, which runs your engine.
     /// Includes:
@@ -106,7 +105,7 @@ namespace Schiism.Service
             //    new NamedPipeStreamSubscriber<ConnectionDiagnostics>(PipeConstants.ConnDiagStreamName));
 
             // Add an instance of the Worker classes as the hosted services (1 engine, 2 stream workers, 1 stream queue worker, 1 command worker)
-            builder.Services.AddHostedService<ModbusEngineWorker>();
+            builder.Services.AddHostedService<EngineWorker>();
             builder.Services.AddHostedService<StreamPublisherWorker<ModbusData>>();
             builder.Services.AddHostedService<StreamPublisherWorker<ConnectionDiagnostics>>();
             builder.Services.AddHostedService<CommandsWorker>();

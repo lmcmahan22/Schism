@@ -5,7 +5,6 @@ using Schiism.Core.Models.IPC;
 using Schiism.Core.Models.IPC.DTOs.Commands;
 using Schiism.Core.Models.IPC.DTOs.Streams;
 
-
 // To switch between the two debuggers, set the Startup object in project properties to either ServiceControlDebugger or ServiceDataDebugger
 
 // Right - click the project

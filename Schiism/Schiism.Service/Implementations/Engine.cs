@@ -15,8 +15,9 @@ namespace Schiism.Service.Implementations
     /// <summary>
     /// Main MODBUS Engine class.
     /// Queues the stream transmissions to the client, but doesn't actually send them from here.
+    /// Additionally, this class does NOT loop! Ideally, I want to make it such that only my Workers contain loops, thereby making the cancellation token handling discrete.
     /// </summary>
-    public class Engine(IModbusConfig config, IModbusClient client, IModbusInterpreter interpreter, IStreamQueue<ModbusData> modbusStreamQueue, IStreamQueue<ConnectionDiagnostics> connStreamQueue) : IEngine
+    public class Engine(IModbusConfig config, IModbusClient client, IModbusInterpreter interpreter, IStreamQueue<ModbusData> modbusStreamQueue, IStreamQueue<ConnectionDiagnostics> connStreamQueue, ILogger<Engine> logger) : IEngine
     {
         private int numRequests = 0;
         private int numResponses = 0;
@@ -29,13 +30,16 @@ namespace Schiism.Service.Implementations
         {
             try
             {
+                logger.LogInformation("Attempting to connect to Modbus Server at {IP}:{Port} with timeout {Timeout}ms", config.IPAddress, config.TCPPort, config.TCPTimeout);
                 await OnRequest(ct);
                 await client.InitializeAsync(config);
                 await OnSuccess(ct);
+                logger.LogInformation("Successfully connected to Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
             }
             catch (Exception e)
             {
                 await OnError(e, ct);
+                logger.LogError(e, "Failed to connect to Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
             }
         }
 
@@ -43,6 +47,7 @@ namespace Schiism.Service.Implementations
         {
             isConnected = false; // Not reported, but set the flag to false to prevent any false reporting of connection status while disconnecting
             await client.DisconnectAsync();
+            logger.LogInformation("Disconnected from Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
         }
 
         public async Task PollOnceAsync(CancellationToken ct)
@@ -67,10 +72,24 @@ namespace Schiism.Service.Implementations
                 await modbusStreamQueue.EnqueueAsync(data, ct);
 
                 await OnSuccess(ct);
+                logger.LogInformation("Successfully polled Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
+            }
+            catch (SocketException ex)
+            {
+                await OnError(ex, ct);
+                logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to Socket Error. Attempting to reconnect...", config.IPAddress, config.TCPPort);
+                throw;
+            }
+            catch (IOException ex)
+            {
+                await OnError(ex, ct);
+                logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to IO Error. Attempting to reconnect...", config.IPAddress, config.TCPPort);
+                throw;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 await OnError(ex, ct);
+                logger.LogError(ex, "Unknown error from Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
             }
         }
 
