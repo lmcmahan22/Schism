@@ -1,4 +1,4 @@
-// <copyright file="Worker.cs" company="Precision Valve &amp; Automation (PVA)">
+// <copyright file="EngineWorker.cs" company="Precision Valve &amp; Automation (PVA)">
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
@@ -8,23 +8,28 @@ namespace Schiism.Service.Workers
     using Schiism.Core.Abstractions.Modbus;
 
     /// <summary>
-    /// Worker class runs the MODBUS Engine in a background thread, allowing it to run independently of the main service thread and be restarted on demand.
+    /// Worker class runs the MODBUS Engine in a background thread, allowing it to run independently of the main service thread and be restarted when necessary.
     /// </summary>
     public class EngineWorker(IEngine engine, IModbusConfig config, IModbusControl modbusControl, ILogger<EngineWorker> logger) : BackgroundService
     {
         private CancellationTokenSource? sessionCts;
 
+        /// <summary>
+        /// Executes the background service, managing the lifecycle of the MODBUS Engine.
+        /// </summary>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
         protected override async Task ExecuteAsync(CancellationToken ct)
         {
             while (!ct.IsCancellationRequested)
             {
-                sessionCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                this.sessionCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
                 try
                 {
-                    await engine.ConnectAsync(sessionCts.Token);
+                    await engine.ConnectAsync(this.sessionCts.Token);
 
-                    await RunPollingLoop(sessionCts.Token);
+                    await this.RunPollingLoop(this.sessionCts.Token);
                 }
                 catch (TaskCanceledException)
                 {
@@ -40,11 +45,6 @@ namespace Schiism.Service.Workers
                     await engine.DisconnectAsync();
                 }
 
-                // finally
-                // {
-                //    await engine.DisconnectAsync();
-                // }
-
                 await Task.Delay(config.ScanRate, ct);
             }
         }
@@ -53,16 +53,11 @@ namespace Schiism.Service.Workers
         {
             while (!ct.IsCancellationRequested)
             {
-                // if (!engine.IsConnected)
-                // {
-                //    throw new OperationCanceledException("Client disconnected");
-                // }
-
                 await engine.PollOnceAsync(ct);
 
                 if (modbusControl.RestartRequested)
                 {
-                    modbusControl.ClearRestartRequest();
+                    modbusControl.RestartRequested = false;
                     logger.LogInformation("Modbus restart requested");
                     throw new OperationCanceledException("Restart requested");
                 }

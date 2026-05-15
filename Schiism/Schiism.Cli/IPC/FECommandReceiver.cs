@@ -1,18 +1,27 @@
-﻿namespace Schiism.Cli.IPC
+﻿// <copyright file="FECommandReceiver.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
+// </copyright>
+
+namespace Schiism.Cli.IPC
 {
-    using Schiism.Core.Abstractions.IPC.Commands;
-    using Schiism.Core.Abstractions.Modbus;
-    using Schiism.Core.Models.IPC;
     using System;
     using System.IO;
     using System.IO.Pipes;
     using System.Threading.Tasks;
+    using Schiism.Core.Abstractions.IPC.Commands;
+    using Schiism.Core.Models.IPC;
+    using Schiism.Core.Models.IPC.DTOs.Commands;
 
-    public class FECommandReceiver<T>(string pipeName) : ICommandReceiver<T>
+    /// <summary>
+    /// Command Receiver implementation for the front end.
+    /// </summary>
+    /// <param name="pipeName">Name of pipe that the command will be received from.</param>
+    public class FECommandReceiver(string pipeName) : ICommandReceiver
     {
         private PipeSerializer Serializer => new();
 
-        public async Task ReceiveAsync(Func<T, Task> handler, CancellationToken ct)
+        /// <inheritdoc/>
+        public async Task ReceiveAsync(Func<SettingsConfig, Task> handler, CancellationToken ct)
         {
             while (!ct.IsCancellationRequested)
             {
@@ -20,7 +29,7 @@
                 {
                     Console.WriteLine($"Creating named pipe for {pipeName}");
 
-                    using var pipe = new NamedPipeServerStream(
+                    using NamedPipeServerStream pipe = new NamedPipeServerStream(
                         pipeName,
                         PipeDirection.In,
                         NamedPipeServerStream.MaxAllowedServerInstances,
@@ -34,26 +43,30 @@
                     Console.WriteLine($"Sender connected to {pipeName}");
                     while (pipe.IsConnected && !ct.IsCancellationRequested)
                     {
-                        var cmd = await Serializer.DeserializeAsync<T>(pipe, ct);
+                        SettingsConfig? cmd = await this.Serializer.DeserializeAsync<SettingsConfig>(pipe, ct);
+
+                        if (cmd is null)
+                        {
+                            Console.WriteLine("Received null command, ignoring");
+                            continue;
+                        }
 
                         Console.WriteLine($"Received command: {cmd}");
-
                         await handler(cmd);
-
-                        return; // Single reciept complete! Get out of here!
+                        return;
                     }
                 }
                 catch (EndOfStreamException)
                 {
-                    Console.WriteLine($"Client disconnected from {pipeName}");
+                    Console.WriteLine("Sender disconnected from {PipeName}", pipeName);
                 }
                 catch (OperationCanceledException)
                 {
-                    Console.WriteLine($"Command server shutting down for {pipeName}");
+                    Console.WriteLine("Command server shutting down");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error in command server for {pipeName}: {ex.Message}");
+                    Console.WriteLine($"Command server error: {ex}");
                 }
             }
         }

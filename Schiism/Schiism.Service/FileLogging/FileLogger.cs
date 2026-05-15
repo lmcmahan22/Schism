@@ -25,7 +25,11 @@ namespace Schiism.Service.FileLogging
         }
 
         /// <inheritdoc/>
-        public IDisposable BeginScope<TState>(TState state) => null;
+        public IDisposable BeginScope<TState>(TState state)
+            where TState : notnull
+        {
+            return default!;
+        }
 
         /// <inheritdoc/>
         public bool IsEnabled(LogLevel logLevel) => true;
@@ -35,15 +39,15 @@ namespace Schiism.Service.FileLogging
             LogLevel logLevel,
             EventId eventId,
             TState state,
-            Exception exception,
-            Func<TState, Exception, string> formatter)
+            Exception? exception,
+            Func<TState, Exception?, string> formatter)
         {
             string timestamp = DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
             string message = $"{eventId} {timestamp} [{logLevel}] {formatter(state, exception)}";
 
             lock (TextAppendlock)
             {
-                File.AppendAllText(filePath, message + Environment.NewLine);
+                File.AppendAllText(this.filePath, message + Environment.NewLine);
             }
         }
     }

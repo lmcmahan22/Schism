@@ -14,62 +14,62 @@ namespace Schiism.Core.Abstractions.Modbus
     public interface IModbusConfig
     {
         /// <summary>
-        /// Gets or Sets IP Address.
+        /// Gets IP Address.
         /// </summary>
         public string IPAddress { get; }
 
         /// <summary>
-        /// Gets or Sets Data Length in accordance with DataSize and StartAddress for min and max allowable value respectively.
+        /// Gets Data Length in accordance with DataSize and StartAddress for min and max allowable value respectively.
         /// </summary>
         public byte DataLength { get; }
 
         /// <summary>
-        /// Gets or Sets Starting Address.
+        /// Gets Starting Address.
         /// </summary>
         public ushort StartAddress { get; }
 
         /// <summary>
-        /// Gets or Sets selected Data Size. May alter DataLength, depending on the entered value.
+        /// Gets selected Data Size. May alter DataLength, depending on the entered value.
         /// </summary>
         public DataSize SelectedDataSize { get; }
 
         /// <summary>
-        /// Gets or Sets TCP Port.
+        /// Gets TCP Port.
         /// </summary>
         public ushort TCPPort { get; }
 
         /// <summary>
-        /// Gets or Sets Scan Rate.
+        /// Gets Scan Rate.
         /// </summary>
         public int ScanRate { get; }
 
         /// <summary>
-        /// Gets or Sets TCP Timeout.
+        /// Gets TCP Timeout.
         /// </summary>
         public int TCPTimeout { get; }
 
         /// <summary>
-        /// Gets or Sets Device ID.
+        /// Gets Device ID.
         /// </summary>
         public byte DeviceId { get; }
 
         /// <summary>
-        /// Gets or Sets selected polling type.
+        /// Gets selected polling type.
         /// </summary>
         public PollType SelectedPollType { get; }
 
         /// <summary>
-        /// Gets or Sets a value indicating whether ASCII display should be included or not.
+        /// Gets a value indicating whether ASCII display should be included or not.
         /// </summary>
         public bool AsciiEnable { get; }
 
         /// <summary>
-        /// Gets or Sets selected numeric base.
+        /// Gets selected numeric base.
         /// </summary>
         public NumericBase SelectedNumericBase { get; }
 
         /// <summary>
-        /// Gets or Sets selected endian.
+        /// Gets selected endian.
         /// </summary>
         public Endian SelectedEndian { get; }
 

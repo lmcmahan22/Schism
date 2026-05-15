@@ -4,6 +4,7 @@
 
 namespace Schiism.Service
 {
+    using System.Diagnostics;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Schiism.Core.Abstractions.IPC;
@@ -11,14 +12,12 @@ namespace Schiism.Service
     using Schiism.Core.Abstractions.IPC.Streams;
     using Schiism.Core.Abstractions.Modbus;
     using Schiism.Core.Models.IPC;
-    using Schiism.Core.Models.IPC.DTOs.Commands;
     using Schiism.Core.Models.IPC.DTOs.Streams;
     using Schiism.Service.FileLogging;
     using Schiism.Service.Implementations;
     using Schiism.Service.Implementations.IPC;
     using Schiism.Service.Implementations.Modbus;
     using Schiism.Service.Workers;
-    using System.Diagnostics;
 
     /// <summary>
     /// Main Service program that executes the Worker Service, which runs your engine.
@@ -72,37 +71,24 @@ namespace Schiism.Service
             builder.Services.AddSingleton<IFrontendInitState, FrontendInitState>();
 
             // Stream Publishers
-            builder.Services.AddSingleton<IStreamPublisher<ModbusData>, StreamPublisher<ModbusData>>(sp => new StreamPublisher<ModbusData>
-                (PipeConstants.ModbusDataStreamName, sp.GetRequiredService<IFrontendInitState>(), sp.GetRequiredService<ILogger<StreamPublisher<ModbusData>>>()));
-            builder.Services.AddSingleton<IStreamPublisher<ConnectionDiagnostics>, StreamPublisher<ConnectionDiagnostics>>(sp => new StreamPublisher<ConnectionDiagnostics>
-                (PipeConstants.ConnDiagStreamName, sp.GetRequiredService<IFrontendInitState>(), sp.GetRequiredService<ILogger<StreamPublisher<ConnectionDiagnostics>>>()));
+            builder.Services.AddSingleton<IStreamPublisher<ModbusData>, StreamPublisher<ModbusData>>(sp => new StreamPublisher<ModbusData>(
+                PipeConstants.ModbusDataStreamName, sp.GetRequiredService<IFrontendInitState>(), sp.GetRequiredService<ILogger<StreamPublisher<ModbusData>>>()));
+            builder.Services.AddSingleton<IStreamPublisher<ConnectionDiagnostics>, StreamPublisher<ConnectionDiagnostics>>(sp => new StreamPublisher<ConnectionDiagnostics>(
+                PipeConstants.ConnDiagStreamName, sp.GetRequiredService<IFrontendInitState>(), sp.GetRequiredService<ILogger<StreamPublisher<ConnectionDiagnostics>>>()));
 
             // Stream Queues
             builder.Services.AddSingleton<IStreamQueue<ModbusData>, StreamQueue<ModbusData>>();
             builder.Services.AddSingleton<IStreamQueue<ConnectionDiagnostics>, StreamQueue<ConnectionDiagnostics>>();
 
             // Commmand Server
-            builder.Services.AddSingleton<ICommandReceiver<SettingsConfig>, ServiceCommandReceiver<SettingsConfig>>(sp =>
-                new ServiceCommandReceiver<SettingsConfig>
-                (PipeConstants.SettingsCommandName, sp.GetRequiredService<ILogger<ServiceCommandReceiver<SettingsConfig>>>()));
+            builder.Services.AddSingleton<ICommandReceiver, ServiceCommandReceiver>(sp =>
+                new ServiceCommandReceiver(
+                PipeConstants.SettingsCommandName, sp.GetRequiredService<ILogger<ServiceCommandReceiver>>()));
 
             // Command Client (for first config population)
-            builder.Services.AddSingleton<ICommandSender<SettingsConfig>, ServiceCommandSender<SettingsConfig>>(sp =>
-                new ServiceCommandSender<SettingsConfig>
-                (PipeConstants.InitSettingsCommandName, sp.GetRequiredService<ILogger<ServiceCommandSender<SettingsConfig>>>()));
-
-            // Frontend
-            // builder.Services.AddSingleton<ICommandClient<ModbusConfigCommand>>(sp =>
-            //    new NamedPipeCommandClient<ModbusConfigCommand>(PipeConstants.ModbusSettingsCommandName));
-
-            // builder.Services.AddSingleton<ICommandClient<ConnectionConfigCommand>>(sp =>
-            //    new NamedPipeCommandClient<ConnectionConfigCommand>(PipeConstants.ConnSettingsCommandName));
-
-            // builder.Services.AddSingleton<IStreamSubscriber<ModbusData>>(sp =>
-            //    new NamedPipeStreamSubscriber<ModbusData>(PipeConstants.ModbusDataStreamName));
-
-            // builder.Services.AddSingleton<IStreamSubscriber<ConnectionDiagnostics>>(sp =>
-            //    new NamedPipeStreamSubscriber<ConnectionDiagnostics>(PipeConstants.ConnDiagStreamName));
+            builder.Services.AddSingleton<ICommandSender, ServiceCommandSender>(sp =>
+                new ServiceCommandSender(
+                PipeConstants.InitSettingsCommandName, sp.GetRequiredService<ILogger<ServiceCommandSender>>()));
 
             // Add an instance of the Worker classes as the hosted services (1 engine, 2 stream workers, 1 stream queue worker, 1 command worker)
             builder.Services.AddHostedService<EngineWorker>();
@@ -117,7 +103,7 @@ namespace Schiism.Service
             // await commandClient.SendAsync(new ModbusConfigCommand(...));
 
             // Build and run!
-            var host = builder.Build();
+            IHost host = builder.Build();
 
             ILogger<Program> logger = host.Services.GetRequiredService<ILogger<Program>>();
 
@@ -136,7 +122,7 @@ namespace Schiism.Service
         {
             if (args.Contains("-install"))
             {
-                var exePath = Process.GetCurrentProcess().MainModule!.FileName!;
+                string? exePath = Process.GetCurrentProcess().MainModule!.FileName!;
                 RunSc($"stop {ServiceName}");
                 RunSc($"delete {ServiceName}");
                 RunSc($"create {ServiceName} binPath= \"{exePath}\" start= auto");

@@ -1,4 +1,4 @@
-﻿// <copyright file="ModbusEngine.cs" company="Precision Valve &amp; Automation (PVA)">
+﻿// <copyright file="Engine.cs" company="Precision Valve &amp; Automation (PVA)">
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
@@ -13,10 +13,15 @@ namespace Schiism.Service.Implementations
     using Schiism.Core.Models.IPC.DTOs.Streams;
 
     /// <summary>
-    /// Main MODBUS Engine class.
-    /// Queues the stream transmissions to the client, but doesn't actually send them from here.
-    /// Additionally, this class does NOT loop! Ideally, I want to make it such that only my Workers contain loops, thereby making the cancellation token handling discrete.
+    /// Implemnting class for the IEngine interface.
+    /// No looping or scheduling done in this class, only singular connect, disconnect, and polling attempts.
     /// </summary>
+    /// <param name="config">The ModbusConfig object, DI'd.</param>
+    /// <param name="client">The Modbus client object, DI'd.</param>
+    /// <param name="interpreter">The Modbus interpreter object, DI'd.</param>
+    /// <param name="modbusStreamQueue">The Modbus data stream queue, DI'd.</param>
+    /// <param name="connStreamQueue">The connection diagnostics stream queue, DI'd.</param>
+    /// <param name="logger">The logger object, DI'd.</param>
     public class Engine(IModbusConfig config, IModbusClient client, IModbusInterpreter interpreter, IStreamQueue<ModbusData> modbusStreamQueue, IStreamQueue<ConnectionDiagnostics> connStreamQueue, ILogger<Engine> logger) : IEngine
     {
         private int numRequests = 0;
@@ -26,44 +31,47 @@ namespace Schiism.Service.Implementations
         private bool isConnected = false;
         private string errorMessage = string.Empty;
 
+        /// <inheritdoc/>
         public async Task ConnectAsync(CancellationToken ct)
         {
             try
             {
                 logger.LogInformation("Attempting to connect to Modbus Server at {IP}:{Port} with timeout {Timeout}ms", config.IPAddress, config.TCPPort, config.TCPTimeout);
-                await OnRequest(ct);
+                await this.OnRequest(ct);
                 await client.InitializeAsync(config);
-                await OnSuccess(ct);
+                await this.OnSuccess(ct);
                 logger.LogInformation("Successfully connected to Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
             }
             catch (Exception e)
             {
-                await OnError(e, ct);
+                await this.OnError(e, ct);
                 logger.LogError(e, "Failed to connect to Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
             }
         }
 
+        /// <inheritdoc/>
         public async Task DisconnectAsync()
         {
-            isConnected = false; // Not reported, but set the flag to false to prevent any false reporting of connection status while disconnecting
+            this.isConnected = false; // Not reported, but set the flag to false to prevent any false reporting of connection status while disconnecting
             await client.DisconnectAsync();
             logger.LogInformation("Disconnected from Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
         }
 
+        /// <inheritdoc/>
         public async Task PollOnceAsync(CancellationToken ct)
         {
             try
             {
-                await OnRequest(ct);
+                await this.OnRequest(ct);
 
-                var rawData = client.ReadData(config);
+                List<ushort> rawData = client.ReadData(config);
 
                 if (rawData is null || rawData.Count != config.DataLength)
                 {
                     throw new Exception("Invalid Modbus response");
                 }
 
-                var interp = config.SelectedPollType is PollType.HoldingRegisters or PollType.InputRegisters
+                List<string>? interp = config.SelectedPollType is PollType.HoldingRegisters or PollType.InputRegisters
                     ? interpreter.InterpretRegs(config, rawData)
                     : rawData.Select(x => x.ToString()).ToList();
 
@@ -71,52 +79,52 @@ namespace Schiism.Service.Implementations
                 ModbusData data = new(config.DeviceId, interp, DateTime.UtcNow);
                 await modbusStreamQueue.EnqueueAsync(data, ct);
 
-                await OnSuccess(ct);
+                await this.OnSuccess(ct);
                 logger.LogInformation("Successfully polled Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
             }
             catch (SocketException ex)
             {
-                await OnError(ex, ct);
+                await this.OnError(ex, ct);
                 logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to Socket Error. Attempting to reconnect...", config.IPAddress, config.TCPPort);
                 throw;
             }
             catch (IOException ex)
             {
-                await OnError(ex, ct);
+                await this.OnError(ex, ct);
                 logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to IO Error. Attempting to reconnect...", config.IPAddress, config.TCPPort);
                 throw;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                await OnError(ex, ct);
+                await this.OnError(ex, ct);
                 logger.LogError(ex, "Unknown error from Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
             }
         }
 
         private async Task OnRequest(CancellationToken ct)
         {
-            numRequests++;
-            ConnectionDiagnostics diag = new(numRequests, numResponses, numOKs, numErrors, errorMessage, isConnected, DateTime.UtcNow);
+            this.numRequests++;
+            ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.isConnected, DateTime.UtcNow);
             await connStreamQueue.EnqueueAsync(diag, ct);
         }
 
         private async Task OnSuccess(CancellationToken ct)
         {
-            isConnected = true;
-            numResponses++;
-            numOKs++;
-            errorMessage = string.Empty;
-            ConnectionDiagnostics diag = new(numRequests, numResponses, numOKs, numErrors, errorMessage, isConnected, DateTime.UtcNow);
+            this.isConnected = true;
+            this.numResponses++;
+            this.numOKs++;
+            this.errorMessage = string.Empty;
+            ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.isConnected, DateTime.UtcNow);
             await connStreamQueue.EnqueueAsync(diag, ct);
         }
 
         private async Task OnError(Exception ex, CancellationToken ct)
         {
-            isConnected = false;
-            numResponses++;
-            numErrors++;
-            errorMessage = MapError(ex);
-            ConnectionDiagnostics diag = new(numRequests, numResponses, numOKs, numErrors, errorMessage, isConnected, DateTime.UtcNow);
+            this.isConnected = false;
+            this.numResponses++;
+            this.numErrors++;
+            this.errorMessage = this.MapError(ex);
+            ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.isConnected, DateTime.UtcNow);
             await connStreamQueue.EnqueueAsync(diag, ct);
         }
 

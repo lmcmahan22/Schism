@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "aOY4XUkOaxQ=",
+  "dgSpecHash": "z6mH/ZhCtfQ=",
   "success": true,
   "projectFilePath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\Schiism.Cli.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.7\\microsoft.extensions.dependencyinjection.abstractions.10.0.7.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\10.0.7\\microsoft.extensions.logging.abstractions.10.0.7.nupkg.sha512",
+    "C:\\Users\\lmcmahan\\.nuget\\packages\\stylecop.analyzers.unstable\\1.2.0.556\\stylecop.analyzers.unstable.1.2.0.556.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\system.diagnostics.diagnosticsource\\10.0.7\\system.diagnostics.diagnosticsource.10.0.7.nupkg.sha512"
   ],
   "logs": []

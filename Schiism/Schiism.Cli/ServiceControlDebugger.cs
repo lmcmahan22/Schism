@@ -1,4 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿// <copyright file="ServiceControlDebugger.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
+// </copyright>
+
 using System.Threading.Channels;
 using Schiism.Cli.IPC;
 using Schiism.Core.Enums;
@@ -16,9 +19,11 @@ using Schiism.Core.Models.IPC.DTOs.Streams;
 //  ServiceControlDebugger
 //  or ServiceDataDebugger
 
+/// <summary>
+/// Console based Service Control Debugger (sister program to Service Data Debugger).
+/// </summary>
 public class ServiceControlDebugger
 {
-    // Local variables to hold current config values for display and command sending. Initialized with defaults matching the Service's default config.
     private static string ipAddress = "127.0.0.1";
     private static ushort startAddress = 0;
     private static byte dataLength = 10;
@@ -32,6 +37,11 @@ public class ServiceControlDebugger
     private static int tCPTimeout = 2000;
     private static bool asciiEnable = false;
 
+    /// <summary>
+    /// Service Control Debugger program. Sister program to the ServiceDataDebugger program.
+    /// </summary>
+    /// <param name="args">Should be empty.</param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     public static async Task Main(string[] args)
     {
         using CancellationTokenSource cts = new();
@@ -71,21 +81,21 @@ public class ServiceControlDebugger
     CancellationTokenSource cts)
     {
         // Streams
-        var modbusDataSubscriber =
+        FEStreamSubscriber<ModbusData> modbusDataSubscriber =
             new FEStreamSubscriber<ModbusData>(
                 PipeConstants.ModbusDataStreamName);
 
-        var connSettSubscriber =
+        FEStreamSubscriber<ConnectionDiagnostics> connSettSubscriber =
             new FEStreamSubscriber<ConnectionDiagnostics>(
                 PipeConstants.ConnDiagStreamName);
 
         // Commands
-        var settingsCommandSender =
-            new FECommandSender<SettingsConfig>(
+        FECommandSender settingsCommandSender =
+            new FECommandSender(
                 PipeConstants.SettingsCommandName);
 
-        var initSettingsCommandReceiver =
-            new FECommandReceiver<SettingsConfig>(
+        FECommandReceiver initSettingsCommandReceiver =
+            new FECommandReceiver(
                 PipeConstants.InitSettingsCommandName);
 
         Console.WriteLine(
@@ -108,22 +118,22 @@ public class ServiceControlDebugger
                 HandleConnDiagAsync,
                 cts.Token);
 
-        var inputChannel = Channel.CreateUnbounded<string>();
+        Channel<string> inputChannel = Channel.CreateUnbounded<string>();
 
         Task inputTask = StartConsoleInputAsync(
             inputChannel.Writer,
             cts.Token);
 
-        var quitTcs = new TaskCompletionSource();
+        TaskCompletionSource quitTcs = new TaskCompletionSource();
 
         // Input loop
         while (!cts.Token.IsCancellationRequested)
         {
             Console.Write("> ");
 
-            var inputReadTask = inputChannel.Reader.ReadAsync(cts.Token).AsTask();
+            Task<string> inputReadTask = inputChannel.Reader.ReadAsync(cts.Token).AsTask();
 
-            var completed = await Task.WhenAny(
+            Task completed = await Task.WhenAny(
                 inputReadTask,
                 quitTcs.Task,
                 modbusTask,
@@ -145,9 +155,9 @@ public class ServiceControlDebugger
             }
 
             // Input received
-            var input = await inputReadTask;
+            string input = await inputReadTask;
 
-            var parts = input.Split(
+            string[] parts = input.Split(
                 ' ',
                 StringSplitOptions.RemoveEmptyEntries);
 
@@ -182,7 +192,7 @@ public class ServiceControlDebugger
         }
     }
 
-    private static async Task HandleSetCommand(string[] parts, FECommandSender<SettingsConfig> settCommandSender, CancellationTokenSource cts)
+    private static async Task HandleSetCommand(string[] parts, FECommandSender settCommandSender, CancellationTokenSource cts)
     {
         if (parts.Length < 3)
         {
@@ -191,8 +201,8 @@ public class ServiceControlDebugger
             return;
         }
 
-        var field = parts[1].ToLower();
-        var value = parts[2];
+        string field = parts[1].ToLower();
+        string value = parts[2];
 
         switch (field)
         {
@@ -264,11 +274,22 @@ public class ServiceControlDebugger
         try
         {
             SettingsConfig cfg = new SettingsConfig(
-                ipAddress, dataLength, startAddress,
-                tCPPort, scanRate, tCPTimeout,
-                deviceId, selectedDataSize, selectedPollType,
-                asciiEnable, selectedNumericBase, selectedEndian);
-            await settCommandSender.SendAsync(cfg, _ => Task.CompletedTask, cts.Token);
+                ipAddress,
+                dataLength,
+                startAddress,
+                tCPPort,
+                scanRate,
+                tCPTimeout,
+                deviceId,
+                selectedDataSize,
+                selectedPollType,
+                asciiEnable,
+                selectedNumericBase,
+                selectedEndian);
+
+            Console.WriteLine("Sending settings command");
+            await settCommandSender.SendAsync(cfg, cts.Token);
+            Console.WriteLine("Settings command sent");
         }
         catch (Exception ex)
         {
@@ -333,7 +354,8 @@ public class ServiceControlDebugger
     ChannelWriter<string> writer,
     CancellationToken ct)
     {
-        return Task.Run(async () =>
+        return Task.Run(
+            async () =>
         {
             while (!ct.IsCancellationRequested)
             {
@@ -346,6 +368,7 @@ public class ServiceControlDebugger
 
                 await writer.WriteAsync(line, ct);
             }
-        }, ct);
+        },
+            ct);
     }
 }

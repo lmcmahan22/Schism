@@ -1,9 +1,3 @@
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.csproj.AssemblyReference.cache
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.AssemblyInfoInputs.cache
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.AssemblyInfo.cs
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.csproj.CoreCompileInputs.cache
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.sourcelink.json
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\bin\Debug\net8.0\Schiism.Cli.exe
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\bin\Debug\net8.0\Schiism.Cli.deps.json
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\bin\Debug\net8.0\Schiism.Cli.runtimeconfig.json
@@ -14,6 +8,12 @@ C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\bin\Debug\net8.0\Microsoft.E
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\bin\Debug\net8.0\System.Diagnostics.DiagnosticSource.dll
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\bin\Debug\net8.0\Schiism.Core.dll
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\bin\Debug\net8.0\Schiism.Core.pdb
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.csproj.AssemblyReference.cache
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.AssemblyInfoInputs.cache
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.AssemblyInfo.cs
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.csproj.CoreCompileInputs.cache
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.sourcelink.json
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism..CA52D85A.Up2Date
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\Schiism.Cli.dll
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Cli\obj\Debug\net8.0\refint\Schiism.Cli.dll

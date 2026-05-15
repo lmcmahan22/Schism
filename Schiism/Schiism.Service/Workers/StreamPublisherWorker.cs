@@ -1,16 +1,20 @@
-﻿using Schiism.Core.Abstractions.IPC;
-using Schiism.Core.Abstractions.IPC.Streams;
-using Schiism.Core.Models.IPC.DTOs.Streams;
+﻿// <copyright file="StreamPublisherWorker.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
+// </copyright>
 
 namespace Schiism.Service.Workers
 {
+    using Schiism.Core.Abstractions.IPC;
+    using Schiism.Core.Abstractions.IPC.Streams;
+    using Schiism.Core.Models.IPC.DTOs.Streams;
+
     /// <summary>
     /// Publishing Worker. Both ModbusData and ConnectionDiagnostics are published through this same worker type, just seperate instances.
     /// </summary>
     /// <typeparam name="T">The type of the stream item, either ModbusData or ConnectionDiagnostics.</typeparam>
     public class StreamPublisherWorker<T>(IStreamQueue<T> queue, IStreamPublisher<T> publisher, ILogger<StreamPublisherWorker<T>> logger) : BackgroundService
     {
-
+        /// <inheritdoc/>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             logger.LogInformation(
@@ -23,10 +27,7 @@ namespace Schiism.Service.Workers
             {
                 try
                 {
-
-                    var item = await queue.DequeueAsync(stoppingToken);
-
-                    // Save to a MODBUS Data log file!
+                    T? item = await queue.DequeueAsync(stoppingToken);
 
                     if (publisher.IsConnected)
                     {
@@ -70,7 +71,8 @@ namespace Schiism.Service.Workers
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex,
+                    logger.LogError(
+                        ex,
                         "Error publishing stream item for {Type}",
                         typeof(T).Name);
                 }

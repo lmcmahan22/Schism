@@ -1,19 +1,15 @@
-﻿using Schiism.Core.Abstractions.Modbus;
+﻿// <copyright file="ModbusControl.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
+// </copyright>
 
 namespace Schiism.Service.Implementations.Modbus
 {
+    using Schiism.Core.Abstractions.Modbus;
+
+    /// <inheritdoc/>
     public class ModbusControl : IModbusControl
     {
-        public bool RestartRequested { get; private set; }
-
-        public void RequestRestart()
-        {
-            RestartRequested = true;
-        }
-
-        public void ClearRestartRequest()
-        {
-            RestartRequested = false;
-        }
+        /// <inheritdoc/>
+        public bool RestartRequested { get; set; }
     }
 }

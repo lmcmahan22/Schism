@@ -1,4 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿// <copyright file="ServiceDataDebugger.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
+// </copyright>
+
 using Schiism.Cli.IPC;
 using Schiism.Core.Enums;
 using Schiism.Core.Models.IPC;
@@ -15,6 +18,9 @@ using Schiism.Core.Models.IPC.DTOs.Streams;
 //  ServiceControlDebugger
 //  or ServiceDataDebugger
 
+/// <summary>
+/// Console based Service Data Debugger (sister program to Service Control Debugger).
+/// </summary>
 public class ServiceDataDebugger
 {
     // Local variables to hold current config values for display and command sending. Initialized with defaults matching the Service's default config.
@@ -31,6 +37,11 @@ public class ServiceDataDebugger
     private static int tCPTimeout = 2000;
     private static bool asciiEnable = false;
 
+    /// <summary>
+    /// Service Data Debugger program. Sister program to the ServiceControlDebugger program.
+    /// </summary>
+    /// <param name="args">Should be empty.</param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     public static async Task Main(string[] args)
     {
         using CancellationTokenSource cts = new();
@@ -70,21 +81,21 @@ public class ServiceDataDebugger
     CancellationTokenSource cts)
     {
         // Streams
-        var modbusDataSubscriber =
+        FEStreamSubscriber<ModbusData> modbusDataSubscriber =
             new FEStreamSubscriber<ModbusData>(
                 PipeConstants.ModbusDataStreamName);
 
-        var connSettSubscriber =
+        FEStreamSubscriber<ConnectionDiagnostics> connSettSubscriber =
             new FEStreamSubscriber<ConnectionDiagnostics>(
                 PipeConstants.ConnDiagStreamName);
 
         // Commands
-        var settingsCommandSender =
-            new FECommandSender<SettingsConfig>(
+        FECommandSender settingsCommandSender =
+            new FECommandSender(
                 PipeConstants.SettingsCommandName);
 
-        var initSettingsCommandReceiver =
-            new FECommandReceiver<SettingsConfig>(
+        FECommandReceiver initSettingsCommandReceiver =
+            new FECommandReceiver(
                 PipeConstants.InitSettingsCommandName);
 
         Console.WriteLine(
@@ -110,7 +121,7 @@ public class ServiceDataDebugger
         // Data loop
         while (!cts.Token.IsCancellationRequested)
         {
-            var completed = await Task.WhenAny(
+            Task completed = await Task.WhenAny(
                 modbusTask,
                 connTask);
 
@@ -121,8 +132,6 @@ public class ServiceDataDebugger
                 throw new Exception(
                     "IPC subscriptions disconnected.");
             }
-
-
 
             // Detect subscription failure
             if (modbusTask.IsFaulted ||
@@ -158,10 +167,6 @@ public class ServiceDataDebugger
     {
         string data = "Data: " + string.Join(", ", msg.Data);
         Console.WriteLine(data);
-        //for (int i = 0; i < msg.Data.Count; i++)
-        //{
-        //    string.Concat($"[{i}] = {msg.Data[i]}");
-        //}
 
         return Task.CompletedTask;
     }

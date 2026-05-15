@@ -4,18 +4,24 @@
 
 namespace Schiism.Service.Implementations.IPC
 {
-    using Schiism.Core.Abstractions.IPC.Streams;
     using System.Threading.Channels;
+    using Schiism.Core.Abstractions.IPC.Streams;
 
+    /// <summary>
+    /// Implementing class for the IStreamQueue interface, using System.Threading.Channels for efficient and thread-safe producer-consumer queues.
+    /// </summary>
+    /// <typeparam name="T">The type of items in the queue.</typeparam>
     public class StreamQueue<T> : IStreamQueue<T>
     {
         private readonly Channel<T> channel;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamQueue{T}"/> class.
+        /// Constructor initializes the channel object with a bounded capacity and appropriate options for a producer-consumer scenario.
+        /// </summary>
         public StreamQueue()
         {
-            // Channel is very useful! It provides a thread-safe way to handle producer-consumer scenarios without the need for explicit locking.
-            // This also sets a hard limit of 1000 items in the queue to prevent memory overload.
-            channel = Channel.CreateBounded<T>(
+            this.channel = Channel.CreateBounded<T>(
                 new BoundedChannelOptions(1000)
                 {
                     FullMode = BoundedChannelFullMode.DropOldest,
@@ -24,14 +30,16 @@ namespace Schiism.Service.Implementations.IPC
                 });
         }
 
+        /// <inheritdoc/>
         public ValueTask EnqueueAsync(T item, CancellationToken ct = default)
         {
-            return channel.Writer.WriteAsync(item, ct);
+            return this.channel.Writer.WriteAsync(item, ct);
         }
 
+        /// <inheritdoc/>
         public ValueTask<T> DequeueAsync(CancellationToken ct = default)
         {
-            return channel.Reader.ReadAsync(ct);
+            return this.channel.Reader.ReadAsync(ct);
         }
     }
 }

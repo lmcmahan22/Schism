@@ -21,7 +21,7 @@ namespace Schiism.WPF
         // This method is called when the module is initialized. It is responsible for registering views with regions and performing any necessary setup for the module, all within a "Container" object.
         public void OnInitialized(IContainerProvider containerProvider)
         {
-            var regionManager = containerProvider.Resolve<IRegionManager>();
+            IRegionManager regionManager = containerProvider.Resolve<IRegionManager>();
             regionManager.RegisterViewWithRegion("ContentRegion", typeof(Home));
         }
 

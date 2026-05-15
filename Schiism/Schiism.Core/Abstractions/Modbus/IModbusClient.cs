@@ -11,9 +11,19 @@ namespace Schiism.Core.Abstractions.Modbus
     /// </summary>
     public interface IModbusClient
     {
-
+        /// <summary>
+        /// Initialize the TCP Client connection to the server device using the settings defined in the ModbusConfig object.
+        /// </summary>
+        /// <param name="mC">
+        /// ModbusConfig object. Necessary for initializing the TCP client connection.
+        /// </param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         Task InitializeAsync(IModbusConfig mC);
 
+        /// <summary>
+        /// Disconnects the TCP Client from the server device.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         Task DisconnectAsync();
 
         /// <summary>

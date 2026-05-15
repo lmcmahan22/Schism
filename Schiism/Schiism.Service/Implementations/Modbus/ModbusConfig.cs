@@ -4,17 +4,14 @@
 
 namespace Schiism.Service.Implementations.Modbus
 {
+    using System;
     using Schiism.Core.Abstractions.Modbus;
     using Schiism.Core.Enums;
     using Schiism.Core.Models.IPC.DTOs.Commands;
-    using System;
-    using System.Net;
-    using System.Threading;
 
     /// <inheritdoc/>
     public class ModbusConfig : IModbusConfig
     {
-
         private readonly object configLock = new();
 
         // Private wariables (that which can be manipulated by more than one setter from this class, or non-nullable)
@@ -34,25 +31,25 @@ namespace Schiism.Service.Implementations.Modbus
         /// <inheritdoc/>
         public ModbusConfig()
         {
-            iPAddress = "127.0.0.1"; // "192.168.100.20" for two device config. Otherwise, just use 127 for a single device localhost double duty build!
-            dataLength = 15;
-            startAddress = 0;
-            selectedDataSize = DataSize.Bit16;
-            tcpPort = 1502;
-            scanRate = 2000;
-            tcpTimeout = 5000;
-            deviceId = 5;
-            selectedPollType = PollType.HoldingRegisters;
-            asciiEnable = true;
-            selectedNumericBase = NumericBase.Decimal;
-            selectedEndian = Endian.BigEndian;
+            this.iPAddress = "127.0.0.1"; // "192.168.100.20" for two device config. Otherwise, just use 127 for a single device localhost double duty build!
+            this.dataLength = 15;
+            this.startAddress = 0;
+            this.selectedDataSize = DataSize.Bit16;
+            this.tcpPort = 1502;
+            this.scanRate = 2000;
+            this.tcpTimeout = 5000;
+            this.deviceId = 5;
+            this.selectedPollType = PollType.HoldingRegisters;
+            this.asciiEnable = true;
+            this.selectedNumericBase = NumericBase.Decimal;
+            this.selectedEndian = Endian.BigEndian;
         }
 
         /// <inheritdoc/>
         public string IPAddress
         {
-            get => iPAddress;
-            set => iPAddress = value;
+            get => this.iPAddress;
+            set => this.iPAddress = value;
         }
 
         /// <summary>
@@ -60,26 +57,26 @@ namespace Schiism.Service.Implementations.Modbus
         /// </summary>
         public byte DataLength
         {
-            get => dataLength;
+            get => this.dataLength;
             private set
             {
-                byte minLen = GetMinLengthForDataSize();
-                byte maxLen = GetMaxLengthForStartAddress();
+                byte minLen = this.GetMinLengthForDataSize();
+                byte maxLen = this.GetMaxLengthForStartAddress();
                 byte clampedDataLength = Math.Clamp(value, minLen, maxLen);
 
-                if (dataLength != clampedDataLength)
+                if (this.dataLength != clampedDataLength)
                 {
-                    dataLength = clampedDataLength;
+                    this.dataLength = clampedDataLength;
                 }
             }
         }
 
         /// <summary>
-        /// Gets or Sets Starting Address. May alter DataLength, depending on the entered value.
+        /// Gets Starting Address. May alter DataLength, depending on the entered value.
         /// </summary>
         public ushort StartAddress
         {
-            get => startAddress;
+            get => this.startAddress;
             private set
             {
                 // NOTE: THE FOLLOWING COMMENTED CODE SHOULD BE CONTROLLED IN THE WPF APPLICATION PRIOR TO RECIEPT BY THE ENGINE HERE!!!
@@ -107,16 +104,16 @@ namespace Schiism.Service.Implementations.Modbus
                 // We can now confirm that the attempted decimal converted value is a short (1-65535), so we can type cast it!
                 // ushort decVal = Convert.ToUInt16(attemptDecVal); */
 
-                if (startAddress != value)
+                if (this.startAddress != value)
                 {
-                    startAddress = value;
+                    this.startAddress = value;
 
-                    byte maxLen = GetMaxLengthForStartAddress();
-                    byte clampedDataLength = Math.Clamp(dataLength, (byte)1, maxLen);
+                    byte maxLen = this.GetMaxLengthForStartAddress();
+                    byte clampedDataLength = Math.Clamp(this.dataLength, (byte)1, maxLen);
 
-                    if (dataLength != clampedDataLength)
+                    if (this.dataLength != clampedDataLength)
                     {
-                        dataLength = clampedDataLength;
+                        this.dataLength = clampedDataLength;
                     }
                 }
             }
@@ -125,52 +122,119 @@ namespace Schiism.Service.Implementations.Modbus
         /// <inheritdoc/>
         public DataSize SelectedDataSize
         {
-            get => selectedDataSize;
+            get => this.selectedDataSize;
             private set
             {
-                if (selectedDataSize != value)
+                if (this.selectedDataSize != value)
                 {
-                    selectedDataSize = value;
+                    this.selectedDataSize = value;
 
-                    byte minLen = GetMinLengthForDataSize();
-                    byte clampedDataLength = Math.Clamp(dataLength, minLen, (byte)120);
+                    byte minLen = this.GetMinLengthForDataSize();
+                    byte clampedDataLength = Math.Clamp(this.dataLength, minLen, (byte)120);
 
-                    if (dataLength != clampedDataLength)
+                    if (this.dataLength != clampedDataLength)
                     {
-                        dataLength = clampedDataLength;
+                        this.dataLength = clampedDataLength;
                     }
                 }
             }
         }
 
         /// <inheritdoc/>
-        public ushort TCPPort { get => tcpPort; private set => tcpPort = value; }
+        public ushort TCPPort { get => this.tcpPort; private set => this.tcpPort = value; }
 
         /// <inheritdoc/>
-        public int ScanRate { get => scanRate; private set => scanRate = value; }
+        public int ScanRate { get => this.scanRate; private set => this.scanRate = value; }
 
         /// <inheritdoc/>
-        public int TCPTimeout { get => tcpTimeout; private set => tcpTimeout = value; }
+        public int TCPTimeout { get => this.tcpTimeout; private set => this.tcpTimeout = value; }
 
         /// <inheritdoc/>
-        public byte DeviceId { get => deviceId; private set => deviceId = value; }
+        public byte DeviceId { get => this.deviceId; private set => this.deviceId = value; }
 
         /// <inheritdoc/>
-        public PollType SelectedPollType { get => selectedPollType; private set => selectedPollType = value; }
+        public PollType SelectedPollType { get => this.selectedPollType; private set => this.selectedPollType = value; }
 
         /// <inheritdoc/>
-        public bool AsciiEnable { get => asciiEnable; private set => asciiEnable = value; }
+        public bool AsciiEnable { get => this.asciiEnable; private set => this.asciiEnable = value; }
 
         /// <inheritdoc/>
-        public NumericBase SelectedNumericBase { get => selectedNumericBase; private set => selectedNumericBase = value; }
+        public NumericBase SelectedNumericBase { get => this.selectedNumericBase; private set => this.selectedNumericBase = value; }
 
         /// <inheritdoc/>
-        public Endian SelectedEndian { get => selectedEndian; private set => selectedEndian = value; }
+        public Endian SelectedEndian { get => this.selectedEndian; private set => this.selectedEndian = value; }
+
+        /// <inheritdoc/>
+        public void Update(SettingsConfig cmd)
+        {
+            lock (this.configLock)
+            {
+                if (cmd.IPAddress is not null)
+                {
+                    this.IPAddress = cmd.IPAddress;
+                }
+
+                if (cmd.TCPPort.HasValue)
+                {
+                    this.TCPPort = cmd.TCPPort.Value;
+                }
+
+                if (cmd.DeviceId.HasValue)
+                {
+                    this.DeviceId = cmd.DeviceId.Value;
+                }
+
+                if (cmd.StartAddress.HasValue)
+                {
+                    this.StartAddress = cmd.StartAddress.Value;
+                }
+
+                if (cmd.DataLength.HasValue)
+                {
+                    this.DataLength = cmd.DataLength.Value;
+                }
+
+                if (cmd.ScanRate.HasValue)
+                {
+                    this.ScanRate = cmd.ScanRate.Value;
+                }
+
+                if (cmd.TCPTimeout.HasValue)
+                {
+                    this.TCPTimeout = cmd.TCPTimeout.Value;
+                }
+
+                if (cmd.AsciiEnable.HasValue)
+                {
+                    this.AsciiEnable = cmd.AsciiEnable.Value;
+                }
+
+                if (cmd.SelectedDataSize.HasValue)
+                {
+                    this.SelectedDataSize = cmd.SelectedDataSize.Value;
+                }
+
+                if (cmd.SelectedPollType.HasValue)
+                {
+                    this.SelectedPollType = cmd.SelectedPollType.Value;
+                }
+
+                if (cmd.SelectedNumericBase.HasValue)
+                {
+                    this.SelectedNumericBase = cmd.SelectedNumericBase.Value;
+                }
+
+                if (cmd.SelectedEndian.HasValue)
+                {
+                    this.SelectedEndian = cmd.SelectedEndian.Value;
+                }
+            }
+        }
 
         // Prevent user from prompting a data overflow simply due to configuring the length and data size poorly
         private byte GetMinLengthForDataSize()
         {
-            return selectedDataSize switch
+            return this.selectedDataSize switch
             {
                 DataSize.Bit32 => 2,
                 DataSize.Bit64 => 4,
@@ -180,74 +244,9 @@ namespace Schiism.Service.Implementations.Modbus
 
         private byte GetMaxLengthForStartAddress()
         {
-            int cap = ushort.MaxValue - startAddress + 1;
+            int cap = ushort.MaxValue - this.startAddress + 1;
             ushort clamped = (ushort)Math.Min(120, cap);
             return (byte)clamped;
-        }
-
-        public void Update(SettingsConfig cmd)
-        {
-            lock (configLock)
-            {
-                if (cmd.IPAddress is not null)
-                {
-                    IPAddress = cmd.IPAddress;
-                }
-
-                if (cmd.TCPPort.HasValue)
-                {
-                    TCPPort = cmd.TCPPort.Value;
-                }
-
-                if (cmd.DeviceId.HasValue)
-                {
-                    DeviceId = cmd.DeviceId.Value;
-                }
-
-                if (cmd.StartAddress.HasValue)
-                {
-                    StartAddress = cmd.StartAddress.Value;
-                }
-                if (cmd.DataLength.HasValue)
-                {
-                    DataLength = cmd.DataLength.Value;
-                }
-
-                if (cmd.ScanRate.HasValue)
-                {
-                    ScanRate = cmd.ScanRate.Value;
-                }
-
-                if (cmd.TCPTimeout.HasValue)
-                {
-                    TCPTimeout = cmd.TCPTimeout.Value;
-                }
-
-                if (cmd.AsciiEnable.HasValue)
-                {
-                    AsciiEnable = cmd.AsciiEnable.Value;
-                }
-
-                if (cmd.SelectedDataSize.HasValue)
-                {
-                    SelectedDataSize = cmd.SelectedDataSize.Value;
-                }
-
-                if (cmd.SelectedPollType.HasValue)
-                {
-                    SelectedPollType = cmd.SelectedPollType.Value;
-                }
-
-                if (cmd.SelectedNumericBase.HasValue)
-                {
-                    SelectedNumericBase = cmd.SelectedNumericBase.Value;
-                }
-
-                if (cmd.SelectedEndian.HasValue)
-                {
-                    SelectedEndian = cmd.SelectedEndian.Value;
-                }
-            }
         }
     }
 }

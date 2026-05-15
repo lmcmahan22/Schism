@@ -49,9 +49,9 @@ namespace Schiism.Service.Implementations.Modbus
                     bytes.Add((byte)(reg & 0xFF));
                 }
 
-                ApplyEndianTransformation(bytes, config.SelectedEndian);
+                this.ApplyEndianTransformation(bytes, config.SelectedEndian);
 
-                string formatted = FormatBytes(bytes.ToArray(), bitWidth, config.SelectedNumericBase, config.AsciiEnable);
+                string formatted = this.FormatBytes(bytes.ToArray(), bitWidth, config.SelectedNumericBase, config.AsciiEnable);
                 result.Add(new string(formatted));
 
                 for (int pad = 1; pad < regsPerValue; pad++)
@@ -71,11 +71,11 @@ namespace Schiism.Service.Implementations.Modbus
                     bytes.Reverse();
                     break;
                 case Endian.BigEndianSW:
-                    SwapBytesWithinWords(bytes);
+                    this.SwapBytesWithinWords(bytes);
                     break;
                 case Endian.LittleEndianSW:
                     bytes.Reverse();
-                    SwapBytesWithinWords(bytes);
+                    this.SwapBytesWithinWords(bytes);
                     break;
                 default:
                     break;
@@ -97,7 +97,7 @@ namespace Schiism.Service.Implementations.Modbus
             switch (numericBase)
             {
                 case NumericBase.Integer:
-                    var le = bytes.Reverse().ToArray();
+                    byte[] le = [.. bytes.Reverse()];
 
                     return bitWidth switch
                     {
@@ -108,7 +108,7 @@ namespace Schiism.Service.Implementations.Modbus
 
                 case NumericBase.Hexadecimal:
                     {
-                        ulong unsigned = ToUnsigned(bytes);
+                        ulong unsigned = this.ToUnsigned(bytes);
                         string hex = bitWidth switch
                         {
                             32 => "0x" + unsigned.ToString("X8"),
@@ -127,7 +127,7 @@ namespace Schiism.Service.Implementations.Modbus
 
                 case NumericBase.Binary:
                     {
-                        ulong unsigned = ToUnsigned(bytes);
+                        ulong unsigned = this.ToUnsigned(bytes);
 
                         string bin = Convert.ToString((long)unsigned, 2).PadLeft(bitWidth, '0');
                         string spaced = Regex.Replace(bin, ".{4}", "$0 ").Trim();
@@ -138,14 +138,14 @@ namespace Schiism.Service.Implementations.Modbus
                     {
                         if (bitWidth == 32)
                         {
-                            var lef = bytes.Reverse().ToArray(); // BitConverter expects little-endian on typical platforms
+                            byte[] lef = [.. bytes.Reverse()]; // BitConverter expects little-endian on typical platforms
                             float f = BitConverter.ToSingle(lef, 0);
                             return f.ToString();
                         }
 
                         if (bitWidth == 64)
                         {
-                            var led = bytes.Reverse().ToArray();
+                            byte[] led = [.. bytes.Reverse()];
                             double d = BitConverter.ToDouble(led, 0);
                             return d.ToString();
                         }
@@ -155,14 +155,14 @@ namespace Schiism.Service.Implementations.Modbus
                     }
 
                 default: // Decimal (unsigned)
-                    return ToUnsigned(bytes).ToString();
+                    return this.ToUnsigned(bytes).ToString();
             }
         }
 
         private ulong ToUnsigned(byte[] bytes)
         {
             ulong value = 0;
-            foreach (var b in bytes)
+            foreach (byte b in bytes)
             {
                 value = value << 8 | b;
             }

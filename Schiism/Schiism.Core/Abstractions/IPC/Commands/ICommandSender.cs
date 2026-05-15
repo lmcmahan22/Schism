@@ -1,15 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// <copyright file="ICommandSender.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
+// </copyright>
 
 namespace Schiism.Core.Abstractions.IPC.Commands
 {
-    // Implemented by WPF
-    // Implemented by Service (In Named Pipes, the sender hosts the client)
-    public interface ICommandSender<TCommand>
+    using System.Threading.Tasks;
+    using Schiism.Core.Models.IPC.DTOs.Commands;
+
+    /// <summary>
+    /// ICommandSender interface used for defining command send implementations on the frontend and backend projects.
+    /// </summary>
+    public interface ICommandSender
     {
-        Task SendAsync(TCommand command, Func<TCommand, Task> handler, CancellationToken ct);
+        /// <summary>
+        /// Ayncrhonous sending method. No looping here, only a singular send.
+        /// </summary>
+        /// <param name="config">Configuration settings to be sent on the command.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task SendAsync(SettingsConfig config, CancellationToken ct);
     }
 }

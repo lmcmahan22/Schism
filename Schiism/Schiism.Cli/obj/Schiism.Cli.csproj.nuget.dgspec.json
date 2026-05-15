@@ -57,6 +57,12 @@
             "Microsoft.Extensions.Logging.Abstractions": {
               "target": "Package",
               "version": "[10.0.7, )"
+            },
+            "StyleCop.Analyzers.Unstable": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.2.0.556, )"
             }
           },
           "imports": [

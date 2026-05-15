@@ -1,20 +1,34 @@
-﻿namespace Schiism.Service.Workers
+﻿// <copyright file="CommandsWorker.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
+// </copyright>
+
+namespace Schiism.Service.Workers
 {
-    using Schiism.Core.Abstractions.IPC.Commands;
-    using Schiism.Core.Abstractions.Modbus;
-    using Microsoft.Extensions.Logging;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
-    using Schiism.Core.Models.IPC.DTOs.Commands;
+    using Microsoft.Extensions.Logging;
     using Schiism.Core.Abstractions.IPC;
+    using Schiism.Core.Abstractions.IPC.Commands;
+    using Schiism.Core.Abstractions.Modbus;
+    using Schiism.Core.Models.IPC.DTOs.Commands;
 
-    public class CommandsWorker(ICommandReceiver<SettingsConfig> receive, ICommandSender<SettingsConfig> initSender, IModbusConfig modbusConfig, IModbusControl modbusControl, IFrontendInitState fEInitState, ILogger<CommandsWorker> logger) : BackgroundService
+    /// <summary>
+    /// Worker class for the backend. Handles SettingsConfig command logic in both directions (sending and receiving).
+    /// </summary>
+    /// <param name="receive">The command receiver, DI'd.</param>
+    /// <param name="initSender">The initializing command sender, DI'd.</param>
+    /// <param name="config">The current Modbus settings configuration.</param>
+    /// <param name="control">The Modbus Control wrapper, used to control engine restarts.</param>
+    /// <param name="fEInitState"> The Frontend status wrapper, used to determine if the Initializing command needs to be sent.</param>
+    /// <param name="logger">Logger object used to write data to a text file.</param>
+    public class CommandsWorker(ICommandReceiver receive, ICommandSender initSender, IModbusConfig config, IModbusControl control, IFrontendInitState fEInitState, ILogger<CommandsWorker> logger) : BackgroundService
     {
+        /// <inheritdoc/>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var sendTask = this.RunSenderLoopAsync(stoppingToken);
-            var receiveTask = this.RunReceiverAsync(stoppingToken);
+            Task? sendTask = this.RunSenderLoopAsync(stoppingToken);
+            Task? receiveTask = this.RunReceiverAsync(stoppingToken);
 
             await Task.WhenAll(receiveTask, sendTask);
         }
@@ -27,29 +41,30 @@
                 {
                     if (!fEInitState.IsInitialized)
                     {
+                        SettingsConfig settConf = new SettingsConfig(
+                            config.IPAddress,
+                            config.DataLength,
+                            config.StartAddress,
+                            config.TCPPort,
+                            config.ScanRate,
+                            config.TCPTimeout,
+                            config.DeviceId,
+                            config.SelectedDataSize,
+                            config.SelectedPollType,
+                            config.AsciiEnable,
+                            config.SelectedNumericBase,
+                            config.SelectedEndian);
+
                         logger.LogInformation("Sending initialization command");
+                        await initSender.SendAsync(settConf, stoppingToken);
 
-                        var initConf = new SettingsConfig(
-                            modbusConfig.IPAddress,
-                            modbusConfig.DataLength,
-                            modbusConfig.StartAddress,
-                            modbusConfig.TCPPort,
-                            modbusConfig.ScanRate,
-                            modbusConfig.TCPTimeout,
-                            modbusConfig.DeviceId,
-                            modbusConfig.SelectedDataSize,
-                            modbusConfig.SelectedPollType,
-                            modbusConfig.AsciiEnable,
-                            modbusConfig.SelectedNumericBase,
-                            modbusConfig.SelectedEndian);
-
-                        await initSender.SendAsync(initConf, this.HandleCommandSendAsync, stoppingToken);
-                        fEInitState.SetInitialized(true);
+                        fEInitState.IsInitialized = true; // Ensure the state is set to true after successful send
                         logger.LogWarning("Frontend Initialization State set to True!");
                     }
                 }
                 catch (OperationCanceledException)
                 {
+                    logger.LogInformation("Init command send canceled.");
                     break;
                 }
                 catch (Exception ex)
@@ -67,7 +82,7 @@
             try
             {
                 logger.LogInformation("Command receive starting");
-                await receive.ReceiveAsync(this.HandleCommandReceiptAsync, stoppingToken);
+                await receive.ReceiveAsync(this.ServiceCommandsHandler, stoppingToken);
             }
             catch (Exception ex)
             {
@@ -75,18 +90,12 @@
             }
         }
 
-        private async Task HandleCommandSendAsync(SettingsConfig cmd)
+        private Task ServiceCommandsHandler(SettingsConfig cmd)
         {
-            logger.LogInformation("Front end received initial config successfully");
-        }
-
-        private async Task HandleCommandReceiptAsync(SettingsConfig cmd)
-        {
-            logger.LogInformation("Received MODBUS config command");
-
-            // Apply settings and restart MODBUS engine
-            modbusConfig.Update(cmd); // or map fields manually
-            modbusControl.RequestRestart();
+            config.Update(cmd); // or map fields manually
+            control.RestartRequested = true;
+            logger.LogInformation("Implemented configuration command successfully.");
+            return Task.CompletedTask;
         }
     }
 }

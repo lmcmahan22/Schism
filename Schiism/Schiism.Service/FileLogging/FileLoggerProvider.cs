@@ -21,14 +21,14 @@ namespace Schiism.Service.FileLogging
         public FileLoggerProvider(string basePath)
         {
             this.basePath = basePath;
-            fileName = $"schiism@{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}.log";
+            this.fileName = $"schiism@{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}.log";
         }
 
         /// <inheritdoc/>
         public ILogger CreateLogger(string categoryName)
         {
-            var fullPath = Path.Combine(basePath, fileName);
-            Directory.CreateDirectory(basePath); // Idempotent, meaning that if this already exists, nothing bad happens :D
+            string fullPath = Path.Combine(this.basePath, this.fileName);
+            Directory.CreateDirectory(this.basePath); // Idempotent, meaning that if this already exists, nothing bad happens :D
             return new FileLogger(fullPath);
         }
 

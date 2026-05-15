@@ -1,37 +1,36 @@
-﻿using System.IO.Pipes;
+﻿// <copyright file="FECommandSender.cs" company="Precision Valve &amp; Automation (PVA)">
+// Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
+// </copyright>
 
 namespace Schiism.Cli.IPC
 {
+    using System;
+    using System.IO.Pipes;
     using Schiism.Core.Abstractions.IPC.Commands;
     using Schiism.Core.Models.IPC;
-    using System;
+    using Schiism.Core.Models.IPC.DTOs.Commands;
 
     /// <summary>
-    /// connect → send → disconnect. Commands don't need to stay connected the whole time, it just takes up bandwidth and resources on the app.
+    /// Frontend Command Sender implementation.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="pipeName"></param>
-    /// <param name="logger"></param>
-    public class FECommandSender<T>(string pipeName) : ICommandSender<T>
+    /// <param name="pipeName"> Name of pipe that the command data should be sent along.</param>
+    public class FECommandSender(string pipeName) : ICommandSender
     {
         private PipeSerializer Serializer => new();
 
-        // Handler is not used in this implementation, but it's part of the interface contract. It can be used for logging or other side effects if needed.
-        public async Task SendAsync(T command, Func<T, Task> handler, CancellationToken ct)
+        /// <inheritdoc/>
+        public async Task SendAsync(SettingsConfig command, CancellationToken ct)
         {
-            using var pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.Out, PipeOptions.Asynchronous);
+            using NamedPipeClientStream pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.Out, PipeOptions.Asynchronous);
 
             Console.WriteLine("Connecting to {0}", pipeName);
-
             await pipe.ConnectAsync(ct);
-
             Console.WriteLine("Connected to {0}", pipeName);
 
-            await Serializer.SerializeAsync(pipe, command, ct);
-
-            Console.WriteLine("Command: {0} sent to {1}", command, pipeName);
+            await this.Serializer.SerializeAsync(pipe, command, ct);
 
             await pipe.FlushAsync(ct);
+            Console.WriteLine("Command: {0} sent to {1}", command, pipeName);
         }
     }
 }

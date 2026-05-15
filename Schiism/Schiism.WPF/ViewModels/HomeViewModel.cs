@@ -444,13 +444,13 @@ namespace Schiism.WPF.ViewModels
             }
 
             // Calculate how many columns we need based on the lengthm which may have changed (integer division)
-            var reqCols = (this.MS.DataLength - 1) / 20 + 1;
+            byte reqCols = (this.MS.DataLength - 1) / 20 + 1;
 
             // Add new MODBUS rows for the configured length with the names cache
             for (int i = 0; i < reqCols; i++)
             {
                 // Calculate how many rows we need in each column, ensuring we don't exceed the total length
-                var reqRows = Math.Min(this.MS.DataLength - 20 * i, 20);
+                byte reqRows = Math.Min(this.MS.DataLength - 20 * i, 20);
 
                 // Add the new names and data iteratively to the new table
                 for (int j = 0; j < reqRows; j++)
@@ -577,7 +577,7 @@ namespace Schiism.WPF.ViewModels
             // Nullable SaveData dummy until we get the data from the json file
             SaveData? lD = new();
 
-            var openFileDialog = new OpenFileDialog();
+            OpenFileDialog? openFileDialog = new OpenFileDialog();
 
             // Optional: Configure the dialog box
             openFileDialog.FileName = "userData"; // Default file name
@@ -592,7 +592,7 @@ namespace Schiism.WPF.ViewModels
             if (result == true)
             {
                 string json = File.ReadAllText(openFileDialog.FileName);
-                var options = new JsonSerializerOptions
+                JsonSerializerOptions options = new JsonSerializerOptions
                 {
                     UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
                 };

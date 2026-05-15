@@ -4,70 +4,73 @@
 
 namespace Schiism.Service.Implementations.Modbus
 {
-    using NModbus;
-    using Schiism.Core.Abstractions.Modbus;
-    using Schiism.Core.Enums;
     using System.Linq;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading.Tasks;
+    using NModbus;
+    using Schiism.Core.Abstractions.Modbus;
+    using Schiism.Core.Enums;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Implementation class for the IModbusClient interface.
+    /// </summary>
     public class ModbusClient : IModbusClient
     {
-
         private readonly SemaphoreSlim connectionLock = new(1, 1);
         private TcpClient? client;
         private IModbusMaster? master;
 
+        /// <inheritdoc/>
         public async Task InitializeAsync(IModbusConfig config)
         {
-            await connectionLock.WaitAsync();
+            await this.connectionLock.WaitAsync();
             try
             {
-                if (client?.Connected == true)
+                if (this.client?.Connected == true)
                 {
                     return;
                 }
 
-                client = CreateClient(config.IPAddress, config.TCPPort, config.TCPTimeout);
+                this.client = CreateClient(config.IPAddress, config.TCPPort, config.TCPTimeout);
 
                 // TcpClient constructor connects synchronously, so just wrap for consistency
                 await Task.CompletedTask;
 
-                master = CreateMaster(client, config.TCPTimeout);
+                this.master = CreateMaster(this.client, config.TCPTimeout);
             }
             finally
             {
-                connectionLock.Release();
+                this.connectionLock.Release();
             }
         }
 
+        /// <inheritdoc/>
         public async Task DisconnectAsync()
         {
-            await connectionLock.WaitAsync();
+            await this.connectionLock.WaitAsync();
             try
             {
-                master?.Dispose();
-                master = null;
+                this.master?.Dispose();
+                this.master = null;
 
-                if (client != null)
+                if (this.client != null)
                 {
-                    client.Close();
-                    client.Dispose();
-                    client = null;
+                    this.client.Close();
+                    this.client.Dispose();
+                    this.client = null;
                 }
             }
             finally
             {
-                connectionLock.Release();
+                this.connectionLock.Release();
             }
         }
 
         /// <inheritdoc/>
         public List<ushort> ReadData(IModbusConfig config)
         {
-            if (master == null)
+            if (this.master == null)
             {
                 throw new InvalidOperationException("Modbus client not connected.");
             }
@@ -75,16 +78,16 @@ namespace Schiism.Service.Implementations.Modbus
             return config.SelectedPollType switch
             {
                 PollType.InputStatus =>
-                    ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, true),
+                    ReadDigitals(this.master, config.DeviceId, config.StartAddress, config.DataLength, true),
 
                 PollType.HoldingRegisters =>
-                    ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, false),
+                    ReadRegisters(this.master, config.DeviceId, config.StartAddress, config.DataLength, false),
 
                 PollType.InputRegisters =>
-                    ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, true),
+                    ReadRegisters(this.master, config.DeviceId, config.StartAddress, config.DataLength, true),
 
                 _ =>
-                    ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, false),
+                    ReadDigitals(this.master, config.DeviceId, config.StartAddress, config.DataLength, false),
             };
         }
 
@@ -118,13 +121,9 @@ namespace Schiism.Service.Implementations.Modbus
 
         private static TcpClient CreateClient(string ipAddr, int tcpPort, int tcpTimeout)
         {
-            // Move this to the front end!
-            // Regex \b0+(\d+) finds leading zeros at word boundaries and keeps the remaining digits
-            // string cleanedIP = Regex.Replace(ipAddr, @"\b0+(\d+)", "$1");
+            IPAddress ip = IPAddress.Parse(ipAddr);
 
-            var ip = IPAddress.Parse(ipAddr);
-
-            var client = new TcpClient(AddressFamily.InterNetwork);
+            TcpClient client = new TcpClient(AddressFamily.InterNetwork);
 
             client.ReceiveTimeout = tcpTimeout;
             client.SendTimeout = tcpTimeout;
