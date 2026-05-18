@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schiism.Core.Abstractions.Modbus
+namespace Schiism.Core.Abstractions
 {
     /// <summary>
     /// Interface for running the MODBUS Engine.

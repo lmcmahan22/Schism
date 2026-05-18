@@ -4,10 +4,10 @@
 
 namespace Schiism.Service.Implementations.IPC
 {
-    using Schiism.Core.Abstractions.IPC;
+    using Schiism.Core.Abstractions.IPC.States;
 
     /// <inheritdoc/>
-    public class FrontendInitState : IFrontendInitState
+    public class LoadConfigState : ILoadConfigState
     {
         private volatile bool isInitialized;
 

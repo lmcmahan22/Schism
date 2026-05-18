@@ -8,8 +8,8 @@ namespace Schiism.Service.Workers
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Schiism.Core.Abstractions.IPC;
     using Schiism.Core.Abstractions.IPC.Commands;
+    using Schiism.Core.Abstractions.IPC.States;
     using Schiism.Core.Abstractions.Modbus;
     using Schiism.Core.Models.IPC.DTOs.Commands;
 
@@ -22,7 +22,7 @@ namespace Schiism.Service.Workers
     /// <param name="control">The Modbus Control wrapper, used to control engine restarts.</param>
     /// <param name="fEInitState"> The Frontend status wrapper, used to determine if the Initializing command needs to be sent.</param>
     /// <param name="logger">Logger object used to write data to a text file.</param>
-    public class CommandsWorker(ICommandReceiver receive, ICommandSender initSender, IModbusConfig config, IModbusControl control, IFrontendInitState fEInitState, ILogger<CommandsWorker> logger) : BackgroundService
+    public class CommandsWorker(ICommandReceiver receive, ICommandSender initSender, IModbusConfig config, IModbusControl control, ILoadConfigState fEInitState, ILogger<CommandsWorker> logger) : BackgroundService
     {
         /// <inheritdoc/>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

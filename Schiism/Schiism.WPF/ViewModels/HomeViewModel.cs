@@ -4,6 +4,14 @@
 
 namespace Schiism.WPF.ViewModels
 {
+    using Microsoft.Win32;
+    using Schiism.Core.Abstractions.IPC.States;
+    using Schiism.Core.Enums;
+    using Schiism.Core.Models.IPC.DTOs.Commands;
+    using Schiism.Core.Models.IPC.DTOs.Streams;
+    using Schiism.WPF.Models;
+    using Schiism.WPF.Services;
+    using Schiism.WPF.Views;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.IO;
@@ -11,14 +19,9 @@ namespace Schiism.WPF.ViewModels
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using System.Windows;
-    using Microsoft.Win32;
-    using Schiism.Views;
-    using Schiism.WPF.Models;
-    using Schiism.WPF.Services;
 
-    public class HomeViewModel : BindableBase, INotifyPropertyChanged
+    public class HomeViewModel(ICommandState modbusSettState, IStreamDataState<ModbusData> modbusDataState, IStreamDataState<ConnectionDiagnostics> connDiagState) : BindableBase, INotifyPropertyChanged
     {
-
         // Private variables
         private string title;
         private bool nonBoolData;
@@ -69,20 +72,13 @@ namespace Schiism.WPF.ViewModels
             UpdateShiftColumn(); // Build the initial shift column
             UpdateModbusTable(); // Build the initial table based on default parameters in the Model
 
-            // Logic for handling reactions to updates from the MODBUSService
-            // NOTE: We don't need this for the ThemeService, because there's no logic that we need to perform in response to anything there. The View still gets access to everything in both services, even without this logic for the MS.
-            if (this.MS == null)
-            {
-                throw new Exception("MS is null");
-            }
-
-            this.MS.PropertyChanged += this.MSPropertyChanged;
+            modbusDataState.PropertyChanged += this.ModbusDataChanged;
+            connDiagState.PropertyChanged += this.ConnDiagChanged;
+            modbusSettState.PropertyChanged += this.ModbusSettChanged;
         }
 
         // Service Singleton instances
-        public ThemeService TS => ThemeService.Instance;
-
-        // public MODBUSService MS => MODBUSService.Instance;
+        public ThemeController TS => ThemeController.Instance;
 
         // Public instances of the ViewModel for control in the View
         public string Title
@@ -140,7 +136,7 @@ namespace Schiism.WPF.ViewModels
 
         public ObservableCollection<ModbusRow>[] ModbusRows => modbusRows;
 
-        // Public Command properties
+        // WPF Public Command properties
         public DelegateCommand SaveClick =>
             saveClick ??= new DelegateCommand(ExecuteSaveClick);
 
@@ -150,8 +146,8 @@ namespace Schiism.WPF.ViewModels
         public DelegateCommand ExitClick =>
             exitClick ??= new DelegateCommand(ExecuteExitClick);
 
-        public DelegateCommand ConnClick =>
-            connClick ??= new DelegateCommand(ExecuteConnClick);
+        //public DelegateCommand ConnClick =>
+        //    connClick ??= new DelegateCommand(ExecuteConnClick);
 
         public DelegateCommand SettClick =>
             settClick ??= new DelegateCommand(ExecuteSettClick);
@@ -166,22 +162,24 @@ namespace Schiism.WPF.ViewModels
         public Visibility ErrorContents
         {
             // Use IsNullOrEmpty for safety (handles null and empty)
-            get => string.IsNullOrEmpty(this.MS.ErrMess) ? Visibility.Collapsed : Visibility.Visible;
+            get => string.IsNullOrEmpty() ? Visibility.Collapsed : Visibility.Visible;
         }
+
+        // Remaining variables (ex. ScanRate) will need to be managed in the ConnSettings ViewModel!
 
         public void ExecuteSaveClick()
         {
             // Create a SaveData object with the current state of the ViewModel
             SaveData sD = new SaveData
             {
-                SaveDeviceId = this.MS.DeviceId,
-                SaveStartAddress = this.MS.StartAddress,
-                SaveLength = this.MS.DataLength,
-                SaveDataType = this.MS.SelectedDataType,
-                SaveNumericBase = this.MS.SelectedNumericBase,
-                SaveDataSize = this.MS.SelectedDataSize,
-                SaveEndian = this.MS.SelectedEndian,
-                SaveAsciiEnable = this.MS.AsciiEnable,
+                SaveDeviceId = modbusSettState.Config.DeviceId,
+                SaveStartAddress = modbusSettState.Config.StartAddress,
+                SaveLength = modbusSettState.Config.DataLength,
+                SavePollType = modbusSettState.Config.SelectedPollType,
+                SaveNumericBase = modbusSettState.Config.SelectedNumericBase,
+                SaveDataSize = modbusSettState.Config.SelectedDataSize,
+                SaveEndian = modbusSettState.Config.SelectedEndian,
+                SaveAsciiEnable = modbusSettState.Config.AsciiEnable,
 
                 SaveAddressConv = selectedAddressConvention,
             };
@@ -194,14 +192,22 @@ namespace Schiism.WPF.ViewModels
 
             // Update ViewModel properties with loaded data
             // NOTE: Setting the public instances of variables runs the logic in the setters implicitly! ;)
-            this.MS.DeviceId = lD.SaveDeviceId;
-            this.MS.DataLength = lD.SaveLength;
-            this.MS.StartAddress = lD.SaveStartAddress;
-            this.MS.SelectedDataType = lD.SaveDataType;
-            this.MS.SelectedNumericBase = lD.SaveNumericBase;
-            this.MS.SelectedDataSize = lD.SaveDataSize;
-            this.MS.SelectedEndian = lD.SaveEndian;
-            this.MS.AsciiEnable = lD.SaveAsciiEnable;
+            SettingsConfig loadData = new SettingsConfig(
+                null,
+                lD.SaveLength,
+                lD.SaveStartAddress,
+                null,
+                null,
+                null,
+                lD.SaveDeviceId,
+                lD.SaveDataSize,
+                lD.SavePollType,
+                lD.SaveAsciiEnable,
+                lD.SaveNumericBase,
+                lD.SaveEndian
+                );
+
+            modbusSettState.Config.Update(loadData);
 
             // ViewModel specific save parameter
             selectedAddressConvention = lD.SaveAddressConv;
@@ -218,18 +224,18 @@ namespace Schiism.WPF.ViewModels
             Application.Current.Shutdown();
         }
 
-        public void ExecuteConnClick()
-        {
-            // Looks a bit strange, but effectively works as a toggle! Press it once to connect (false case), press it again to stop (true case).
-            if (this.MS.ConnectEngage)
-            {
-                this.MS.ConnectEngage = false;
-            }
-            else
-            {
-                this.MS.Connection();
-            }
-        }
+        //public void ExecuteConnClick()
+        //{
+        //    // Looks a bit strange, but effectively works as a toggle! Press it once to connect (false case), press it again to stop (true case).
+        //    if (this.MS.ConnectEngage)
+        //    {
+        //        this.MS.ConnectEngage = false;
+        //    }
+        //    else
+        //    {
+        //        this.MS.Connection();
+        //    }
+        //}
 
         public void ExecuteSettClick()
         {
@@ -280,19 +286,19 @@ namespace Schiism.WPF.ViewModels
         private void MSPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             // Simply update the MODBUS table (shape) if we see a change here
-            if (e.PropertyName is nameof(this.MS.DataLength))
+            if (e.PropertyName is nameof(modbusSettState.Config.DataLength))
             {
                 // Update MODBUS table, since the shape of the names and data may have changed here
                 UpdateModbusTable();
             }
 
             // Starting Address should update the table headers as well as call a table update, in case the starting address requires a length change
-            if (e.PropertyName is nameof(this.MS.StartAddress))
+            if (e.PropertyName is nameof(modbusSettState.Config.StartAddress))
             {
                 // Update the address headers that sit above the data columns
                 for (int i = 0; i < addressList.Length; i++)
                 {
-                    ushort startAdd = Convert.ToUInt16(this.MS.StartAddress);
+                    ushort startAdd = Convert.ToUInt16(modbusSettState.Config.StartAddress);
                     int addr = startAdd + i * 20;
                     addressList[i] = addr.ToString();
                 }
@@ -304,70 +310,70 @@ namespace Schiism.WPF.ViewModels
             }
 
             // If either the DataLength or the SelectedDataSize change, make changes accordingly
-            if (e.PropertyName is nameof(this.MS.DataLength) or nameof(this.MS.SelectedDataSize))
+            if (e.PropertyName is nameof(modbusSettState.Config.DataLength) or nameof(modbusSettState.Config.SelectedDataSize))
             {
-                if (this.MS.SelectedDataType is "Holding Registers" or "Input Registers")
+                if (modbusSettState.Config.SelectedPollType is PollType.HoldingRegisters or PollType.InputRegisters)
                 {
                     // If we're attempting to poll an odd number of registers while in a numeric base that requires an even number of registers, reduce the length until it is a multiple of 2 to ensure we don't exceed the length with our data display.
-                    if (this.MS.SelectedDataSize == "32-Bit" && this.MS.DataLength % 2 != 0 && this.MS.DataLength > 2)
+                    if (modbusSettState.Config.SelectedDataSize == DataSize.Bit32 && modbusSettState.Config.DataLength % 2 != 0 && modbusSettState.Config.DataLength > 2)
                     {
-                        this.MS.DataLength = (byte)(this.MS.DataLength - this.MS.DataLength % 2);
+                        modbusSettState.Config.DataLength = (byte)(modbusSettState.Config.DataLength - modbusSettState.Config.DataLength % 2);
                     }
 
                     // If we're attempting to poll a number of registers that isn't a multiple of 4 while in a numeric base that requires a multiple of 4, reduce the length until it is a multiple of 4 to ensure we don't exceed the length with our data display.
-                    else if (this.MS.SelectedDataSize == "64-Bit" && this.MS.DataLength % 4 != 0 && this.MS.DataLength > 4)
+                    else if (modbusSettState.Config.SelectedDataSize == DataSize.Bit64 && modbusSettState.Config.DataLength % 4 != 0 && modbusSettState.Config.DataLength > 4)
                     {
-                        this.MS.DataLength = (byte)(this.MS.DataLength - this.MS.DataLength % 4);
+                        modbusSettState.Config.DataLength = (byte)(modbusSettState.Config.DataLength - modbusSettState.Config.DataLength % 4);
                     }
                 }
 
-                if (this.MS.SelectedNumericBase is "Floating Point")
+                if (modbusSettState.Config.SelectedNumericBase is "Floating Point")
                 {
                     // Force data size update if it is currently set to 16-Bit while attempting to use Floating Point as the Numeric Base
-                    if (this.MS.SelectedDataSize == "16-Bit")
+                    if (modbusSettState.Config.SelectedDataSize == "16-Bit")
                     {
-                        this.MS.SelectedDataSize = "32-Bit";
+                        modbusSettState.Config.SelectedDataSize = "32-Bit";
                     }
 
                     // Update the available data sizes for Floating Point (32 bit and 64 bit only)
-                    this.MS.DataSizes = ["32-Bit", "64-Bit"];
+                    modbusSettState.Config.DataSizes = ["32-Bit", "64-Bit"];
                 }
                 else
                 {
                     // Update the available data sizes for non-Floating Point numeric bases (all 3)
-                    this.MS.DataSizes = ["16-Bit", "32-Bit", "64-Bit"];
+                    modbusSettState.Config.DataSizes = ["16-Bit", "32-Bit", "64-Bit"];
                 }
 
-                if (this.MS.SelectedDataSize is "16-Bit")
+                if (modbusSettState.Config.SelectedDataSize is "16-Bit")
                 {
-                    if (this.MS.SelectedNumericBase is "Floating Point")
+                    if (modbusSettState.Config.SelectedNumericBase is "Floating Point")
                     {
                         // Force numeric base update if it is currently set to Floating Point while attempting to use 16-Bit as the Data Size
-                        this.MS.SelectedNumericBase = "Decimal";
+                        modbusSettState.Config.SelectedNumericBase = "Decimal";
                     }
 
                     // Update the available numeric bases for 16-bit (all but Floating Point)
-                    this.MS.NumericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary" };
+                    modbusSettState.Config.NumericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary" };
                 }
                 else
                 {
                     // Update the available numeric bases for non-16-Bit data sizes (all 5)
-                    this.MS.NumericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary", "Floating Point" };
+                    modbusSettState.Config.NumericBases = new ObservableCollection<string> { "Decimal", "Integer", "Hexadecimal", "Binary", "Floating Point" };
                 }
 
-                endianEnable = this.MS.SelectedDataType is "Holding Registers" or "Input Registers";
+                endianEnable = modbusSettState.Config.SelectedDataType is "Holding Registers" or "Input Registers";
                 OnPropertyChanged(nameof(EndianEnable));
 
                 // Update MODBUS table, since the shape of the names and data may have changed here
                 // UpdateModbusTable(); (MIGHT NEED TO PUT THIS BACK IN)
             }
 
-            if (e.PropertyName is nameof(this.MS.SelectedDataType))
+            if (e.PropertyName is nameof(modbusSettState.Config.SelectedDataType))
             {
                 // Update selection availability, according to current settings (ex. allow ASCII display only when using Hex as the numeric base)
-                nonBoolData = this.MS.SelectedDataType is "Holding Registers" or "Input Registers";
-                hexData = this.MS.SelectedDataType is "Holding Registers" or "Input Registers" && this.MS.SelectedNumericBase is "Hexadecimal";
-                endianEnable = this.MS.SelectedDataType is "Holding Registers" or "Input Registers";
+                nonBoolData = modbusSettState.Config.SelectedDataType is "Holding Registers" or "Input Registers";
+                hexData = modbusSettState.Config.SelectedDataType is "Holding Registers" or "Input Registers" && modbusSettState.Config.SelectedNumericBase is "Hexadecimal";
+                endianEnable = modbusSettState.Config.SelectedDataType is "Holding Registers" or "Input Registers";
 
                 OnPropertyChanged(nameof(NonBoolData));
                 OnPropertyChanged(nameof(EndianEnable));
@@ -377,14 +383,14 @@ namespace Schiism.WPF.ViewModels
                 // UpdateModbusTable(); (MIGHT NEED TO PUT THIS BACK IN)
             }
 
-            if (e.PropertyName is nameof(this.MS.SelectedNumericBase))
+            if (e.PropertyName is nameof(modbusSettState.Config.SelectedNumericBase))
             {
                 // Update selection availability, according to current settings (ex. allow ASCII display only when using Hex as the numeric base)
-                hexData = this.MS.SelectedDataType is "Holding Registers" or "Input Registers" && this.MS.SelectedNumericBase is "Hexadecimal";
+                hexData = modbusSettState.Config.SelectedDataType is "Holding Registers" or "Input Registers" && modbusSettState.Config.SelectedNumericBase is "Hexadecimal";
                 OnPropertyChanged(nameof(HexData));
             }
 
-            if (e.PropertyName is nameof(this.MS.RawModbusData))
+            if (e.PropertyName is nameof(modbusDataState.Contents.Data))
             {
                 // Update MODBUS Data in the UI
                 // NOTE: since the RawModbusData updates via a loop on another thread, this method will get called constantly!
@@ -392,7 +398,7 @@ namespace Schiism.WPF.ViewModels
             }
 
             // Simply pass along the error message contents from the catch block in the MODBUS Service
-            if (e.PropertyName is nameof(this.MS.ErrMess))
+            if (e.PropertyName is nameof(connDiagState.Contents.ErrorMessage))
             {
                 OnPropertyChanged(nameof(ErrorContents));
             }
@@ -402,10 +408,10 @@ namespace Schiism.WPF.ViewModels
         private void UpdateModbusTable()
         {
             // Force disconnect if we're currently connected, since we're changing parameters that would affect the amount of data that we poll
-            this.MS.IsConnected = false;
+            modbusSettState.Config.IsConnected = false;
 
             // Prepare a cache of the name data, in case we need to keep some of the current names around
-            string[] namesCache = new string[this.MS.DataLength];
+            string[] namesCache = new string[modbusSettState.Config.DataLength];
             for (int i = 0; i < namesCache.Length; i++)
             {
                 namesCache[i] = string.Empty; // Initialize the cache with empty strings to avoid null issues
@@ -426,7 +432,7 @@ namespace Schiism.WPF.ViewModels
 
                     // Only save this name for the new display if we know that we'll see it in the new length.
                     // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
-                    if (idx < this.MS.DataLength)
+                    if (idx < modbusSettState.Config.DataLength)
                     {
                         string? temp = modbusRows[i][j].Name;
                         if (temp == null)
@@ -444,13 +450,13 @@ namespace Schiism.WPF.ViewModels
             }
 
             // Calculate how many columns we need based on the lengthm which may have changed (integer division)
-            byte reqCols = (this.MS.DataLength - 1) / 20 + 1;
+            byte reqCols = (modbusSettState.Config.DataLength - 1) / 20 + 1;
 
             // Add new MODBUS rows for the configured length with the names cache
             for (int i = 0; i < reqCols; i++)
             {
                 // Calculate how many rows we need in each column, ensuring we don't exceed the total length
-                byte reqRows = Math.Min(this.MS.DataLength - 20 * i, 20);
+                byte reqRows = Math.Min(modbusSettState.Config.DataLength - 20 * i, 20);
 
                 // Add the new names and data iteratively to the new table
                 for (int j = 0; j < reqRows; j++)
@@ -464,7 +470,7 @@ namespace Schiism.WPF.ViewModels
             colsVis.Clear();
             for (int i = 0; i < 6; i++)
             {
-                colsVis.Add(this.MS.DataLength > i * 20 ? Visibility.Visible : Visibility.Collapsed);
+                colsVis.Add(modbusSettState.Config.DataLength > i * 20 ? Visibility.Visible : Visibility.Collapsed);
             }
 
             OnPropertyChanged(nameof(ModbusRows));
@@ -484,10 +490,10 @@ namespace Schiism.WPF.ViewModels
                     // Only try to take the MODBUS data if we have a connection and if the index is within the bounds of the current length.
                     // i.e. the user can change the desired data length prior to connecting, so we don't necessarily want to try reading data here (it may not exist yet)
                     string data;
-                    if (this.MS.IsConnected && idx < this.MS.DataLength)
+                    if (connDiagState.Contents.IsConnected && idx < modbusSettState.Config.DataLength)
                     {
                         // Retrieve existing item if present; otherwise create one instance
-                        data = this.MS.RawModbusData[idx].ToString() ?? new string(string.Empty);
+                        data = modbusDataState.Contents.Data[idx].ToString() ?? new string(string.Empty);
                     }
                     else
                     {

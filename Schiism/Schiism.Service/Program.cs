@@ -7,8 +7,9 @@ namespace Schiism.Service
     using System.Diagnostics;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Schiism.Core.Abstractions.IPC;
+    using Schiism.Core.Abstractions;
     using Schiism.Core.Abstractions.IPC.Commands;
+    using Schiism.Core.Abstractions.IPC.States;
     using Schiism.Core.Abstractions.IPC.Streams;
     using Schiism.Core.Abstractions.Modbus;
     using Schiism.Core.Models.IPC;
@@ -68,13 +69,13 @@ namespace Schiism.Service
             builder.Services.AddSingleton<IModbusControl, ModbusControl>();
 
             // ConnectionState
-            builder.Services.AddSingleton<IFrontendInitState, FrontendInitState>();
+            builder.Services.AddSingleton<ILoadConfigState, LoadConfigState>();
 
             // Stream Publishers
             builder.Services.AddSingleton<IStreamPublisher<ModbusData>, StreamPublisher<ModbusData>>(sp => new StreamPublisher<ModbusData>(
-                PipeConstants.ModbusDataStreamName, sp.GetRequiredService<IFrontendInitState>(), sp.GetRequiredService<ILogger<StreamPublisher<ModbusData>>>()));
+                PipeConstants.ModbusDataStreamName, sp.GetRequiredService<ILoadConfigState>(), sp.GetRequiredService<ILogger<StreamPublisher<ModbusData>>>()));
             builder.Services.AddSingleton<IStreamPublisher<ConnectionDiagnostics>, StreamPublisher<ConnectionDiagnostics>>(sp => new StreamPublisher<ConnectionDiagnostics>(
-                PipeConstants.ConnDiagStreamName, sp.GetRequiredService<IFrontendInitState>(), sp.GetRequiredService<ILogger<StreamPublisher<ConnectionDiagnostics>>>()));
+                PipeConstants.ConnDiagStreamName, sp.GetRequiredService<ILoadConfigState>(), sp.GetRequiredService<ILogger<StreamPublisher<ConnectionDiagnostics>>>()));
 
             // Stream Queues
             builder.Services.AddSingleton<IStreamQueue<ModbusData>, StreamQueue<ModbusData>>();

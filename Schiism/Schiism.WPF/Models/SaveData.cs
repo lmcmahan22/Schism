@@ -4,28 +4,29 @@
 
 namespace Schiism.WPF.Models
 {
+    using Schiism.Core.Enums;
     using System.Runtime.Intrinsics.X86;
 
     public class SaveData
     {
         // private variables
         private byte saveLength;
-        private string saveStartAddress;
+        private ushort saveStartAddress;
         private byte saveDeviceID;
-        private string saveDataType;
-        private string saveNumericBase;
-        private string saveDataSize;
-        private string saveEndian;
+        private PollType savePollType;
+        private NumericBase saveNumericBase;
+        private DataSize saveDataSize;
+        private Endian saveEndian;
         private bool saveASCIIEnable;
         private string saveAddressConv;
 
         // Constructor
-        public SaveData(byte sL, string sSA, byte sDID, string sDT, string sNB, string sDS, string sE, bool sAE, string sAC)
+        public SaveData(byte sL, ushort sSA, byte sDID, PollType sPT, NumericBase sNB, DataSize sDS, Endian sE, bool sAE, string sAC)
         {
             saveLength = sL;
             saveStartAddress = sSA;
             saveDeviceID = sDID;
-            saveDataType = sDT;
+            savePollType = sPT;
             saveNumericBase = sNB;
             saveDataSize = sDS;
             saveEndian = sE;
@@ -37,12 +38,12 @@ namespace Schiism.WPF.Models
         public SaveData()
         {
             saveLength = 0;
-            saveStartAddress = string.Empty;
+            saveStartAddress = 0;
             saveDeviceID = 0;
-            saveDataType = string.Empty;
-            saveNumericBase = string.Empty;
-            saveDataSize = string.Empty;
-            saveEndian = string.Empty;
+            savePollType = PollType.CoilStatus;
+            saveNumericBase = NumericBase.Decimal;
+            saveDataSize = DataSize.Bit16;
+            saveEndian = Endian.BigEndian;
             saveASCIIEnable = false;
             saveAddressConv = string.Empty;
         }
@@ -50,17 +51,17 @@ namespace Schiism.WPF.Models
         // Simple getters and setters for each variable
         public byte SaveLength { get => saveLength; set => saveLength = value; }
 
-        public string SaveStartAddress { get => saveStartAddress; set => saveStartAddress = value; }
+        public ushort SaveStartAddress { get => saveStartAddress; set => saveStartAddress = value; }
 
         public byte SaveDeviceId { get => saveDeviceID; set => saveDeviceID = value; }
 
-        public string SaveDataType { get => saveDataType; set => saveDataType = value; }
+        public PollType SavePollType { get => savePollType; set => savePollType = value; }
 
-        public string SaveNumericBase { get => saveNumericBase; set => saveNumericBase = value; }
+        public NumericBase SaveNumericBase { get => saveNumericBase; set => saveNumericBase = value; }
 
-        public string SaveDataSize { get => saveDataSize; set => saveDataSize = value; }
+        public DataSize SaveDataSize { get => saveDataSize; set => saveDataSize = value; }
 
-        public string SaveEndian { get => saveEndian; set => saveEndian = value; }
+        public Endian SaveEndian { get => saveEndian; set => saveEndian = value; }
 
         public bool SaveAsciiEnable { get => saveASCIIEnable; set => saveASCIIEnable = value; }
 

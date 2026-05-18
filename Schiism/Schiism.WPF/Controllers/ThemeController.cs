@@ -9,7 +9,7 @@ namespace Schiism.WPF.Services
     using System.Runtime.CompilerServices;
     using System.Windows.Media;
 
-    public class ThemeService : INotifyPropertyChanged
+    public class ThemeController : INotifyPropertyChanged
     {
         // dropdown contents (never change)
         private readonly ObservableCollection<string> availableThemes;
@@ -27,7 +27,7 @@ namespace Schiism.WPF.Services
         private string selectedTheme;
 
         // Constructor
-        public ThemeService()
+        public ThemeController()
         {
             // Initialize available themes and set default theme
             availableThemes = new ObservableCollection<string> { "Dark", "Light" };
@@ -50,7 +50,7 @@ namespace Schiism.WPF.Services
         public event PropertyChangedEventHandler? PropertyChanged;
 
         // Singleton instance
-        public static ThemeService Instance { get; } = new();
+        public static ThemeController Instance { get; } = new();
 
         // Public properties with getters and setters that notify the UI of changes
         public string SelectedTheme

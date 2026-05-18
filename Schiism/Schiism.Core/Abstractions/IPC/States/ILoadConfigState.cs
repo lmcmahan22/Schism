@@ -2,12 +2,12 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schiism.Core.Abstractions.IPC
+namespace Schiism.Core.Abstractions.IPC.States
 {
     /// <summary>
     /// Interface for tracking initialization state of the frontend.
     /// </summary>
-    public interface IFrontendInitState
+    public interface ILoadConfigState
     {
         /// <summary>
         /// Gets or sets a value indicating whether the frontend is initialized, whether that's a console or the WPF GUI.

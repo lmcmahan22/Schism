@@ -1,10 +1,10 @@
 ﻿<UserControl Width="500" Height="300"
-             x:Class="Schiism.Views.About"
+             x:Class="Schiism.WPF.Views.About"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"   
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:viewmodels="clr-namespace:Schiism.ViewModels"
+             xmlns:viewmodels="clr-namespace:Schiism.WPF.ViewModels"
              prism:ViewModelLocator.AutoWireViewModel="True"
              Background="DarkGray">
 

@@ -1,7 +1,24 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}|Schiism.Cli\\Schiism.Cli.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.cli\\servicecontroldebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}|Schiism.Cli\\Schiism.Cli.csproj|solutionrelative:schiism.cli\\servicecontroldebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\models\\savedata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\models\\savedata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\viewmodels\\homeviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\viewmodels\\homeviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 1,
@@ -9,11 +26,63 @@
       "DocumentGroups": [
         {
           "DockedHeight": 226,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ServiceControlDebugger.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\ServiceControlDebugger.cs",
+              "RelativeDocumentMoniker": "Schiism.Cli\\ServiceControlDebugger.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\ServiceControlDebugger.cs",
+              "RelativeToolTip": "Schiism.Cli\\ServiceControlDebugger.cs",
+              "ViewState": "AgIAAGMAAAAAAAAAAAAAAH0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-18T20:36:40.469Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SaveData.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\SaveData.cs",
+              "RelativeDocumentMoniker": "Schiism.WPF\\Models\\SaveData.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\SaveData.cs",
+              "RelativeToolTip": "Schiism.WPF\\Models\\SaveData.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAkwD0AAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-18T20:23:23.238Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "App.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\App.xaml.cs",
+              "RelativeDocumentMoniker": "Schiism.WPF\\App.xaml.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\App.xaml.cs",
+              "RelativeToolTip": "Schiism.WPF\\App.xaml.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAACgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-18T20:14:39.204Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "HomeViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\ViewModels\\HomeViewModel.cs",
+              "RelativeDocumentMoniker": "Schiism.WPF\\ViewModels\\HomeViewModel.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\ViewModels\\HomeViewModel.cs",
+              "RelativeToolTip": "Schiism.WPF\\ViewModels\\HomeViewModel.cs",
+              "ViewState": "AgIAAF8BAAAAAAAAAAAAALsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-18T18:19:19.516Z",
+              "EditorCaption": ""
             }
           ]
         },

@@ -5,6 +5,7 @@
 namespace Schiism.Service.Workers
 {
     using Microsoft.Extensions.Logging;
+    using Schiism.Core.Abstractions;
     using Schiism.Core.Abstractions.Modbus;
 
     /// <summary>

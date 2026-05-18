@@ -1,9 +1,9 @@
-﻿<Window x:Class="Schiism.Views.MainWindow"
+﻿<Window x:Class="Schiism.WPF.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="720" Width="1280">
+        Title="MainWindow" Height="675" Width="1200">
     
     <Grid>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" />

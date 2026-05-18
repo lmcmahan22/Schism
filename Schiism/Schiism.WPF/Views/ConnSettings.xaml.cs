@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schiism.Views
+namespace Schiism.WPF.Views
 {
     using System;
     using System.Collections.Generic;

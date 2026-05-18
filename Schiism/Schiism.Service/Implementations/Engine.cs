@@ -7,6 +7,7 @@ namespace Schiism.Service.Implementations
     using System.Net.Sockets;
     using System.Threading.Tasks;
     using NModbus;
+    using Schiism.Core.Abstractions;
     using Schiism.Core.Abstractions.IPC.Streams;
     using Schiism.Core.Abstractions.Modbus;
     using Schiism.Core.Enums;

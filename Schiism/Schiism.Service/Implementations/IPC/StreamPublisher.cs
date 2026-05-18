@@ -5,7 +5,7 @@
 namespace Schiism.Service.Implementations.IPC
 {
     using System.IO.Pipes;
-    using Schiism.Core.Abstractions.IPC;
+    using Schiism.Core.Abstractions.IPC.States;
     using Schiism.Core.Abstractions.IPC.Streams;
     using Schiism.Core.Models.IPC;
 
@@ -16,7 +16,7 @@ namespace Schiism.Service.Implementations.IPC
     /// <param name="pipeName">Pipe name, DI'd.</param>
     /// <param name="fEInitState">Frontend Initialized state object, DI'd.</param>
     /// <param name="logger">File Logger object, DI'd.</param>
-    public class StreamPublisher<T>(string pipeName, IFrontendInitState fEInitState, ILogger<StreamPublisher<T>> logger) : IStreamPublisher<T>
+    public class StreamPublisher<T>(string pipeName, ILoadConfigState fEInitState, ILogger<StreamPublisher<T>> logger) : IStreamPublisher<T>
     {
         private readonly List<NamedPipeServerStream> clients = [];
         private readonly PipeSerializer serializer = new();

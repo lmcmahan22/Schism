@@ -6,14 +6,10 @@ namespace Schiism.WPF
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Windows.Controls;
     using Prism.Ioc;
     using Prism.Modularity;
     using Prism.Navigation.Regions;
-    using Schiism.Views;
+    using Schiism.WPF.Views;
 
     // Implements the IModule interface, which is a contract for modules in a Prism application. This class is responsible for initializing the module and registering any types or services that the module provides.
     public class MainModule : IModule
@@ -28,6 +24,7 @@ namespace Schiism.WPF
         // This method is called to register types with the container. It is responsible for registering any services, view models, or other types that the module provides.
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
+
         }
     }
 }

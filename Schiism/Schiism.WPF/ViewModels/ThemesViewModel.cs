@@ -20,7 +20,7 @@ namespace Schiism.WPF.ViewModels
         }
 
         // Service Singleton that gets passed up to View
-        public ThemeService TS => ThemeService.Instance;
+        public ThemeController TS => ThemeController.Instance;
 
         // Public instance with getters/setters
         public string Title
