@@ -9,6 +9,7 @@ namespace Schiism.Service.Implementations.Modbus
     using System.Net.Sockets;
     using System.Threading.Tasks;
     using NModbus;
+    using Schiism.Core.Abstractions.IPC.States;
     using Schiism.Core.Abstractions.Modbus;
     using Schiism.Core.Enums;
 
@@ -22,7 +23,7 @@ namespace Schiism.Service.Implementations.Modbus
         private IModbusMaster? master;
 
         /// <inheritdoc/>
-        public async Task InitializeAsync(IModbusConfig config)
+        public async Task InitializeAsync(IConfigState config)
         {
             await this.connectionLock.WaitAsync();
             try
@@ -68,7 +69,7 @@ namespace Schiism.Service.Implementations.Modbus
         }
 
         /// <inheritdoc/>
-        public List<ushort> ReadData(IModbusConfig config)
+        public List<ushort> ReadData(IConfigState config)
         {
             if (this.master == null)
             {

@@ -2,6 +2,8 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
+using Schiism.Core.Abstractions.IPC.States;
+
 namespace Schiism.Core.Abstractions.Modbus
 {
     /// <summary>
@@ -21,6 +23,6 @@ namespace Schiism.Core.Abstractions.Modbus
         /// <returns>
         /// Returns a List of strings defining the interpreted data (ex. ushorts become a collection of Hex based ASCII characters).
         /// </returns>
-        List<string> InterpretRegs(IModbusConfig mC, List<ushort> rawData);
+        List<string> InterpretRegs(IConfigState mC, List<ushort> rawData);
     }
 }

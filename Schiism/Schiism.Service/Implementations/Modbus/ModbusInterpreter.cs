@@ -9,6 +9,7 @@ namespace Schiism.Service.Implementations.Modbus
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
+    using Schiism.Core.Abstractions.IPC.States;
     using Schiism.Core.Abstractions.Modbus;
     using Schiism.Core.Enums;
 
@@ -16,7 +17,7 @@ namespace Schiism.Service.Implementations.Modbus
     public class ModbusInterpreter : IModbusInterpreter
     {
         /// <inheritdoc/>
-        public List<string> InterpretRegs(IModbusConfig config, List<ushort> rawData)
+        public List<string> InterpretRegs(IConfigState config, List<ushort> rawData)
         {
             List<string> result = new List<string>();
 

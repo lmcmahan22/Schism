@@ -8,6 +8,7 @@ namespace Schiism.Service.Implementations
     using System.Threading.Tasks;
     using NModbus;
     using Schiism.Core.Abstractions;
+    using Schiism.Core.Abstractions.IPC.States;
     using Schiism.Core.Abstractions.IPC.Streams;
     using Schiism.Core.Abstractions.Modbus;
     using Schiism.Core.Enums;
@@ -23,7 +24,7 @@ namespace Schiism.Service.Implementations
     /// <param name="modbusStreamQueue">The Modbus data stream queue, DI'd.</param>
     /// <param name="connStreamQueue">The connection diagnostics stream queue, DI'd.</param>
     /// <param name="logger">The logger object, DI'd.</param>
-    public class Engine(IModbusConfig config, IModbusClient client, IModbusInterpreter interpreter, IStreamQueue<ModbusData> modbusStreamQueue, IStreamQueue<ConnectionDiagnostics> connStreamQueue, ILogger<Engine> logger) : IEngine
+    public class Engine(IConfigState config, IModbusClient client, IModbusInterpreter interpreter, IStreamQueue<ModbusData> modbusStreamQueue, IStreamQueue<ConnectionDiagnostics> connStreamQueue, ILogger<Engine> logger) : IEngine
     {
         private int numRequests = 0;
         private int numResponses = 0;

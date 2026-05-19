@@ -6,12 +6,13 @@ namespace Schiism.Service.Workers
 {
     using Microsoft.Extensions.Logging;
     using Schiism.Core.Abstractions;
+    using Schiism.Core.Abstractions.IPC.States;
     using Schiism.Core.Abstractions.Modbus;
 
     /// <summary>
     /// Worker class runs the MODBUS Engine in a background thread, allowing it to run independently of the main service thread and be restarted when necessary.
     /// </summary>
-    public class EngineWorker(IEngine engine, IModbusConfig config, IModbusControl modbusControl, ILogger<EngineWorker> logger) : BackgroundService
+    public class EngineWorker(IEngine engine, IConfigState config, IModbusControl modbusControl, ILogger<EngineWorker> logger) : BackgroundService
     {
         private CancellationTokenSource? sessionCts;
 

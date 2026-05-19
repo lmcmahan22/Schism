@@ -2,6 +2,8 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
+using System.ComponentModel;
+
 namespace Schiism.Core.Enums
 {
     /// <summary>
@@ -12,21 +14,25 @@ namespace Schiism.Core.Enums
         /// <summary>
         /// Big Endian (MODBUS TCP default): [a,b,c,d].
         /// </summary>
+        [Description("Big Endian")]
         BigEndian,
 
         /// <summary>
         ///  Little Endian. // Reverse full array: [d,c,b,a] -> [a,b,c,d].
         /// </summary>
+        [Description("Little Endian")]
         LittleEndian,
 
         /// <summary>
         ///  Big Endian (Byte-Swap) // Swap bytes within each 16-bit word: [b,a,d,c] -> [a,b,c,d].
         /// </summary>
+        [Description("Big Endian (Byte Swap)")]
         BigEndianSW,
 
         /// <summary>
         ///  Little Endian (Byte-Swap) // Reverse full array then swap within each word: [c,d,a,b] -> [b,a,d,c] -> [a,b,c,d].
         /// </summary>
+        [Description("Little Endian (Byte Swap)")]
         LittleEndianSW,
     }
 }

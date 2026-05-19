@@ -62,20 +62,20 @@ namespace Schiism.Service
 
             // Define Core Services (Builder.Services is a dependency container)
             // Make this its own method (ChatGPT originally advised making this its own CLASS???)
-            builder.Services.AddSingleton<IModbusConfig, ModbusConfig>();
+            builder.Services.AddSingleton<IConfigState, ConfigState>();
             builder.Services.AddSingleton<IModbusClient, ModbusClient>();
             builder.Services.AddSingleton<IEngine, Engine>();
             builder.Services.AddSingleton<IModbusInterpreter, ModbusInterpreter>();
             builder.Services.AddSingleton<IModbusControl, ModbusControl>();
 
             // ConnectionState
-            builder.Services.AddSingleton<ILoadConfigState, LoadConfigState>();
+            builder.Services.AddSingleton<IInitializedState, InitializedState>();
 
             // Stream Publishers
             builder.Services.AddSingleton<IStreamPublisher<ModbusData>, StreamPublisher<ModbusData>>(sp => new StreamPublisher<ModbusData>(
-                PipeConstants.ModbusDataStreamName, sp.GetRequiredService<ILoadConfigState>(), sp.GetRequiredService<ILogger<StreamPublisher<ModbusData>>>()));
+                PipeConstants.ModbusDataStreamName, sp.GetRequiredService<IInitializedState>(), sp.GetRequiredService<ILogger<StreamPublisher<ModbusData>>>()));
             builder.Services.AddSingleton<IStreamPublisher<ConnectionDiagnostics>, StreamPublisher<ConnectionDiagnostics>>(sp => new StreamPublisher<ConnectionDiagnostics>(
-                PipeConstants.ConnDiagStreamName, sp.GetRequiredService<ILoadConfigState>(), sp.GetRequiredService<ILogger<StreamPublisher<ConnectionDiagnostics>>>()));
+                PipeConstants.ConnDiagStreamName, sp.GetRequiredService<IInitializedState>(), sp.GetRequiredService<ILogger<StreamPublisher<ConnectionDiagnostics>>>()));
 
             // Stream Queues
             builder.Services.AddSingleton<IStreamQueue<ModbusData>, StreamQueue<ModbusData>>();

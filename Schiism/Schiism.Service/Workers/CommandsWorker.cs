@@ -22,7 +22,7 @@ namespace Schiism.Service.Workers
     /// <param name="control">The Modbus Control wrapper, used to control engine restarts.</param>
     /// <param name="fEInitState"> The Frontend status wrapper, used to determine if the Initializing command needs to be sent.</param>
     /// <param name="logger">Logger object used to write data to a text file.</param>
-    public class CommandsWorker(ICommandReceiver receive, ICommandSender initSender, IModbusConfig config, IModbusControl control, ILoadConfigState fEInitState, ILogger<CommandsWorker> logger) : BackgroundService
+    public class CommandsWorker(ICommandReceiver receiver, ICommandSender initSender, IConfigState config, IModbusControl control, IInitializedState fEInitState, ILogger<CommandsWorker> logger) : BackgroundService
     {
         /// <inheritdoc/>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -69,7 +69,6 @@ namespace Schiism.Service.Workers
                 }
                 catch (Exception ex)
                 {
-                    // fEInitState.SetConnected(false);
                     logger.LogError(ex, "Failed to send init command. Trying again...");
                 }
 
@@ -82,7 +81,7 @@ namespace Schiism.Service.Workers
             try
             {
                 logger.LogInformation("Command receive starting");
-                await receive.ReceiveAsync(this.ServiceCommandsHandler, stoppingToken);
+                await receiver.ReceiveAsync(this.ReceiveHandler, stoppingToken);
             }
             catch (Exception ex)
             {
@@ -90,9 +89,9 @@ namespace Schiism.Service.Workers
             }
         }
 
-        private Task ServiceCommandsHandler(SettingsConfig cmd)
+        private Task ReceiveHandler(SettingsConfig cmd)
         {
-            config.Update(cmd); // or map fields manually
+            config.Update(cmd);
             control.RestartRequested = true;
             logger.LogInformation("Implemented configuration command successfully.");
             return Task.CompletedTask;
