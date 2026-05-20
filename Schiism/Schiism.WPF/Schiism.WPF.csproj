@@ -14,6 +14,8 @@
     <None Remove="Images\Copy.png" />
     <None Remove="Images\Cut.png" />
     <None Remove="Images\Disconnect.png" />
+    <None Remove="Images\InterfaceConnected.png" />
+    <None Remove="Images\InterfaceDisconnected.png" />
     <None Remove="Images\Load.png" />
     <None Remove="Images\Paste.png" />
     <None Remove="Images\PVALogo.png" />
@@ -36,6 +38,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\Disconnect.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\InterfaceConnected.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\InterfaceDisconnected.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\Load.png">

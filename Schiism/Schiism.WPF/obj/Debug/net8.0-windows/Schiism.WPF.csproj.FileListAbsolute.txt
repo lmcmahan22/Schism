@@ -88,3 +88,5 @@ C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\obj\Debug\net8.0-windows\ref
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\obj\Debug\net8.0-windows\Schiism.WPF.pdb
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\obj\Debug\net8.0-windows\Schiism.WPF.genruntimeconfig.cache
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\obj\Debug\net8.0-windows\ref\Schiism.WPF.dll
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\bin\Debug\net8.0-windows\Images\InterfaceConnected.png
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\bin\Debug\net8.0-windows\Images\InterfaceDisconnected.png

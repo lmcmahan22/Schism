@@ -2,6 +2,8 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
+using System.IO.Pipes;
+
 namespace Schiism.Core.Abstractions.IPC.Streams
 {
     /// <summary>
@@ -12,23 +14,11 @@ namespace Schiism.Core.Abstractions.IPC.Streams
     public interface IStreamPublisher<T>
     {
         /// <summary>
-        /// Gets a value indicating whether the stream's pipe is connected to the client or not.
-        /// </summary>
-        bool IsConnected { get; }
-
-        /// <summary>
-        /// Initializes the publishing stream.
-        /// </summary>
-        /// <param name="ct"> The cancellation token. </param>
-        /// <returns>Pass along the asynchronous task.</returns>
-        Task StartAsync(CancellationToken ct);
-
-        /// <summary>
         /// Publish data through the stream once (does not loop).
         /// </summary>
         /// <param name="data">The data published along the stream.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>Pass along the asynchronous task.</returns>
-        Task PublishAsync(T data, CancellationToken ct);
+        Task PublishAsync(PipeStream pipe, T data, CancellationToken ct);
     }
 }

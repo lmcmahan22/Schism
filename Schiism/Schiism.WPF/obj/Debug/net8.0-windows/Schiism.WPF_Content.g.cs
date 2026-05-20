@@ -13,6 +13,8 @@
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/copy.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/cut.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/disconnect.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/interfaceconnected.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/interfacedisconnected.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/load.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/paste.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/pvalogo.ico")]

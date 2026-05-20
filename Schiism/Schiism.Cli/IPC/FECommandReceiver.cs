@@ -18,7 +18,7 @@ namespace Schiism.Cli.IPC
     /// <param name="pipeName">Name of pipe that the command will be received from.</param>
     public class FECommandReceiver(string pipeName) : ICommandReceiver
     {
-        private PipeSerializer Serializer => new();
+        private readonly PipeSerializer Serializer => new();
 
         /// <inheritdoc/>
         public async Task ReceiveAsync(Func<SettingsConfig, Task> handler, CancellationToken ct)

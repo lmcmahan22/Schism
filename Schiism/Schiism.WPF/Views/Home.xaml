@@ -6,7 +6,8 @@
              xmlns:viewmodels="clr-namespace:Schiism.WPF.ViewModels"
              xmlns:helpers="clr-namespace:Schiism.WPF.Helpers"
              prism:ViewModelLocator.AutoWireViewModel="True"
-             Background="{Binding TS.Main, UpdateSourceTrigger=PropertyChanged}">
+             Background="{Binding TS.Main, UpdateSourceTrigger=PropertyChanged}"
+             Height="810" Width="1440">
 
     <!-- Top level resources for use across the entire XAML file -->
     <!-- Includes style manipulations and proxy class instance (from "Helpers" directory) -->
@@ -71,8 +72,6 @@
                     <MenuItem Header="Exit App" Command="{Binding ExitClick}"/>
                 </MenuItem>
                 <MenuItem Header="Connection">
-                    <MenuItem Header="Toggle" Command="{Binding ConnClick}"/>
-                    <Separator Background="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}"/>
                     <MenuItem Header="Settings" Command="{Binding SettClick}"/>
                 </MenuItem>
                 <MenuItem Header="Customize">
@@ -87,6 +86,7 @@
         <!-- Row 2: General Settings and Buttons -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -109,34 +109,7 @@
                         <Button Name="Load" ToolTip="Load Config" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="55,5,0,5" Command="{Binding LoadClick}">
                             <Image Source="/Images/Load.png" />
                         </Button>
-                        <!-- Turn this button into just an icon. WPF will no longer control when the ModbusClient connects to the ModbusServer! -->
-                        <Separator Background="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="100,5,0,5" VerticalAlignment="Center" HorizontalAlignment="Left" Width="2" Height="25"/>
-                        <Button ToolTip="Connect" HorizontalAlignment="Left" Width="40" Margin="107,5,0,5" Command="{Binding ConnClick}">
-                            <Image>
-                                <Image.Style>
-                                    <Style TargetType="Image">
-                                        <Setter Property="Source" Value="/Images/Disconnect.png"/>
-                                        <Style.Triggers>
-                                            <MultiDataTrigger>
-                                                <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding connDiagState.ConnectEngage}" Value="True" />
-                                                    <Condition Binding="{Binding connDiagState.IsConnected}" Value="False" />
-                                                </MultiDataTrigger.Conditions>
-                                                <Setter Property="Source" Value="/Images/Connecting.png"/>
-                                            </MultiDataTrigger>
-                                            <MultiDataTrigger>
-                                                <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding connDiagState.ConnectEngage}" Value="True" />
-                                                    <Condition Binding="{Binding connDiagState.IsConnected}" Value="True" />
-                                                </MultiDataTrigger.Conditions>
-                                                <Setter Property="Source" Value="/Images/Connected.png"/>
-                                            </MultiDataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Image.Style>
-                            </Image>
-                        </Button>
-                        <Button Name="Settings" ToolTip="Settings" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="152,5,0,5" Command="{Binding SettClick}">
+                        <Button Name="Settings" ToolTip="Settings" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="100,5,0,5" Command="{Binding SettClick}">
                             <Image Source="/Images/Settings.png" />
                         </Button>
                     </Grid>
@@ -230,6 +203,88 @@
                 </Border>
             </Grid>
             <Grid Grid.Column="2">
+                <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding TS.Accent2, UpdateSourceTrigger=PropertyChanged}">
+                    <StackPanel>
+                        <TextBlock Text="Connection Status" FontSize="16" FontWeight="Bold"/>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="45"/>
+                                <RowDefinition Height="45"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Row="0" Grid.Column="0">
+                                <TextBlock Text="UI + Client: " Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="1">
+                                <Image Width="40">
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Setter Property="Source" Value="/Images/InterfaceDisconnected.png"/>
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding initState.IsInitialized}" Value="True" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Source" Value="/Images/InterfaceConnected.png"/>
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="0">
+                                <TextBlock Text="Client + Server: " Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="1">
+                                <Image Width="40">
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Setter Property="Source" Value="/Images/InterfaceDisconnected.png" />
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding connDiagState.IsConnected}" Value="True" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Source" Value="/Images/InterfaceConnected.png"/>
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- <Image>
+    <Image.Style>
+        <Style TargetType="Image">
+            <Setter Property="Source" Value="/Images/Disconnect.png"/>
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding connDiagState.ConnectEngage}" Value="True" />
+                        <Condition Binding="{Binding connDiagState.IsConnected}" Value="False" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Source" Value="/Images/Connecting.png"/>
+                </MultiDataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding connDiagState.ConnectEngage}" Value="True" />
+                        <Condition Binding="{Binding connDiagState.IsConnected}" Value="True" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Source" Value="/Images/Connected.png"/>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Image.Style>
+</Image>
+                -->
+            </Grid>
+            <Grid Grid.Column="3">
                 <Image Source="/Images/PVALogo.png" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,25,0" Width="160"/>
             </Grid>
         </Grid>

@@ -5,7 +5,6 @@
 namespace Schiism.Cli.IPC
 {
     using System.IO.Pipes;
-    using Microsoft.Extensions.Logging;
     using Schiism.Core.Abstractions.IPC.Streams;
     using Schiism.Core.Models.IPC;
 
@@ -16,7 +15,7 @@ namespace Schiism.Cli.IPC
     /// <param name="pipeName">Name of pipe that the stream data will be received from.</param>
     public class FEStreamSubscriber<T>(string pipeName) : IStreamSubscriber<T>
     {
-        private PipeSerializer Serializer => new();
+        private readonly PipeSerializer Serializer => new();
 
         /// <inheritdoc/>
         public async Task SubscribeAsync(Func<T, Task> onData, CancellationToken ct)

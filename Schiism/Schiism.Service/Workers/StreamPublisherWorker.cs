@@ -4,63 +4,48 @@
 
 namespace Schiism.Service.Workers
 {
-    using Schiism.Core.Abstractions.IPC;
+    using Schiism.Core.Abstractions.IPC.States;
     using Schiism.Core.Abstractions.IPC.Streams;
-    using Schiism.Core.Models.IPC.DTOs.Streams;
+    using System.IO.Pipes;
 
     /// <summary>
     /// Publishing Worker. Both ModbusData and ConnectionDiagnostics are published through this same worker type, just seperate instances.
     /// </summary>
     /// <typeparam name="T">The type of the stream item, either ModbusData or ConnectionDiagnostics.</typeparam>
-    public class StreamPublisherWorker<T>(IStreamQueue<T> queue, IStreamPublisher<T> publisher, ILogger<StreamPublisherWorker<T>> logger) : BackgroundService
+    public class StreamPublisherWorker<T>(string pipeName, IInitializedState fEInitState, IStreamQueue<T> queue, IStreamPublisher<T> publisher, ILogger<StreamPublisherWorker<T>> logger) : BackgroundService
     {
         /// <inheritdoc/>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            logger.LogInformation(
-                "Starting stream publisher worker for {Type}",
-                typeof(T).Name);
-
-            await publisher.StartAsync(stoppingToken);
-
-            while (!stoppingToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested && fEInitState.IsInitialized)
             {
+                NamedPipeServerStream? pipe = null;
+
                 try
                 {
-                    T? item = await queue.DequeueAsync(stoppingToken);
+                    pipe = new NamedPipeServerStream(
+                        pipeName,
+                        PipeDirection.Out,
+                        1,
+                        PipeTransmissionMode.Byte,
+                        PipeOptions.Asynchronous);
 
-                    if (publisher.IsConnected)
+                    logger.LogInformation($"Waiting for client on {pipeName}");
+
+                    await pipe.WaitForConnectionAsync(stoppingToken);
+
+                    logger.LogInformation($"Client connected on {pipeName}");
+
+                    while (!stoppingToken.IsCancellationRequested && pipe.IsConnected)
                     {
-                        await publisher.PublishAsync(item, stoppingToken);
+                        T? item = await queue.DequeueAsync(stoppingToken);
 
-                        if (item is ModbusData modbusData)
-                        {
-                            string data = string.Empty;
-                            for (int i = 0; i < modbusData.Data.Count; i++)
-                            {
-                                data += $"Data[{i}]: {modbusData.Data[i]} ";
-                            }
+                        logger.LogInformation($"Publishing on {pipeName}");
+                        await publisher.PublishAsync(pipe, item, stoppingToken);
+                        logger.LogInformation($"Publish complete on {pipeName}");
 
-                            logger.LogInformation(
-                                "Published {Type}: Data: {Data}",
-                                typeof(T).Name,
-                                data);
-                        }
+                        await Task.Delay(2000, stoppingToken);
                     }
-
-                    // else if (item is ConnectionDiagnostics diagnostics)
-                    // {
-                    //    logger.LogInformation(
-                    //        "Published {Type}: NumRequests: {NumRequests}, NumResponses: {NumResponses}, NumOKs: {NumOKs}, NumErrors: {NumErrors}, IsConnected: {IsConnected}, ErrorMessage: {ErrorMessage}, Timestamp: {Timestamp}",
-                    //        typeof(T).Name,
-                    //        diagnostics.NumRequests,
-                    //        diagnostics.NumResponses,
-                    //        diagnostics.NumOKs,
-                    //        diagnostics.NumErrors,
-                    //        diagnostics.IsConnected,
-                    //        diagnostics.ErrorMessage,
-                    //        diagnostics.Timestamp);
-                    // }
                 }
                 catch (OperationCanceledException)
                 {
@@ -75,6 +60,10 @@ namespace Schiism.Service.Workers
                         ex,
                         "Error publishing stream item for {Type}",
                         typeof(T).Name);
+                }
+                finally
+                {
+                    pipe?.Dispose();
                 }
             }
 

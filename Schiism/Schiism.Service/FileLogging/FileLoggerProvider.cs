@@ -21,7 +21,7 @@ namespace Schiism.Service.FileLogging
         public FileLoggerProvider(string basePath)
         {
             this.basePath = basePath;
-            this.fileName = $"schiism@{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}.log";
+            this.fileName = $"schiismService@{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}.log";
         }
 
         /// <inheritdoc/>

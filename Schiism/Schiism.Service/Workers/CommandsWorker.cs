@@ -93,6 +93,7 @@ namespace Schiism.Service.Workers
         {
             config.Update(cmd);
             control.RestartRequested = true;
+
             logger.LogInformation("Implemented configuration command successfully.");
             return Task.CompletedTask;
         }

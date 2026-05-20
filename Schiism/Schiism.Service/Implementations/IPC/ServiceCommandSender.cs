@@ -16,7 +16,7 @@ namespace Schiism.Service.Implementations.IPC
     /// <param name="logger">Logger object for logging data to text file.</param>
     public class ServiceCommandSender(string pipeName, ILogger<ServiceCommandSender> logger) : ICommandSender
     {
-        private PipeSerializer Serializer => new();
+        private readonly PipeSerializer Serializer = new();
 
         /// <inheritdoc/>
         public async Task SendAsync(SettingsConfig command, CancellationToken ct)

@@ -25,6 +25,7 @@ namespace Schiism.WPF.ViewModels
         private readonly IWPFConfigState modbusSettState;
         private readonly IStreamDataState<ModbusData> modbusDataState;
         private readonly IStreamDataState<ConnectionDiagnostics> connDiagState;
+        private readonly IInitializedState initState;
 
         // Private variables
         private string title;
@@ -58,11 +59,13 @@ namespace Schiism.WPF.ViewModels
             IDialogService dialogService,
             IWPFConfigState modbusSettState,
             IStreamDataState<ModbusData> modbusDataState,
-            IStreamDataState<ConnectionDiagnostics> connDiagState)
+            IStreamDataState<ConnectionDiagnostics> connDiagState,
+            IInitializedState initState)
         {
             this.modbusSettState = modbusSettState;
             this.modbusDataState = modbusDataState;
             this.connDiagState = connDiagState;
+            this.initState = initState;
 
             title = "PVA MODBUS TCP Client";
             addressList = ["0", "20", "40", "60", "80", "100"];

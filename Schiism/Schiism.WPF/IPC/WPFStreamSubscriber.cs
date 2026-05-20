@@ -4,80 +4,35 @@
 
 namespace Schiism.WPF.IPC
 {
-    using System.IO.Pipes;
-    using Schiism.Core.Abstractions.IPC.States;
-    // using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging;
     using Schiism.Core.Abstractions.IPC.Streams;
     using Schiism.Core.Models.IPC;
+    using System.IO.Pipes;
 
     /// <summary>
     /// Stream subscriber implementation for the front end.
     /// </summary>
     /// <typeparam name="T">Defines the object type that will be expected on this stream.</typeparam>
     /// <param name="pipeName">Name of pipe that the stream data will be received from.</param>
-    public class WPFStreamSubscriber<T>(string pipeName, IStreamDataState<T> dataState) : IStreamSubscriber<T>
+    public class WPFStreamSubscriber<T> : IStreamSubscriber<T>
     {
-        private PipeSerializer Serializer => new();
+        private readonly ILogger logger;
+
+        private readonly PipeSerializer serializer = new();
+
+        public WPFStreamSubscriber(ILoggerFactory factory)
+        {
+            this.logger = factory.CreateLogger<WPFStreamSubscriber<T>>();
+        }
 
         /// <inheritdoc/>
-        public async Task SubscribeAsync(Func<T, Task> onData, CancellationToken ct)
+        public async Task<T?> SubscribeAsync(PipeStream pipe, CancellationToken ct)
         {
-            while (!ct.IsCancellationRequested)
-            {
-                NamedPipeClientStream? pipe = null;
+            logger.LogInformation($"Deserializing on {pipe}");
+            T? data = await this.serializer.DeserializeAsync<T>(pipe, ct);
+            logger.LogInformation($"{pipe} deserialization complete!");
 
-                try
-                {
-                    pipe = new NamedPipeClientStream(
-                        ".",
-                        pipeName,
-                        PipeDirection.In,
-                        PipeOptions.Asynchronous);
-
-                    await pipe.ConnectAsync(ct);
-
-                    T? data = await this.Serializer.DeserializeAsync<T>(pipe, ct);
-
-                    if (data == null)
-                    {
-                        Console.WriteLine($"Received null data from {pipeName}");
-                        continue;
-                    }
-
-                    try
-                    {
-                        await onData(data);
-                        dataState.Update(data);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(
-                            "Subscriber callback failed for {PipeName}: {ex}",
-                            pipeName,
-                            ex);
-                    }
-                }
-                catch (OperationCanceledException)
-                {
-                    Console.WriteLine($"Subscription to {pipeName} cancelled");
-                    break;
-                }
-
-                // catch (EndOfStreamException)
-                // {
-                //    Console.WriteLine($"Subscription to {pipeName} dropped unexpectedly");
-                //    throw;
-                // }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Unknown error in subscription to {pipeName}: {ex}");
-                    throw;
-                }
-                finally
-                {
-                    pipe?.Dispose();
-                }
-            }
+            return data;
         }
     }
 }

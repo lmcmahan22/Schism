@@ -4,20 +4,23 @@
 
 namespace Schiism
 {
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using Prism.Ioc;
     using Schiism.Core.Abstractions.IPC.Commands;
     using Schiism.Core.Abstractions.IPC.States;
     using Schiism.Core.Abstractions.IPC.Streams;
     using Schiism.Core.Models.IPC;
     using Schiism.Core.Models.IPC.DTOs.Streams;
     using Schiism.WPF;
+    using Schiism.WPF.FileLogging;
     using Schiism.WPF.Implementations.Modbus;
     using Schiism.WPF.IPC;
     using Schiism.WPF.IPC.Workers;
     using Schiism.WPF.Models.Implementations.States;
     using Schiism.WPF.Services;
     using Schiism.WPF.Views;
+    using System.Runtime.Intrinsics.X86;
     using System.Windows;
 
     public partial class App
@@ -34,6 +37,19 @@ namespace Schiism
         // Registers types with the dependency injection container. This method is called during application initialization.
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
+
+            // Logger factory to be used via DI (a bit verbose in order to get it to work how we want...)
+            ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.ClearProviders();
+
+                builder.AddProvider(
+                    new WPFFileLoggerProvider(
+                        @"C:\Users\lmcmahan\OneDrive - Precision Valve and Automation\Desktop\SchiismLogs"));
+            });
+
+            containerRegistry.RegisterInstance<ILoggerFactory>(loggerFactory);
+
             // Local Singleton
             containerRegistry.RegisterSingleton<ThemeController>();
 
@@ -41,6 +57,7 @@ namespace Schiism
             containerRegistry.RegisterSingleton<IStreamDataState<ModbusData>, StreamDataState<ModbusData>>();
             containerRegistry.RegisterSingleton<IStreamDataState<ConnectionDiagnostics>, StreamDataState<ConnectionDiagnostics>>();
             containerRegistry.RegisterSingleton<IWPFConfigState, WPFConfigState>();
+            containerRegistry.RegisterSingleton<IInitializedState, InitializedState>();
 
             // IPC Singletons (Subscribers, Command Receiver, and Command Sender)
             containerRegistry.RegisterSingleton<ICommandReceiver>(
@@ -51,18 +68,31 @@ namespace Schiism
                     PipeConstants.SettingsCommandName));
             containerRegistry.RegisterSingleton<IStreamSubscriber<ConnectionDiagnostics>>(
                 ssc => new WPFStreamSubscriber<ConnectionDiagnostics>(
-                    PipeConstants.ConnDiagStreamName,
-                    ssc.Resolve<IStreamDataState<ConnectionDiagnostics>>()));
+                    ssc.Resolve<ILoggerFactory>()));
             containerRegistry.RegisterSingleton<IStreamSubscriber<ModbusData>>(
                 ssm => new WPFStreamSubscriber<ModbusData>(
-                    PipeConstants.ModbusDataStreamName,
-                    ssm.Resolve<IStreamDataState<ModbusData>>()));
+                    ssm.Resolve<ILoggerFactory>()));
 
             // Workers (to run the subscription and command loops/calls)
-            // NOTE: These need to resolve these as prism instances vis container.resolve
-            containerRegistry.Register<CommandsWorker>();
-            containerRegistry.Register<ConnDiagSubscriberWorker>();
-            containerRegistry.Register<ModbusSubscriberWorker>();
+            containerRegistry.Register<WPFCommandsWorker>(
+            cw => new WPFCommandsWorker(
+                cw.Resolve<ICommandReceiver>(),
+                cw.Resolve<ICommandSender>(),
+                cw.Resolve<IWPFConfigState>(),
+                cw.Resolve<IInitializedState>(),
+                cw.Resolve<ILoggerFactory>()));
+            containerRegistry.Register<WPFSubscriberWorker<ModbusData>>(
+            swm => new WPFSubscriberWorker<ModbusData>(
+                PipeConstants.ModbusDataStreamName,
+                swm.Resolve<IStreamSubscriber<ModbusData>>(),
+                swm.Resolve<IStreamDataState<ModbusData>>(),
+                swm.Resolve<ILoggerFactory>()));
+            containerRegistry.Register<WPFSubscriberWorker<ConnectionDiagnostics>>(
+                swc => new WPFSubscriberWorker<ConnectionDiagnostics>(
+                PipeConstants.ConnDiagStreamName,
+                swc.Resolve<IStreamSubscriber<ConnectionDiagnostics>>(),
+                swc.Resolve<IStreamDataState<ConnectionDiagnostics>>(),
+                swc.Resolve<ILoggerFactory>()));
         }
 
         // Configures the module catalog, which is responsible for managing the modules in the application. This method is called during application initialization.
@@ -78,9 +108,9 @@ namespace Schiism
             base.OnInitialized();
 
             // This resolves the workers 
-            hostedServices.Add(Container.Resolve<CommandsWorker>());
-            hostedServices.Add(Container.Resolve<ConnDiagSubscriberWorker>());
-            hostedServices.Add(Container.Resolve<ModbusSubscriberWorker>());
+            hostedServices.Add(Container.Resolve<WPFCommandsWorker>());
+            hostedServices.Add(Container.Resolve<WPFSubscriberWorker<ModbusData>>());
+            hostedServices.Add(Container.Resolve<WPFSubscriberWorker<ConnectionDiagnostics>>());
 
             foreach (var service in hostedServices)
             {
