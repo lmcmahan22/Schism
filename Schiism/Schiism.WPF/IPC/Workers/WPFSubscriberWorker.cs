@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Schiism.Core.Abstractions.IPC.States;
 using Schiism.Core.Abstractions.IPC.Streams;
+using Schiism.WPF.Models.Implementations.States;
 using System.IO;
 using System.IO.Pipes;
 
@@ -12,7 +13,8 @@ namespace Schiism.WPF.IPC.Workers
         // No in-line constructor here, in order to support the logger:
         private readonly ILogger logger;
         private readonly IStreamSubscriber<T> subscriber;
-        private readonly IStreamDataState<T> dataState;
+        private readonly WPFStreamDataState<T> dataState;
+        private WPFInitializedState initState;
         private readonly string pipeName;
 
         // should this be a collection of ModbusData polls, just so we don't lose any data s we're trying to print it?
@@ -20,11 +22,12 @@ namespace Schiism.WPF.IPC.Workers
 
         public T RawData { get => rawData; }
 
-        public WPFSubscriberWorker(string pipeName, IStreamSubscriber<T> subscriber, IStreamDataState<T> dataState, ILoggerFactory factory)
+        public WPFSubscriberWorker(string pipeName, IStreamSubscriber<T> subscriber, WPFStreamDataState<T> dataState, WPFInitializedState initState, ILoggerFactory factory)
         {
             this.logger = factory.CreateLogger<WPFSubscriberWorker<T>>();
             this.subscriber = subscriber;
             this.dataState = dataState;
+            this.initState = initState;
             this.pipeName = pipeName;
         }
 
@@ -63,6 +66,8 @@ namespace Schiism.WPF.IPC.Workers
                         {
                             logger.LogInformation("Null data...");
                         }
+
+                        await Task.Delay(100, cts); // IMPORTANT or you'll spin CPU. This should be short though, since there's no reason for the UI to wait for updated data if it has already arrived.
                     }
                 }
                 catch (IOException)
@@ -72,9 +77,16 @@ namespace Schiism.WPF.IPC.Workers
                 finally
                 {
                     pipe?.Dispose();
+
+                    // If either of the subscribers drops, we'll need to re-initialize
+                    if (this.initState.IsInitialized)
+                    {
+                        this.initState.IsInitialized = false;
+                        logger.LogInformation("Initialization State set to False!");
+                    }
                 }
 
-                await Task.Delay(2000, cts);
+                await Task.Delay(100, cts); // IMPORTANT or you'll spin CPU. This should be short though, since there's no reason for the UI to wait for updated data if it has already arrived.
             }
         }
     }

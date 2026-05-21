@@ -72,7 +72,7 @@ namespace Schiism.Service.Workers
                     logger.LogError(ex, "Failed to send init command. Trying again...");
                 }
 
-                await Task.Delay(2000, stoppingToken); // IMPORTANT or you'll spin CPU
+                await Task.Delay(1000, stoppingToken); // Wait a second before sending the init command again.
             }
         }
 

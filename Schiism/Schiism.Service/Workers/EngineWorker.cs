@@ -14,8 +14,6 @@ namespace Schiism.Service.Workers
     /// </summary>
     public class EngineWorker(IEngine engine, IConfigState config, IModbusControl modbusControl, ILogger<EngineWorker> logger) : BackgroundService
     {
-        private CancellationTokenSource? sessionCts;
-
         /// <summary>
         /// Executes the background service, managing the lifecycle of the MODBUS Engine.
         /// </summary>
@@ -25,29 +23,40 @@ namespace Schiism.Service.Workers
         {
             while (!ct.IsCancellationRequested)
             {
-                this.sessionCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                using var sessionCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
                 try
                 {
-                    await engine.ConnectAsync(this.sessionCts.Token);
+                    logger.LogInformation("Connecting to Modbus engine...");
+                    await engine.ConnectAsync(sessionCts.Token);
 
-                    await this.RunPollingLoop(this.sessionCts.Token);
+                    if (!engine.IsConnected)
+                    {
+                        throw new InvalidOperationException("Engine reported not connected after ConnectAsync");
+                    }
+
+                    logger.LogInformation("Connected. Starting polling loop.");
+                    await this.RunPollingLoop(sessionCts.Token);
                 }
-                catch (TaskCanceledException)
+                catch (OperationCanceledException) when (ct.IsCancellationRequested)
                 {
-                    logger.LogInformation("Modbus Server has closed. Attempting Reconnect...");
-                }
-                catch (OperationCanceledException)
-                {
-                    logger.LogInformation("Modbus Engine session restarted. Attempting Reconnect...");
+                    logger.LogInformation("Modbus Engine session lost/restarted. Attempting Reconnect...");
                 }
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Modbus Engine failure");
                     await engine.DisconnectAsync();
                 }
+                finally
+                {
+                    if (!engine.IsConnected) {
+                        logger.LogError("Disconnecting from MODBUS server (if connected prior)...");
+                        await engine.DisconnectAsync();
+                    }
+                }
 
-                await Task.Delay(config.ScanRate, ct);
+                // This shouldn't need to be here, since connect and pollingloop both have their own delays.
+                // await Task.Delay(config.ScanRate, ct);
             }
         }
 
@@ -60,10 +69,10 @@ namespace Schiism.Service.Workers
                 if (modbusControl.RestartRequested)
                 {
                     modbusControl.RestartRequested = false;
-                    logger.LogInformation("Modbus restart requested");
                     throw new OperationCanceledException("Restart requested");
                 }
 
+                // The only scanRate delay that we should need in this application.
                 await Task.Delay(config.ScanRate, ct);
             }
         }

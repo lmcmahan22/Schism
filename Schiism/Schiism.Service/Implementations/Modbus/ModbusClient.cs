@@ -33,12 +33,18 @@ namespace Schiism.Service.Implementations.Modbus
                     return;
                 }
 
+                client?.Dispose();
+
                 this.client = CreateClient(config.IPAddress, config.TCPPort, config.TCPTimeout);
 
-                // TcpClient constructor connects synchronously, so just wrap for consistency
-                await Task.CompletedTask;
-
                 this.master = CreateMaster(this.client, config.TCPTimeout);
+            }
+            catch
+            {
+                client?.Dispose();
+                client = null;
+                master = null;
+                throw;
             }
             finally
             {

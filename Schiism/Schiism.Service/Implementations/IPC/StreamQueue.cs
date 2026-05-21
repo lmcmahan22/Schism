@@ -15,6 +15,8 @@ namespace Schiism.Service.Implementations.IPC
     {
         private readonly Channel<T> channel;
 
+        public int Count { get; private set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamQueue{T}"/> class.
         /// Constructor initializes the channel object with a bounded capacity and appropriate options for a producer-consumer scenario.
@@ -33,12 +35,14 @@ namespace Schiism.Service.Implementations.IPC
         /// <inheritdoc/>
         public ValueTask EnqueueAsync(T item, CancellationToken ct = default)
         {
+            this.Count++;
             return this.channel.Writer.WriteAsync(item, ct);
         }
 
         /// <inheritdoc/>
         public ValueTask<T> DequeueAsync(CancellationToken ct = default)
         {
+            this.Count--;
             return this.channel.Reader.ReadAsync(ct);
         }
     }

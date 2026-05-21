@@ -69,7 +69,7 @@ namespace Schiism.Service
             builder.Services.AddSingleton<IModbusControl, ModbusControl>();
 
             // ConnectionState
-            builder.Services.AddSingleton<IInitializedState, InitializedState>();
+            builder.Services.AddSingleton<IInitializedState, FrontendInitializedState>();
 
             // Stream Publishers
             builder.Services.AddSingleton<IStreamPublisher<ModbusData>, StreamPublisher<ModbusData>>(
@@ -105,6 +105,7 @@ namespace Schiism.Service
             builder.Services.AddHostedService<StreamPublisherWorker<ModbusData>>(
                 spm => new StreamPublisherWorker<ModbusData>(
                     PipeConstants.ModbusDataStreamName,
+                    spm.GetRequiredService<IConfigState>(),
                     spm.GetRequiredService<IInitializedState>(),
                     spm.GetRequiredService<IStreamQueue<ModbusData>>(),
                     spm.GetRequiredService<IStreamPublisher<ModbusData>>(),
@@ -112,6 +113,7 @@ namespace Schiism.Service
             builder.Services.AddHostedService<StreamPublisherWorker<ConnectionDiagnostics>>(
                 spc => new StreamPublisherWorker<ConnectionDiagnostics>(
                     PipeConstants.ConnDiagStreamName,
+                    spc.GetRequiredService<IConfigState>(),
                     spc.GetRequiredService<IInitializedState>(),
                     spc.GetRequiredService<IStreamQueue<ConnectionDiagnostics>>(),
                     spc.GetRequiredService<IStreamPublisher<ConnectionDiagnostics>>(),

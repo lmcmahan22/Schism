@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Schiism.Core.Abstractions.IPC.States
 {
-    public interface IStreamDataState<T> : INotifyPropertyChanged
+    public interface IStreamDataState<T>
     {
         T Contents { get; }
 

@@ -71,7 +71,6 @@ namespace Schiism.WPF.Services
                 if (main != value)
                 {
                     main = value;
-                    
                 }
             }
         }
@@ -84,7 +83,6 @@ namespace Schiism.WPF.Services
                 if (accent1 != value)
                 {
                     accent1 = value;
-                    
                 }
             }
         }
@@ -97,7 +95,6 @@ namespace Schiism.WPF.Services
                 if (accent2 != value)
                 {
                     accent2 = value;
-                    
                 }
             }
         }
@@ -110,7 +107,6 @@ namespace Schiism.WPF.Services
                 if (accent3 != value)
                 {
                     accent3 = value;
-                    
                 }
             }
         }
@@ -123,7 +119,6 @@ namespace Schiism.WPF.Services
                 if (accent4 != value)
                 {
                     accent4 = value;
-                    
                 }
             }
         }
@@ -136,7 +131,6 @@ namespace Schiism.WPF.Services
                 if (textColor != value)
                 {
                     textColor = value;
-                    
                 }
             }
         }
@@ -149,7 +143,6 @@ namespace Schiism.WPF.Services
                 if (errorColor != value)
                 {
                     errorColor = value;
-                    
                 }
             }
         }

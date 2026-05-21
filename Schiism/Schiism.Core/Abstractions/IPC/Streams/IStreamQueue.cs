@@ -10,6 +10,9 @@ namespace Schiism.Core.Abstractions.IPC.Streams
     /// <typeparam name="T">The type of items in the queue.</typeparam>
     public interface IStreamQueue<T>
     {
+
+        public int Count { get; }
+
         /// <summary>
         /// Method for adding an item to the queue. This method is asynchronous and can be awaited. It also accepts a cancellation token to allow for cancellation of the enqueue operation.
         /// </summary>

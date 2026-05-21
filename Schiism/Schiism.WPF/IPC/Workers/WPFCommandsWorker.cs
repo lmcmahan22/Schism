@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Schiism.Core.Abstractions.IPC.Commands;
 using Schiism.Core.Abstractions.IPC.States;
 using Schiism.Core.Models.IPC.DTOs.Commands;
+using Schiism.WPF.Models.Implementations.States;
 
 namespace Schiism.WPF.IPC.Workers
 {
@@ -16,9 +17,12 @@ namespace Schiism.WPF.IPC.Workers
         private readonly ICommandReceiver initReceiver;
         private readonly ICommandSender sender;
         private readonly IWPFConfigState configSettState;
-        private readonly IInitializedState initState;
+        private readonly WPFInitializedState initState;
 
-        public WPFCommandsWorker(ICommandReceiver initReceiver, ICommandSender sender, IWPFConfigState configSettState, IInitializedState initState, ILoggerFactory factory)
+        // Track if the config actually needs to be sent or not.
+        private SettingsConfig? lastSentConfig;
+
+        public WPFCommandsWorker(ICommandReceiver initReceiver, ICommandSender sender, IWPFConfigState configSettState, WPFInitializedState initState, ILoggerFactory factory)
         {
             this.logger = factory.CreateLogger<WPFCommandsWorker>();
             this.initReceiver = initReceiver;
@@ -29,45 +33,60 @@ namespace Schiism.WPF.IPC.Workers
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Task? sendTask = this.RunSenderAsync(stoppingToken);
+            Task? sendTask = this.RunSenderLoopAsync(stoppingToken);
             Task? receiveTask = this.RunReceiverLoopAsync(stoppingToken);
 
             await Task.WhenAll(sendTask, receiveTask);
         }
 
-        private async Task? RunSenderAsync(CancellationToken stoppingToken)
+        private async Task? RunSenderLoopAsync(CancellationToken stoppingToken)
         {
-            try
+            while (!stoppingToken.IsCancellationRequested)
             {
-                if (initState.IsInitialized)
+                try
                 {
-                    // Make this so it only sends UPDATED parameters, rather than everything every single time!
-                    SettingsConfig settConf = new SettingsConfig(
-                        configSettState.IPAddress,
-                        configSettState.DataLength,
-                        configSettState.StartAddress,
-                        configSettState.TCPPort,
-                        configSettState.ScanRate,
-                        configSettState.TCPTimeout,
-                        configSettState.DeviceId,
-                        configSettState.SelectedDataSize,
-                        configSettState.SelectedPollType,
-                        configSettState.AsciiEnable,
-                        configSettState.SelectedNumericBase,
-                        configSettState.SelectedEndian);
+                    if (initState.IsInitialized)
+                    {
+                        // Make this so it only sends UPDATED parameters, rather than everything every single time!
+                        SettingsConfig currentConfig = new SettingsConfig(
+                            configSettState.IPAddress,
+                            configSettState.DataLength,
+                            configSettState.StartAddress,
+                            configSettState.TCPPort,
+                            configSettState.ScanRate,
+                            configSettState.TCPTimeout,
+                            configSettState.DeviceId,
+                            configSettState.SelectedDataSize,
+                            configSettState.SelectedPollType,
+                            configSettState.AsciiEnable,
+                            configSettState.SelectedNumericBase,
+                            configSettState.SelectedEndian);
 
-                    logger.LogInformation("Settings command send starting");
+                        if (!currentConfig.Equals(lastSentConfig))
+                        {
+                            logger.LogInformation("Settings changed, sending update");
 
-                    await sender.SendAsync(settConf, stoppingToken);
+                            await sender.SendAsync(currentConfig, stoppingToken);
+
+                            logger.LogInformation("Updated settings sent!");
+
+                            lastSentConfig = currentConfig;
+                        }
+                    }
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                logger.LogInformation("Command send cancelled");
-            }
-            catch (Exception ex)
-            {
-                logger.LogInformation("Failed to send init command");
+                catch (OperationCanceledException)
+                {
+                    logger.LogError("Command send cancelled");
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError("Failed to send init command");
+                    throw;
+                }
+
+                await Task.Delay(1000, stoppingToken); // This makes it so Settings can only be sent as fast as once per second.
+                                                       // I think that's appropriate for now, assuming the user can make changes that quickly.
             }
         }
 
@@ -81,17 +100,15 @@ namespace Schiism.WPF.IPC.Workers
                     {
                         logger.LogInformation("Initializing command receive starting");
                         await initReceiver.ReceiveAsync(this.ReceiveHandler, stoppingToken);
-
-                        initState.IsInitialized = true;
-                        logger.LogInformation("Initialization State set to True!");
                     }
                 }
                 catch (Exception ex)
                 {
-                    logger.LogInformation("Initialization command receive crashed. Trying again...");
+                    logger.LogError("Initialization command receive crashed. Trying again...");
+                    throw;
                 }
 
-                await Task.Delay(2000, stoppingToken); // IMPORTANT or you'll spin CPU
+                await Task.Delay(100, stoppingToken); // IMPORTANT or you'll spin CPU. This should be short though, since there's no reason for the UI to wait for updated data if it has already arrived.
             }
         }
 
@@ -99,6 +116,9 @@ namespace Schiism.WPF.IPC.Workers
         {
             // Trigger a PropertyChanged event to notify the view model for a UI update
             configSettState.Update(cmd);
+
+            initState.IsInitialized = true;
+            logger.LogInformation("Initialization State set to True!");
 
             logger.LogInformation("Implemented initializing configuration command successfully");
             return Task.CompletedTask;

@@ -1,7 +1,12 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
     "net8.0": {
+      "StyleCop.Analyzers.Unstable/1.2.0.556": {
+        "type": "package"
+      }
+    },
+    "net8.0/win-x64": {
       "StyleCop.Analyzers.Unstable/1.2.0.556": {
         "type": "package"
       }
@@ -70,6 +75,7 @@
       },
       "frameworks": {
         "net8.0": {
+          "framework": "net8.0",
           "targetAlias": "net8.0",
           "projectReferences": {}
         }
@@ -84,10 +90,11 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "10.0.100"
+      "SdkAnalysisLevel": "10.0.300"
     },
     "frameworks": {
       "net8.0": {
+        "framework": "net8.0",
         "targetAlias": "net8.0",
         "dependencies": {
           "StyleCop.Analyzers.Unstable": {
@@ -113,7 +120,12 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.108/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+      }
+    },
+    "runtimes": {
+      "win-x64": {
+        "#import": []
       }
     }
   }

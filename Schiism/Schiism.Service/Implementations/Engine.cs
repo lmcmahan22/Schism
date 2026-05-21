@@ -30,31 +30,39 @@ namespace Schiism.Service.Implementations
         private int numResponses = 0;
         private int numOKs = 0;
         private int numErrors = 0;
-        private bool isConnected = false;
         private string errorMessage = string.Empty;
+
+        // Referenced by the worker
+        public bool IsConnected { get; private set; }
 
         /// <inheritdoc/>
         public async Task ConnectAsync(CancellationToken ct)
         {
-            try
+            while (!this.IsConnected)
             {
-                logger.LogInformation("Attempting to connect to Modbus Server at {IP}:{Port} with timeout {Timeout}ms", config.IPAddress, config.TCPPort, config.TCPTimeout);
-                await this.OnRequest(ct);
-                await client.InitializeAsync(config);
-                await this.OnSuccess(ct);
-                logger.LogInformation("Successfully connected to Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
-            }
-            catch (Exception e)
-            {
-                await this.OnError(e, ct);
-                logger.LogError(e, "Failed to connect to Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
+                try
+                {
+                    logger.LogInformation("Attempting to connect to Modbus Server at {IP}:{Port} with timeout {Timeout}ms", config.IPAddress, config.TCPPort, config.TCPTimeout);
+                    await this.OnRequest(ct);
+                    await client.InitializeAsync(config);
+
+                    await this.OnSuccess(ct);
+                    logger.LogInformation("Successfully connected to Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
+                }
+                catch (Exception e)
+                {
+                    await this.OnError(e, ct);
+                    logger.LogError(e, "Failed to connect to Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
+                }
+
+                await Task.Delay(1000, ct); // Wait one second before retrying connection if it failed. This prevents spamming connection attempts in case of persistent failure.
             }
         }
 
         /// <inheritdoc/>
         public async Task DisconnectAsync()
         {
-            this.isConnected = false; // Not reported, but set the flag to false to prevent any false reporting of connection status while disconnecting
+            this.IsConnected = false; // Not reported, but set the flag to false to prevent any false reporting of connection status while disconnecting
             await client.DisconnectAsync();
             logger.LogInformation("Disconnected from Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
         }
@@ -84,6 +92,11 @@ namespace Schiism.Service.Implementations
                 await this.OnSuccess(ct);
                 logger.LogInformation("Successfully polled Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
             }
+            catch (OperationCanceledException ex)
+            {
+                logger.LogWarning("Connection cancelled on Client Engine.");
+                throw;
+            }
             catch (SocketException ex)
             {
                 await this.OnError(ex, ct);
@@ -106,27 +119,29 @@ namespace Schiism.Service.Implementations
         private async Task OnRequest(CancellationToken ct)
         {
             this.numRequests++;
-            ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.isConnected, DateTime.UtcNow);
+            ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.IsConnected, DateTime.UtcNow);
             await connStreamQueue.EnqueueAsync(diag, ct);
         }
 
         private async Task OnSuccess(CancellationToken ct)
         {
-            this.isConnected = true;
+            this.IsConnected = true;
             this.numResponses++;
             this.numOKs++;
             this.errorMessage = string.Empty;
-            ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.isConnected, DateTime.UtcNow);
+            ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.IsConnected, DateTime.UtcNow);
+            // logger.LogError($"Client is sending server Connection Status: {this.IsConnected}");
             await connStreamQueue.EnqueueAsync(diag, ct);
         }
 
         private async Task OnError(Exception ex, CancellationToken ct)
         {
-            this.isConnected = false;
+            this.IsConnected = false;
             this.numResponses++;
             this.numErrors++;
             this.errorMessage = this.MapError(ex);
-            ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.isConnected, DateTime.UtcNow);
+            ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.IsConnected, DateTime.UtcNow);
+            // logger.LogError($"Client is sending server Connection Status: {this.IsConnected}");
             await connStreamQueue.EnqueueAsync(diag, ct);
         }
 

@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Schiism.Service")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5021657741f9ce40998eb34cf91f3e8359bdf389")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+25f48719ae7f54692812fb2c136fb273826cdead")]
 [assembly: System.Reflection.AssemblyProductAttribute("Schiism.Service")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Schiism.Service")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

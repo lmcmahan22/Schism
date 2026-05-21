@@ -30,7 +30,7 @@ namespace Schiism.WPF.IPC
         {
             logger.LogInformation($"Deserializing on {pipe}");
             T? data = await this.serializer.DeserializeAsync<T>(pipe, ct);
-            logger.LogInformation($"{pipe} deserialization complete!");
+            logger.LogInformation($"Received data on {typeof(T).Name} pipe: {data}.");
 
             return data;
         }

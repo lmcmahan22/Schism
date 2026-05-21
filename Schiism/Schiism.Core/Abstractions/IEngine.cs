@@ -10,6 +10,9 @@ namespace Schiism.Core.Abstractions
     /// </summary>
     public interface IEngine
     {
+
+        bool IsConnected { get; }
+
         /// <summary>
         /// Asynchronous connect method to establish connection with the Modbus device.
         /// </summary>
