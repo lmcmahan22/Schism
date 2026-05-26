@@ -5,7 +5,7 @@
 namespace Schiism.WPF.Models
 {
     using Schiism.Core.Enums;
-    using System.Runtime.Intrinsics.X86;
+    using Schiism.WPF.Models.Enums;
 
     public class SaveData
     {
@@ -18,10 +18,10 @@ namespace Schiism.WPF.Models
         private DataSize saveDataSize;
         private Endian saveEndian;
         private bool saveASCIIEnable;
-        private string saveAddressConv;
+        private AddressConvention saveAddressConv;
 
         // Constructor
-        public SaveData(byte sL, ushort sSA, byte sDID, PollType sPT, NumericBase sNB, DataSize sDS, Endian sE, bool sAE, string sAC)
+        public SaveData(byte sL, ushort sSA, byte sDID, PollType sPT, NumericBase sNB, DataSize sDS, Endian sE, bool sAE, AddressConvention sAC)
         {
             saveLength = sL;
             saveStartAddress = sSA;
@@ -45,7 +45,7 @@ namespace Schiism.WPF.Models
             saveDataSize = DataSize.Bit16;
             saveEndian = Endian.BigEndian;
             saveASCIIEnable = false;
-            saveAddressConv = string.Empty;
+            saveAddressConv = AddressConvention.RegisterAddress;
         }
 
         // Simple getters and setters for each variable
@@ -65,6 +65,6 @@ namespace Schiism.WPF.Models
 
         public bool SaveAsciiEnable { get => saveASCIIEnable; set => saveASCIIEnable = value; }
 
-        public string SaveAddressConv { get => saveAddressConv; set => saveAddressConv = value; }
+        public AddressConvention SaveAddressConv { get => saveAddressConv; set => saveAddressConv = value; }
     }
 }

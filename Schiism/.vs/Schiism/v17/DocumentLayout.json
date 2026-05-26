@@ -3,104 +3,36 @@
   "WorkspaceRootPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\viewmodels\\homeviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\viewmodels\\homeviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\views\\home.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\views\\home.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\models\\modbusrow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\models\\modbusrow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\views\\connsettings.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\views\\connsettings.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\viewmodels\\connsettingsviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\viewmodels\\connsettingsviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\abstractions\\ipc\\states\\iwpfconfigstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\abstractions\\ipc\\states\\iwpfconfigstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\abstractions\\ipc\\commands\\icommandsender.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\abstractions\\ipc\\commands\\icommandsender.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\ipc\\workers\\wpfcommandsworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\ipc\\workers\\wpfcommandsworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\abstractions\\ipc\\commands\\icommandreceiver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\abstractions\\ipc\\commands\\icommandreceiver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\models\\implementations\\states\\wpfconfigstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\models\\implementations\\states\\wpfconfigstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\implementations\\modbus\\configstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\implementations\\modbus\\configstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\workers\\commandsworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\workers\\commandsworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\models\\savedata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\models\\savedata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\implementations\\ipc\\servicecommandreceiver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\implementations\\ipc\\servicecommandreceiver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\models\\enums\\addressconvention.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\models\\enums\\addressconvention.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\workers\\streampublisherworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\workers\\streampublisherworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\enums\\datasize.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\enums\\datasize.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\models\\implementations\\states\\wpfstreamdatastate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\models\\implementations\\states\\wpfstreamdatastate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\implementations\\engine.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\implementations\\engine.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\models\\ipc\\dtos\\streams\\connectiondiagnostics.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\models\\ipc\\dtos\\streams\\connectiondiagnostics.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}|Schiism.Cli\\Schiism.Cli.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.cli\\servicecontroldebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}|Schiism.Cli\\Schiism.Cli.csproj|solutionrelative:schiism.cli\\servicecontroldebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\implementations\\ipc\\streamqueue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\implementations\\ipc\\streamqueue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\workers\\engineworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\workers\\engineworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\abstractions\\ipc\\streams\\istreamqueue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\abstractions\\ipc\\streams\\istreamqueue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\implementations\\ipc\\servicecommandsender.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\implementations\\ipc\\servicecommandsender.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\implementations\\ipc\\streampublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\implementations\\ipc\\streampublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\ipc\\wpfstreamsubscriber.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\ipc\\wpfstreamsubscriber.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\ipc\\wpfcommandreceiver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\ipc\\wpfcommandreceiver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.service\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3185F97B-262D-478E-B009-271CEC4A7097}|Schiism.Service\\Schiism.Service.csproj|solutionrelative:schiism.service\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -110,7 +42,7 @@
       "DocumentGroups": [
         {
           "DockedHeight": 226,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Bookmark",
@@ -118,325 +50,92 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ModbusRow.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\ModbusRow.cs",
-              "RelativeDocumentMoniker": "Schiism.WPF\\Models\\ModbusRow.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\ModbusRow.cs",
-              "RelativeToolTip": "Schiism.WPF\\Models\\ModbusRow.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAABAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "SaveData.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\SaveData.cs",
+              "RelativeDocumentMoniker": "Schiism.WPF\\Models\\SaveData.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\SaveData.cs",
+              "RelativeToolTip": "Schiism.WPF\\Models\\SaveData.cs",
+              "ViewState": "AgIAACQAAAAAAAAAAAAAAEMAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T20:14:27.038Z",
+              "WhenOpened": "2026-05-26T19:52:53.968Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ConnSettings.xaml",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Views\\ConnSettings.xaml",
-              "RelativeDocumentMoniker": "Schiism.WPF\\Views\\ConnSettings.xaml",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Views\\ConnSettings.xaml",
-              "RelativeToolTip": "Schiism.WPF\\Views\\ConnSettings.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-05-21T20:06:00.931Z",
+              "DocumentIndex": 5,
+              "Title": "DataSize.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Enums\\DataSize.cs",
+              "RelativeDocumentMoniker": "Schiism.Core\\Enums\\DataSize.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Enums\\DataSize.cs",
+              "RelativeToolTip": "Schiism.Core\\Enums\\DataSize.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T19:25:53.862Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AddressConvention.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\Enums\\AddressConvention.cs",
+              "RelativeDocumentMoniker": "Schiism.WPF\\Models\\Enums\\AddressConvention.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\Enums\\AddressConvention.cs",
+              "RelativeToolTip": "Schiism.WPF\\Models\\Enums\\AddressConvention.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T19:25:50.072Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "WPFCommandsWorker.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\IPC\\Workers\\WPFCommandsWorker.cs",
-              "RelativeDocumentMoniker": "Schiism.WPF\\IPC\\Workers\\WPFCommandsWorker.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\IPC\\Workers\\WPFCommandsWorker.cs",
-              "RelativeToolTip": "Schiism.WPF\\IPC\\Workers\\WPFCommandsWorker.cs",
-              "ViewState": "AgIAAF0AAAAAAAAAAAAAAHUAAAAoAAAAAAAAAA==",
+              "Title": "WPFStreamDataState.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\Implementations\\States\\WPFStreamDataState.cs",
+              "RelativeDocumentMoniker": "Schiism.WPF\\Models\\Implementations\\States\\WPFStreamDataState.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\Implementations\\States\\WPFStreamDataState.cs",
+              "RelativeToolTip": "Schiism.WPF\\Models\\Implementations\\States\\WPFStreamDataState.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T19:15:45.437Z",
+              "WhenOpened": "2026-05-26T19:21:13.038Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Home.xaml",
               "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Views\\Home.xaml",
               "RelativeDocumentMoniker": "Schiism.WPF\\Views\\Home.xaml",
               "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Views\\Home.xaml",
               "RelativeToolTip": "Schiism.WPF\\Views\\Home.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-05-21T18:28:43.774Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ICommandSender.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\Commands\\ICommandSender.cs",
-              "RelativeDocumentMoniker": "Schiism.Core\\Abstractions\\IPC\\Commands\\ICommandSender.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\Commands\\ICommandSender.cs",
-              "RelativeToolTip": "Schiism.Core\\Abstractions\\IPC\\Commands\\ICommandSender.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T19:15:14.394Z",
+              "WhenOpened": "2026-05-26T19:19:12.849Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 7,
-              "Title": "ICommandReceiver.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\Commands\\ICommandReceiver.cs",
-              "RelativeDocumentMoniker": "Schiism.Core\\Abstractions\\IPC\\Commands\\ICommandReceiver.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\Commands\\ICommandReceiver.cs",
-              "RelativeToolTip": "Schiism.Core\\Abstractions\\IPC\\Commands\\ICommandReceiver.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAABUAAAAAAAAAA==",
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Program.cs",
+              "RelativeDocumentMoniker": "Schiism.Service\\Program.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Program.cs",
+              "RelativeToolTip": "Schiism.Service\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T19:15:02.609Z",
+              "WhenOpened": "2026-05-26T19:04:04.198Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ConnSettingsViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\ViewModels\\ConnSettingsViewModel.cs",
-              "RelativeDocumentMoniker": "Schiism.WPF\\ViewModels\\ConnSettingsViewModel.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\ViewModels\\ConnSettingsViewModel.cs",
-              "RelativeToolTip": "Schiism.WPF\\ViewModels\\ConnSettingsViewModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAzAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "HomeViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\ViewModels\\HomeViewModel.cs",
+              "RelativeDocumentMoniker": "Schiism.WPF\\ViewModels\\HomeViewModel.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\ViewModels\\HomeViewModel.cs",
+              "RelativeToolTip": "Schiism.WPF\\ViewModels\\HomeViewModel.cs",
+              "ViewState": "AgIAAFsBAAAAAAAAAAAAAGUBAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T17:21:51.612Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "IWPFConfigState.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\States\\IWPFConfigState.cs",
-              "RelativeDocumentMoniker": "Schiism.Core\\Abstractions\\IPC\\States\\IWPFConfigState.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\States\\IWPFConfigState.cs",
-              "RelativeToolTip": "Schiism.Core\\Abstractions\\IPC\\States\\IWPFConfigState.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T19:16:13.509Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "App.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\App.xaml.cs",
-              "RelativeDocumentMoniker": "Schiism.WPF\\App.xaml.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\App.xaml.cs",
-              "RelativeToolTip": "Schiism.WPF\\App.xaml.cs",
-              "ViewState": "AgIAAC4AAAAAAAAAAAAowHYAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T18:25:28.325Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "WPFConfigState.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\Implementations\\States\\WPFConfigState.cs",
-              "RelativeDocumentMoniker": "Schiism.WPF\\Models\\Implementations\\States\\WPFConfigState.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\Implementations\\States\\WPFConfigState.cs",
-              "RelativeToolTip": "Schiism.WPF\\Models\\Implementations\\States\\WPFConfigState.cs",
-              "ViewState": "AgIAAJ8AAAAAAAAAAAAAAEQAAABIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T19:16:52.252Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "StreamPublisherWorker.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Workers\\StreamPublisherWorker.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Workers\\StreamPublisherWorker.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Workers\\StreamPublisherWorker.cs",
-              "RelativeToolTip": "Schiism.Service\\Workers\\StreamPublisherWorker.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T17:44:01.667Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "IStreamQueue.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamQueue.cs",
-              "RelativeDocumentMoniker": "Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamQueue.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamQueue.cs",
-              "RelativeToolTip": "Schiism.Core\\Abstractions\\IPC\\Streams\\IStreamQueue.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAPAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T18:16:35.927Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "ConfigState.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\Modbus\\ConfigState.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Implementations\\Modbus\\ConfigState.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\Modbus\\ConfigState.cs",
-              "RelativeToolTip": "Schiism.Service\\Implementations\\Modbus\\ConfigState.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAAAADQAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T18:17:33.068Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "StreamQueue.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\IPC\\StreamQueue.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Implementations\\IPC\\StreamQueue.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\IPC\\StreamQueue.cs",
-              "RelativeToolTip": "Schiism.Service\\Implementations\\IPC\\StreamQueue.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAAMwCUAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T18:16:59.733Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "WPFStreamDataState.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\Implementations\\States\\WPFStreamDataState.cs",
-              "RelativeDocumentMoniker": "Schiism.WPF\\Models\\Implementations\\States\\WPFStreamDataState.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Models\\Implementations\\States\\WPFStreamDataState.cs",
-              "RelativeToolTip": "Schiism.WPF\\Models\\Implementations\\States\\WPFStreamDataState.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T19:02:25.567Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "CommandsWorker.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Workers\\CommandsWorker.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Workers\\CommandsWorker.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Workers\\CommandsWorker.cs",
-              "RelativeToolTip": "Schiism.Service\\Workers\\CommandsWorker.cs",
-              "ViewState": "AgIAAEQAAAAAAAAAAAAowF4AAAAsAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T15:55:39.408Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "ServiceControlDebugger.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\ServiceControlDebugger.cs",
-              "RelativeDocumentMoniker": "Schiism.Cli\\ServiceControlDebugger.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Cli\\ServiceControlDebugger.cs",
-              "RelativeToolTip": "Schiism.Cli\\ServiceControlDebugger.cs",
-              "ViewState": "AgIAAEUAAAAAAAAAAAAowFcAAAAbAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T19:01:34.727Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "EngineWorker.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Workers\\EngineWorker.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Workers\\EngineWorker.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Workers\\EngineWorker.cs",
-              "RelativeToolTip": "Schiism.Service\\Workers\\EngineWorker.cs",
-              "ViewState": "AgIAADkAAAAAAAAAAAAowEsAAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T18:07:45.844Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "ServiceCommandReceiver.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\IPC\\ServiceCommandReceiver.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Implementations\\IPC\\ServiceCommandReceiver.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\IPC\\ServiceCommandReceiver.cs",
-              "RelativeToolTip": "Schiism.Service\\Implementations\\IPC\\ServiceCommandReceiver.cs",
-              "ViewState": "AgIAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T18:06:46.68Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "Engine.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\Engine.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Implementations\\Engine.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\Engine.cs",
-              "RelativeToolTip": "Schiism.Service\\Implementations\\Engine.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAowBoAAACcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T17:44:14.619Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "ConnectionDiagnostics.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Models\\IPC\\DTOs\\Streams\\ConnectionDiagnostics.cs",
-              "RelativeDocumentMoniker": "Schiism.Core\\Models\\IPC\\DTOs\\Streams\\ConnectionDiagnostics.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Models\\IPC\\DTOs\\Streams\\ConnectionDiagnostics.cs",
-              "RelativeToolTip": "Schiism.Core\\Models\\IPC\\DTOs\\Streams\\ConnectionDiagnostics.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T17:21:27.044Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "ServiceCommandSender.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\IPC\\ServiceCommandSender.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Implementations\\IPC\\ServiceCommandSender.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\IPC\\ServiceCommandSender.cs",
-              "RelativeToolTip": "Schiism.Service\\Implementations\\IPC\\ServiceCommandSender.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAASAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T18:17:27.144Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "StreamPublisher.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\IPC\\StreamPublisher.cs",
-              "RelativeDocumentMoniker": "Schiism.Service\\Implementations\\IPC\\StreamPublisher.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\IPC\\StreamPublisher.cs",
-              "RelativeToolTip": "Schiism.Service\\Implementations\\IPC\\StreamPublisher.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T17:43:45.603Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 24,
-              "Title": "WPFCommandReceiver.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\IPC\\WPFCommandReceiver.cs",
-              "RelativeDocumentMoniker": "Schiism.WPF\\IPC\\WPFCommandReceiver.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\IPC\\WPFCommandReceiver.cs",
-              "RelativeToolTip": "Schiism.WPF\\IPC\\WPFCommandReceiver.cs",
-              "ViewState": "AgIAACQAAAAAAAAAAAAowD4AAAAYAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T17:22:03.573Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": "WPFStreamSubscriber.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\IPC\\WPFStreamSubscriber.cs",
-              "RelativeDocumentMoniker": "Schiism.WPF\\IPC\\WPFStreamSubscriber.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\IPC\\WPFStreamSubscriber.cs",
-              "RelativeToolTip": "Schiism.WPF\\IPC\\WPFStreamSubscriber.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T17:22:18.563Z",
+              "WhenOpened": "2026-05-26T12:18:59.172Z",
               "EditorCaption": ""
             }
           ]
@@ -456,6 +155,40 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "FloatingWindowState": {
+        "Id": "7e731ea1-7a5a-4783-9327-2002d49985af",
+        "Display": 1,
+        "X": -335,
+        "Y": 696,
+        "Width": 1514,
+        "Height": 602,
+        "WindowState": 2
+      },
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ConfigState.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\Modbus\\ConfigState.cs",
+              "RelativeDocumentMoniker": "Schiism.Service\\Implementations\\Modbus\\ConfigState.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Service\\Implementations\\Modbus\\ConfigState.cs",
+              "RelativeToolTip": "Schiism.Service\\Implementations\\Modbus\\ConfigState.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAUwDwAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T19:04:13.491Z",
+              "EditorCaption": ""
             }
           ]
         }

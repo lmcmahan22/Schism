@@ -1,5 +1,3 @@
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Release\net8.0\win-x64\appsettings.Development.json
-C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Release\net8.0\win-x64\appsettings.json
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Release\net8.0\win-x64\Schiism.Service.exe
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Release\net8.0\win-x64\Schiism.Service.deps.json
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\bin\Release\net8.0\win-x64\Schiism.Service.runtimeconfig.json

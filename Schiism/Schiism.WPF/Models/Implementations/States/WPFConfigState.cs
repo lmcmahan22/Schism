@@ -39,10 +39,10 @@ namespace Schiism.WPF.Implementations.Modbus
             this.scanRate = 2000;
             this.tcpTimeout = 5000;
             this.deviceId = 5;
-            this.selectedPollType = PollType.HoldingRegisters;
+            this.selectedPollType = PollType.CoilStatus;
             this.asciiEnable = true;
-            this.selectedNumericBase = NumericBase.Decimal;
-            this.selectedEndian = Endian.BigEndian;
+            this.selectedNumericBase = NumericBase.Hexadecimal;
+            this.selectedEndian = Endian.LittleEndian;
         }
 
         /// <inheritdoc/>

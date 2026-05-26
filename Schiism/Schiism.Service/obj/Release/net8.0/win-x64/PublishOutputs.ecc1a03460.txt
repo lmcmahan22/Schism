@@ -1,6 +1,4 @@
 C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Service.exe
-C:\Users\lmcmahan\Github\Schism\Exec\appsettings.Development.json
-C:\Users\lmcmahan\Github\Schism\Exec\appsettings.json
 C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Service.dll
 C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Service.runtimeconfig.json
 C:\Users\lmcmahan\Github\Schism\Exec\Schiism.Service.pdb
