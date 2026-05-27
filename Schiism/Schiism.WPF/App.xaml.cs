@@ -7,18 +7,17 @@ namespace Schiism
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Prism.Ioc;
+    using Schiism.Core;
     using Schiism.Core.Abstractions.IPC.Commands;
     using Schiism.Core.Abstractions.IPC.States;
     using Schiism.Core.Abstractions.IPC.Streams;
-    using Schiism.Core.Models.IPC;
     using Schiism.Core.Models.IPC.DTOs.Streams;
     using Schiism.WPF;
+    using Schiism.WPF.Controllers;
     using Schiism.WPF.FileLogging;
-    using Schiism.WPF.Implementations.Modbus;
     using Schiism.WPF.IPC;
     using Schiism.WPF.IPC.Workers;
     using Schiism.WPF.Models.Implementations.States;
-    using Schiism.WPF.Services;
     using Schiism.WPF.Views;
     using System.Windows;
 
@@ -61,11 +60,11 @@ namespace Schiism
             // IPC Singletons (Subscribers, Command Receiver, and Command Sender)
             containerRegistry.RegisterSingleton<ICommandReceiver>(
                 cr => new WPFCommandReceiver(
-                    PipeConstants.InitSettingsCommandName,
+                    NamingConstants.InitSettingsCommandName,
                     cr.Resolve<ILoggerFactory>()));
             containerRegistry.RegisterSingleton<ICommandSender>(
                 cs => new WPFCommandSender(
-                    PipeConstants.SettingsCommandName,
+                    NamingConstants.SettingsCommandName,
                     cs.Resolve<ILoggerFactory>()));
             containerRegistry.RegisterSingleton<IStreamSubscriber<ConnectionDiagnostics>>(
                 ssc => new WPFStreamSubscriber<ConnectionDiagnostics>(
@@ -84,14 +83,14 @@ namespace Schiism
                 cw.Resolve<ILoggerFactory>()));
             containerRegistry.Register<WPFSubscriberWorker<ModbusData>>(
             swm => new WPFSubscriberWorker<ModbusData>(
-                PipeConstants.ModbusDataStreamName,
+                NamingConstants.ModbusDataStreamName,
                 swm.Resolve<IStreamSubscriber<ModbusData>>(),
                 swm.Resolve<WPFStreamDataState<ModbusData>>(),
                 swm.Resolve<WPFInitializedState>(),
                 swm.Resolve<ILoggerFactory>()));
             containerRegistry.Register<WPFSubscriberWorker<ConnectionDiagnostics>>(
                 swc => new WPFSubscriberWorker<ConnectionDiagnostics>(
-                PipeConstants.ConnDiagStreamName,
+                NamingConstants.ConnDiagStreamName,
                 swc.Resolve<IStreamSubscriber<ConnectionDiagnostics>>(),
                 swc.Resolve<WPFStreamDataState<ConnectionDiagnostics>>(),
                 swc.Resolve<WPFInitializedState>(),

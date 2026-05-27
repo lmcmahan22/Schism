@@ -3,7 +3,6 @@
 // </copyright>
 
 using Microsoft.Extensions.Logging;
-using Schiism.Service.FileLogging;
 using System.IO;
 
 namespace Schiism.WPF.FileLogging

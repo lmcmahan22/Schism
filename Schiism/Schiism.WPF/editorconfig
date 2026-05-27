@@ -1006,7 +1006,7 @@ dotnetdiagnostic.SA1200.severity = silent
 dotnetdiagnostic.SA1201.severity = warning
 # SA1202: Elements should be ordered by access
 dotnetdiagnostic.SA1202.severity = warning
-# SA1203: Constants should appear before fields
+# SA1203: NamingConstants should appear before fields
 dotnetdiagnostic.SA1203.severity = warning
 # SA1204: Static elements should appear before instance elements
 dotnetdiagnostic.SA1204.severity = warning

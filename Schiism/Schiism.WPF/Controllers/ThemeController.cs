@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schiism.WPF.Services
+namespace Schiism.WPF.Controllers
 {
     using System.Collections.ObjectModel;
     using System.ComponentModel;

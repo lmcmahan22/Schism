@@ -2,7 +2,7 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schiism.WPF.Helpers
+namespace Schiism.WPF.Models.Helpers
 {
     using System.Windows;
 

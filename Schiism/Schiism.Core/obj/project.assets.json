@@ -5,11 +5,6 @@
       "StyleCop.Analyzers.Unstable/1.2.0.556": {
         "type": "package"
       }
-    },
-    "net8.0/win-x64": {
-      "StyleCop.Analyzers.Unstable/1.2.0.556": {
-        "type": "package"
-      }
     }
   },
   "libraries": {
@@ -119,11 +114,6 @@
           }
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
-      }
-    },
-    "runtimes": {
-      "win-x64": {
-        "#import": []
       }
     }
   }

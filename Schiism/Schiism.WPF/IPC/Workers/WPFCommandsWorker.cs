@@ -139,7 +139,9 @@ namespace Schiism.WPF.IPC.Workers
                     configSettState.SelectedPollType,
                     configSettState.AsciiEnable,
                     configSettState.SelectedNumericBase,
-                    configSettState.SelectedEndian);
+                    configSettState.SelectedEndian,
+                    configSettState.AutoStart,
+                    configSettState.AutoRestart);
 
                 if (currentConfig.Equals(lastSentConfig))
                 {

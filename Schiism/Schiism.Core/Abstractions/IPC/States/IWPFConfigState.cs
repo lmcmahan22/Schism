@@ -74,6 +74,10 @@ namespace Schiism.Core.Abstractions.IPC.States
         /// </summary>
         public Endian SelectedEndian { get; set; }
 
+        public bool AutoStart { get; set; }
+
+        public bool AutoRestart { get; set; }
+
         /// <summary>
         /// Updates the current configuration with the values from the provided configuration.
         /// </summary>

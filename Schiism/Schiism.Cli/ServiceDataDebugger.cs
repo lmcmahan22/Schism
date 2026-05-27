@@ -3,8 +3,8 @@
 // </copyright>
 
 using Schiism.Cli.IPC;
+using Schiism.Core.NamingConstants;
 using Schiism.Core.Enums;
-using Schiism.Core.Models.IPC;
 using Schiism.Core.Models.IPC.DTOs.Commands;
 using Schiism.Core.Models.IPC.DTOs.Streams;
 
@@ -83,20 +83,20 @@ public class ServiceDataDebugger
         // Streams
         FEStreamSubscriber<ModbusData> modbusDataSubscriber =
             new FEStreamSubscriber<ModbusData>(
-                PipeConstants.ModbusDataStreamName);
+                NamingConstants.ModbusDataStreamName);
 
         FEStreamSubscriber<ConnectionDiagnostics> connSettSubscriber =
             new FEStreamSubscriber<ConnectionDiagnostics>(
-                PipeConstants.ConnDiagStreamName);
+                NamingConstants.ConnDiagStreamName);
 
         // Commands
         FECommandSender settingsCommandSender =
             new FECommandSender(
-                PipeConstants.SettingsCommandName);
+                NamingConstants.SettingsCommandName);
 
         FECommandReceiver initSettingsCommandReceiver =
             new FECommandReceiver(
-                PipeConstants.InitSettingsCommandName);
+                NamingConstants.InitSettingsCommandName);
 
         Console.WriteLine(
             "Waiting for initialization settings...");

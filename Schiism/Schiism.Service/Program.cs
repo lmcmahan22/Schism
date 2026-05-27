@@ -4,21 +4,23 @@
 
 namespace Schiism.Service
 {
-    using System.Diagnostics;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Schiism.Core;
     using Schiism.Core.Abstractions;
     using Schiism.Core.Abstractions.IPC.Commands;
     using Schiism.Core.Abstractions.IPC.States;
     using Schiism.Core.Abstractions.IPC.Streams;
     using Schiism.Core.Abstractions.Modbus;
-    using Schiism.Core.Models.IPC;
+    using Schiism.Core.Abstractions.RuntimeControl;
     using Schiism.Core.Models.IPC.DTOs.Streams;
     using Schiism.Service.FileLogging;
     using Schiism.Service.Implementations;
     using Schiism.Service.Implementations.IPC;
     using Schiism.Service.Implementations.Modbus;
+    using Schiism.Service.Implementations.RuntimeControl;
     using Schiism.Service.Workers;
+    using System.Diagnostics;
 
     /// <summary>
     /// Main Service program that executes the Worker Service, which runs your engine.
@@ -33,8 +35,6 @@ namespace Schiism.Service
     /// </summary>
     public class Program
     {
-        private const string ServiceName = "PVAModbusClient";
-
         private static void Main(string[] args)
         {
             // Command line argument handling
@@ -57,8 +57,11 @@ namespace Schiism.Service
             builder.Logging.AddProvider(new FileLoggerProvider($"C:\\Users\\lmcmahan\\OneDrive - Precision Valve and Automation\\Desktop\\SchiismLogs"));
 
             // Control via checkboxes in UI when it's ready!
-            ConfigureStartup(true);
-            ConfigureRestart(false);
+            var settingsStore = new ServiceSettingsStore();
+            var settings = settingsStore.Load();
+
+            ConfigureStartup(settings.AutoStart);
+            ConfigureRestart(settings.AutoRestart);
 
             // Define Core Services (Builder.Services is a dependency container)
             // Make this its own method (ChatGPT originally advised making this its own CLASS???)
@@ -67,6 +70,7 @@ namespace Schiism.Service
             builder.Services.AddSingleton<IEngine, Engine>();
             builder.Services.AddSingleton<IModbusInterpreter, ModbusInterpreter>();
             builder.Services.AddSingleton<IModbusControl, ModbusControl>();
+            builder.Services.AddSingleton<IServiceSettingsStore, ServiceSettingsStore>();
 
             // ConnectionState
             builder.Services.AddSingleton<IInitializedState, FrontendInitializedState>();
@@ -86,13 +90,13 @@ namespace Schiism.Service
             // Commmand Server
             builder.Services.AddSingleton<ICommandReceiver, ServiceCommandReceiver>(
                 sp => new ServiceCommandReceiver(
-                PipeConstants.SettingsCommandName,
+                NamingConstants.SettingsCommandName,
                 sp.GetRequiredService<ILogger<ServiceCommandReceiver>>()));
 
             // Command Client (for first config population)
             builder.Services.AddSingleton<ICommandSender, ServiceCommandSender>(
                 sp => new ServiceCommandSender(
-                PipeConstants.InitSettingsCommandName,
+                NamingConstants.InitSettingsCommandName,
                 sp.GetRequiredService<ILogger<ServiceCommandSender>>()));
 
             // Add an instance of the Worker classes as the hosted services (1 engine, 2 stream workers, 1 stream queue worker, 1 command worker)
@@ -104,7 +108,7 @@ namespace Schiism.Service
                     ew.GetRequiredService<ILogger<ServiceEngineWorker>>()));
             builder.Services.AddHostedService<ServiceStreamPublisherWorker<ModbusData>>(
                 spm => new ServiceStreamPublisherWorker<ModbusData>(
-                    PipeConstants.ModbusDataStreamName,
+                    NamingConstants.ModbusDataStreamName,
                     spm.GetRequiredService<IConfigState>(),
                     spm.GetRequiredService<IInitializedState>(),
                     spm.GetRequiredService<IStreamQueue<ModbusData>>(),
@@ -112,7 +116,7 @@ namespace Schiism.Service
                     spm.GetRequiredService<ILogger<ServiceStreamPublisherWorker<ModbusData>>>()));
             builder.Services.AddHostedService<ServiceStreamPublisherWorker<ConnectionDiagnostics>>(
                 spc => new ServiceStreamPublisherWorker<ConnectionDiagnostics>(
-                    PipeConstants.ConnDiagStreamName,
+                    NamingConstants.ConnDiagStreamName,
                     spc.GetRequiredService<IConfigState>(),
                     spc.GetRequiredService<IInitializedState>(),
                     spc.GetRequiredService<IStreamQueue<ConnectionDiagnostics>>(),
@@ -125,6 +129,7 @@ namespace Schiism.Service
                     cw.GetRequiredService<IConfigState>(),
                     cw.GetRequiredService<IModbusControl>(),
                     cw.GetRequiredService<IInitializedState>(),
+                    cw.GetRequiredService<IServiceSettingsStore>(),
                     cw.GetRequiredService<ILogger<ServiceCommandsWorker>>()));
 
             // Not used right now, it's just a logger that doesn't actually log correctly atm
@@ -154,10 +159,10 @@ namespace Schiism.Service
             if (args.Contains("-install"))
             {
                 string? exePath = Process.GetCurrentProcess().MainModule!.FileName!;
-                RunSc($"stop {ServiceName}");
-                RunSc($"delete {ServiceName}");
-                RunSc($"create {ServiceName} binPath= \"{exePath}\" start= auto");
-                RunSc($"description {ServiceName} \"MODBUS TCP Client\"");
+                RunSc($"stop {NamingConstants.ServiceName}");
+                RunSc($"delete {NamingConstants.ServiceName}");
+                RunSc($"create {NamingConstants.ServiceName} binPath= \"{exePath}\" start= auto");
+                RunSc($"description {NamingConstants.ServiceName} \"MODBUS TCP Client\"");
                 return;
             }
         }
@@ -167,7 +172,7 @@ namespace Schiism.Service
             {
                 // "delayed-auto" also works in place of "auto" here, but took about 90 seconds longer on my desktop PC to start up. Keeping this as "auto" until I see reason to change it.
                 string startType = enableAutoStart ? "auto" : "demand";
-                RunSc($"config {ServiceName} start= {startType}");
+                RunSc($"config {NamingConstants.ServiceName} start= {startType}");
             }
         }
 
@@ -177,14 +182,14 @@ namespace Schiism.Service
                 if (enableRestart)
                 {
                     // Configure auto restart, if the app crashes
-                    RunSc($"failureflag {ServiceName} 1");
-                    RunSc($"failure {ServiceName} reset= 0 actions= restart/5000/restart/5000/restart/5000");
+                    RunSc($"failureflag {NamingConstants.ServiceName} 1");
+                    RunSc($"failure {NamingConstants.ServiceName} reset= 0 actions= restart/5000/restart/5000/restart/5000");
                 }
                 else
                 {
                     // Disable all failure actions (no restart)
-                    RunSc($"failureflag {ServiceName} 0");
-                    RunSc($"failure {ServiceName} reset= 0 actions= \"\"");
+                    RunSc($"failureflag {NamingConstants.ServiceName} 0");
+                    RunSc($"failure {NamingConstants.ServiceName} reset= 0 actions= \"\"");
                 }
             }
         }

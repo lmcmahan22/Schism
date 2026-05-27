@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Logging;
 using System.IO;
 
-namespace Schiism.Service.FileLogging
+namespace Schiism.WPF.FileLogging
 {
     /// <summary>
     /// ILogger implementation to send Logged messages to a timestamped text file.
@@ -50,7 +50,7 @@ namespace Schiism.Service.FileLogging
 
             lock (TextAppendlock)
             {
-                File.AppendAllText(this.filePath, message + Environment.NewLine);
+                File.AppendAllText(filePath, message + Environment.NewLine);
             }
         }
     }

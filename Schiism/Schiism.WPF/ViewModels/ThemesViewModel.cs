@@ -6,7 +6,7 @@ namespace Schiism.WPF.ViewModels
 {
     using System.Collections.ObjectModel;
     using System.Runtime.CompilerServices;
-    using Schiism.WPF.Services;
+    using Schiism.WPF.Controllers;
 
     public class ThemesViewModel : BindableBase
     {

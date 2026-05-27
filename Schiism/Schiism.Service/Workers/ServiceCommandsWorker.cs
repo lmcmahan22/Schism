@@ -4,14 +4,20 @@
 
 namespace Schiism.Service.Workers
 {
-    using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Schiism.Core;
     using Schiism.Core.Abstractions.IPC.Commands;
     using Schiism.Core.Abstractions.IPC.States;
     using Schiism.Core.Abstractions.Modbus;
+    using Schiism.Core.Abstractions.RuntimeControl;
     using Schiism.Core.Models.IPC.DTOs.Commands;
+    using Schiism.Core.Models.RuntimeControl;
+    using Schiism.Service.Implementations.RuntimeControl;
+    using System.Diagnostics;
+    using System.ServiceProcess;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Worker class for the backend. Handles SettingsConfig command logic in both directions (sending and receiving).
@@ -22,7 +28,7 @@ namespace Schiism.Service.Workers
     /// <param name="control">The Modbus Control wrapper, used to control engine restarts.</param>
     /// <param name="fEInitState"> The Frontend status wrapper, used to determine if the Initializing command needs to be sent.</param>
     /// <param name="logger">Logger object used to write data to a text file.</param>
-    public class ServiceCommandsWorker(ICommandReceiver receiver, ICommandSender initSender, IConfigState config, IModbusControl control, IInitializedState fEInitState, ILogger<ServiceCommandsWorker> logger) : BackgroundService
+    public class ServiceCommandsWorker(ICommandReceiver receiver, ICommandSender initSender, IConfigState config, IModbusControl control, IInitializedState fEInitState, IServiceSettingsStore startupSettings, ILogger<ServiceCommandsWorker> logger) : BackgroundService
     {
         /// <inheritdoc/>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -41,6 +47,9 @@ namespace Schiism.Service.Workers
                 {
                     if (!fEInitState.IsInitialized)
                     {
+                        // Send the configuration from the save file for intialization.
+                        ServiceRuntimeSettings srs = startupSettings.Load();
+
                         SettingsConfig settConf = new SettingsConfig(
                             config.IPAddress,
                             config.DataLength,
@@ -53,7 +62,9 @@ namespace Schiism.Service.Workers
                             config.SelectedPollType,
                             config.AsciiEnable,
                             config.SelectedNumericBase,
-                            config.SelectedEndian);
+                            config.SelectedEndian,
+                            srs.AutoStart,
+                            srs.AutoRestart);
 
                         logger.LogInformation("Sending initialization command");
                         await initSender.SendAsync(settConf, stoppingToken);
@@ -97,10 +108,74 @@ namespace Schiism.Service.Workers
         private Task ReceiveHandler(SettingsConfig cmd)
         {
             config.Update(cmd);
+
+            ServiceRuntimeSettings startSett = new ServiceRuntimeSettings();
+
+            // Nullable sets
+            if (cmd.AutoStart.HasValue)
+            {
+                startSett.AutoStart = cmd.AutoStart.Value;
+
+                // Update in real time as well (if possible)
+                ConfigureStartup(startSett.AutoStart);
+            }
+
+            if (cmd.AutoRestart.HasValue)
+            {
+                startSett.AutoRestart = cmd.AutoRestart.Value;
+
+                // Update in real time as well (if possible)
+                ConfigureRestart(startSett.AutoRestart);
+            }
+
+            // Save parameters, so they can be loaded on next boot
+            startupSettings.Save(startSett);
+
             control.RestartRequested = true;
 
             logger.LogInformation("Implemented configuration command successfully.");
             return Task.CompletedTask;
+        }
+
+        private  void ConfigureStartup(bool enableAutoStart)
+        {
+            {
+                // "delayed-auto" also works in place of "auto" here, but took about 90 seconds longer on my desktop PC to start up. Keeping this as "auto" until I see reason to change it.
+                string startType = enableAutoStart ? "auto" : "demand";
+                RunSc($"config {NamingConstants.ServiceName} start= {startType}");
+            }
+        }
+
+        private void ConfigureRestart(bool enableRestart)
+        {
+            {
+                if (enableRestart)
+                {
+                    // Configure auto restart, if the app crashes
+                    RunSc($"failureflag {NamingConstants.ServiceName} 1");
+                    RunSc($"failure {NamingConstants.ServiceName} reset= 0 actions= restart/5000/restart/5000/restart/5000");
+                }
+                else
+                {
+                    // Disable all failure actions (no restart)
+                    RunSc($"failureflag {NamingConstants.ServiceName} 0");
+                    RunSc($"failure {NamingConstants.ServiceName} reset= 0 actions= \"\"");
+                }
+            }
+        }
+
+        private static void RunSc(string arguments)
+        {
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "sc.exe",
+                    Arguments = arguments,
+                    Verb = "runas", // requires admin
+                    CreateNoWindow = true,
+                    UseShellExecute = true,
+                });
+            }
         }
     }
 }

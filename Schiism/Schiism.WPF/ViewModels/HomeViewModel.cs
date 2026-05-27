@@ -17,10 +17,10 @@ namespace Schiism.WPF.ViewModels
     using Schiism.Core.Enums;
     using Schiism.Core.Models.IPC.DTOs.Commands;
     using Schiism.Core.Models.IPC.DTOs.Streams;
+    using Schiism.WPF.Controllers;
     using Schiism.WPF.Models;
     using Schiism.WPF.Models.Enums;
     using Schiism.WPF.Models.Implementations.States;
-    using Schiism.WPF.Services;
     using Schiism.WPF.Views;
 
     public class HomeViewModel : BindableBase, INotifyPropertyChanged

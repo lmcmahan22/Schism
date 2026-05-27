@@ -28,7 +28,7 @@ namespace Schiism.Core.Models.IPC.DTOs.Commands
         /// <param name="selectedNumericBase">The selected numeric base (e.g., Decimal, Hexadecimal).</param>
         /// <param name="selectedEndian">The selected endian type (e.g., Little Endian, Big Endian).</param>
         [JsonConstructor]
-        public SettingsConfig(string? iPAddress, byte? dataLength, ushort? startAddress, ushort? tCPPort, int? scanRate, int? tCPTimeout, byte? deviceId, DataSize? selectedDataSize, PollType? selectedPollType, bool? asciiEnable, NumericBase? selectedNumericBase, Endian? selectedEndian)
+        public SettingsConfig(string? iPAddress, byte? dataLength, ushort? startAddress, ushort? tCPPort, int? scanRate, int? tCPTimeout, byte? deviceId, DataSize? selectedDataSize, PollType? selectedPollType, bool? asciiEnable, NumericBase? selectedNumericBase, Endian? selectedEndian, bool? autoStart, bool? autoRestart)
         {
             this.IPAddress = iPAddress;
             this.DataLength = dataLength;
@@ -42,6 +42,8 @@ namespace Schiism.Core.Models.IPC.DTOs.Commands
             this.AsciiEnable = asciiEnable;
             this.SelectedNumericBase = selectedNumericBase;
             this.SelectedEndian = selectedEndian;
+            this.AutoStart = autoStart;
+            this.AutoRestart = autoRestart;
         }
 
         /// <summary>
@@ -103,5 +105,9 @@ namespace Schiism.Core.Models.IPC.DTOs.Commands
         /// Gets the selected endian type, which determines the byte order used for interpreting multi-byte data (e.g., Little Endian, Big Endian).
         /// </summary>
         public Endian? SelectedEndian { get; init; }
+
+        public bool? AutoStart { get; init; }
+
+        public bool? AutoRestart { get; init; }
     }
 }

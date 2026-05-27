@@ -1,13 +1,13 @@
-﻿// <copyright file="PipeConstants.cs" company="Precision Valve &amp; Automation (PVA)">
+﻿// <copyright file="NamingConstants.cs" company="Precision Valve &amp; Automation (PVA)">
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
-namespace Schiism.Core.Models.IPC
+namespace Schiism.Core
 {
     /// <summary>
     /// Provides constant values for named pipes used in inter-process communication.
     /// </summary>
-    public static class PipeConstants
+    public static class NamingConstants
     {
         /// <summary>
         /// Represents the name of the Modbus data stream.
@@ -28,5 +28,7 @@ namespace Schiism.Core.Models.IPC
         /// Represents the name of the Initializing Settings Configuration command (Service --> Console).
         /// </summary>
         public const string InitSettingsCommandName = "schiism.initSettings.cmd.v1";
+
+        public const string ServiceName = "PVAModbusClient";
     }
 }
