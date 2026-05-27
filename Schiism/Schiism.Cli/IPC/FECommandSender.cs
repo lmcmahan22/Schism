@@ -16,7 +16,7 @@ namespace Schiism.Cli.IPC
     /// <param name="pipeName"> Name of pipe that the command data should be sent along.</param>
     public class FECommandSender(string pipeName) : ICommandSender
     {
-        private readonly PipeSerializer Serializer => new();
+        private PipeSerializer Serializer => new();
 
         /// <inheritdoc/>
         public async Task SendAsync(SettingsConfig command, CancellationToken ct)

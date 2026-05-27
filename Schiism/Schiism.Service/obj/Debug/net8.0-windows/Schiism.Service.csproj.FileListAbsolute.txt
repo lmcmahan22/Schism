@@ -1,0 +1,6 @@
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Debug\net8.0-windows\Schiism.Service.csproj.AssemblyReference.cache
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Debug\net8.0-windows\Schiism.Service.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Debug\net8.0-windows\Schiism.Service.AssemblyInfoInputs.cache
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Debug\net8.0-windows\Schiism.Service.AssemblyInfo.cs
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Debug\net8.0-windows\Schiism.Service.csproj.CoreCompileInputs.cache
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Service\obj\Debug\net8.0-windows\Schiism.Service.sourcelink.json

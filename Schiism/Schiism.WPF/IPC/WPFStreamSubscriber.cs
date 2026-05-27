@@ -7,6 +7,7 @@ namespace Schiism.WPF.IPC
     using Microsoft.Extensions.Logging;
     using Schiism.Core.Abstractions.IPC.Streams;
     using Schiism.Core.Models.IPC;
+    using Schiism.Core.Models.IPC.DTOs.Streams;
     using System.IO.Pipes;
 
     /// <summary>
@@ -30,7 +31,25 @@ namespace Schiism.WPF.IPC
         {
             logger.LogInformation($"Deserializing on {pipe}");
             T? data = await this.serializer.DeserializeAsync<T>(pipe, ct);
-            logger.LogInformation($"Received data on {typeof(T).Name} pipe: {data}.");
+
+            if (typeof(T).Name == "ModbusData")
+            {
+                ModbusData? modData = data as ModbusData;
+
+                logger.LogInformation($"Received data on {typeof(T).Name} pipe: {data}.");
+
+                string output = string.Empty;
+                for (int i = 0; i < modData.Data.Count; i++)
+                {
+                    output += modData.Data[i].ToString() + ", ";
+                }
+
+                logger.LogInformation($"Modbus Data: {output}");
+            }
+            else
+            {
+                logger.LogInformation($"Received data on {typeof(T).Name} pipe: {data}.");
+            }
 
             return data;
         }

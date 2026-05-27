@@ -4,14 +4,15 @@
 
 namespace Schiism.Service.Implementations.IPC
 {
-    using System;
-    using System.IO;
-    using System.IO.Pipes;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Schiism.Core.Abstractions.IPC.Commands;
     using Schiism.Core.Models.IPC;
     using Schiism.Core.Models.IPC.DTOs.Commands;
+    using System;
+    using System.IO;
+    using System.IO.Pipes;
+    using System.Security.AccessControl;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Backend Command Receiver implementation.
@@ -33,12 +34,22 @@ namespace Schiism.Service.Implementations.IPC
                         "Creating named pipe for {PipeName}",
                         pipeName);
 
-                    using NamedPipeServerStream pipe = new NamedPipeServerStream(
+                    var security = new PipeSecurity();
+
+                    security.AddAccessRule(new PipeAccessRule(
+                        "Everyone",
+                        PipeAccessRights.ReadWrite,
+                        AccessControlType.Allow));
+
+                    using NamedPipeServerStream pipe = NamedPipeServerStreamAcl.Create(
                         pipeName,
                         PipeDirection.In,
-                        NamedPipeServerStream.MaxAllowedServerInstances,
+                        1,
                         PipeTransmissionMode.Byte,
-                        PipeOptions.Asynchronous);
+                        PipeOptions.Asynchronous,
+                        0,
+                        0,
+                        security);
 
                     logger.LogInformation(
                         "Waiting for sender connection on {PipeName}",

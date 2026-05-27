@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Schiism.Cli")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5021657741f9ce40998eb34cf91f3e8359bdf389")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+23beabf0c52991a3db6ca6715c27cbb634199f30")]
 [assembly: System.Reflection.AssemblyProductAttribute("Schiism.Cli")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Schiism.Cli")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

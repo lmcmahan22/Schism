@@ -72,16 +72,16 @@ namespace Schiism.Service
             builder.Services.AddSingleton<IInitializedState, FrontendInitializedState>();
 
             // Stream Publishers
-            builder.Services.AddSingleton<IStreamPublisher<ModbusData>, StreamPublisher<ModbusData>>(
-                sp => new StreamPublisher<ModbusData>(
-                sp.GetRequiredService<ILogger<StreamPublisher<ModbusData>>>()));
-            builder.Services.AddSingleton<IStreamPublisher<ConnectionDiagnostics>, StreamPublisher<ConnectionDiagnostics>>(
-                sp => new StreamPublisher<ConnectionDiagnostics>(
-                sp.GetRequiredService<ILogger<StreamPublisher<ConnectionDiagnostics>>>()));
+            builder.Services.AddSingleton<IStreamPublisher<ModbusData>, ServiceStreamPublisher<ModbusData>>(
+                sp => new ServiceStreamPublisher<ModbusData>(
+                sp.GetRequiredService<ILogger<ServiceStreamPublisher<ModbusData>>>()));
+            builder.Services.AddSingleton<IStreamPublisher<ConnectionDiagnostics>, ServiceStreamPublisher<ConnectionDiagnostics>>(
+                sp => new ServiceStreamPublisher<ConnectionDiagnostics>(
+                sp.GetRequiredService<ILogger<ServiceStreamPublisher<ConnectionDiagnostics>>>()));
 
             // Stream Queues
-            builder.Services.AddSingleton<IStreamQueue<ModbusData>, StreamQueue<ModbusData>>();
-            builder.Services.AddSingleton<IStreamQueue<ConnectionDiagnostics>, StreamQueue<ConnectionDiagnostics>>();
+            builder.Services.AddSingleton<IStreamQueue<ModbusData>, ServiceStreamQueue<ModbusData>>();
+            builder.Services.AddSingleton<IStreamQueue<ConnectionDiagnostics>, ServiceStreamQueue<ConnectionDiagnostics>>();
 
             // Commmand Server
             builder.Services.AddSingleton<ICommandReceiver, ServiceCommandReceiver>(
@@ -96,36 +96,36 @@ namespace Schiism.Service
                 sp.GetRequiredService<ILogger<ServiceCommandSender>>()));
 
             // Add an instance of the Worker classes as the hosted services (1 engine, 2 stream workers, 1 stream queue worker, 1 command worker)
-            builder.Services.AddHostedService<EngineWorker>(
-                ew => new EngineWorker(
+            builder.Services.AddHostedService<ServiceEngineWorker>(
+                ew => new ServiceEngineWorker(
                     ew.GetRequiredService<IEngine>(),
                     ew.GetRequiredService<IConfigState>(),
                     ew.GetRequiredService<IModbusControl>(),
-                    ew.GetRequiredService<ILogger<EngineWorker>>()));
-            builder.Services.AddHostedService<StreamPublisherWorker<ModbusData>>(
-                spm => new StreamPublisherWorker<ModbusData>(
+                    ew.GetRequiredService<ILogger<ServiceEngineWorker>>()));
+            builder.Services.AddHostedService<ServiceStreamPublisherWorker<ModbusData>>(
+                spm => new ServiceStreamPublisherWorker<ModbusData>(
                     PipeConstants.ModbusDataStreamName,
                     spm.GetRequiredService<IConfigState>(),
                     spm.GetRequiredService<IInitializedState>(),
                     spm.GetRequiredService<IStreamQueue<ModbusData>>(),
                     spm.GetRequiredService<IStreamPublisher<ModbusData>>(),
-                    spm.GetRequiredService<ILogger<StreamPublisherWorker<ModbusData>>>()));
-            builder.Services.AddHostedService<StreamPublisherWorker<ConnectionDiagnostics>>(
-                spc => new StreamPublisherWorker<ConnectionDiagnostics>(
+                    spm.GetRequiredService<ILogger<ServiceStreamPublisherWorker<ModbusData>>>()));
+            builder.Services.AddHostedService<ServiceStreamPublisherWorker<ConnectionDiagnostics>>(
+                spc => new ServiceStreamPublisherWorker<ConnectionDiagnostics>(
                     PipeConstants.ConnDiagStreamName,
                     spc.GetRequiredService<IConfigState>(),
                     spc.GetRequiredService<IInitializedState>(),
                     spc.GetRequiredService<IStreamQueue<ConnectionDiagnostics>>(),
                     spc.GetRequiredService<IStreamPublisher<ConnectionDiagnostics>>(),
-                    spc.GetRequiredService<ILogger<StreamPublisherWorker<ConnectionDiagnostics>>>()));
-            builder.Services.AddHostedService<CommandsWorker>(
-                cw => new CommandsWorker(
+                    spc.GetRequiredService<ILogger<ServiceStreamPublisherWorker<ConnectionDiagnostics>>>()));
+            builder.Services.AddHostedService<ServiceCommandsWorker>(
+                cw => new ServiceCommandsWorker(
                     cw.GetRequiredService<ICommandReceiver>(),
                     cw.GetRequiredService<ICommandSender>(),
                     cw.GetRequiredService<IConfigState>(),
                     cw.GetRequiredService<IModbusControl>(),
                     cw.GetRequiredService<IInitializedState>(),
-                    cw.GetRequiredService<ILogger<CommandsWorker>>()));
+                    cw.GetRequiredService<ILogger<ServiceCommandsWorker>>()));
 
             // Not used right now, it's just a logger that doesn't actually log correctly atm
             // builder.Services.AddHostedService<QueueMonitorWorker>();

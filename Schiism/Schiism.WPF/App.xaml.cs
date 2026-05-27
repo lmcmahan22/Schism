@@ -20,7 +20,6 @@ namespace Schiism
     using Schiism.WPF.Models.Implementations.States;
     using Schiism.WPF.Services;
     using Schiism.WPF.Views;
-    using System.Runtime.Intrinsics.X86;
     using System.Windows;
 
     public partial class App
@@ -66,7 +65,8 @@ namespace Schiism
                     cr.Resolve<ILoggerFactory>()));
             containerRegistry.RegisterSingleton<ICommandSender>(
                 cs => new WPFCommandSender(
-                    PipeConstants.SettingsCommandName));
+                    PipeConstants.SettingsCommandName,
+                    cs.Resolve<ILoggerFactory>()));
             containerRegistry.RegisterSingleton<IStreamSubscriber<ConnectionDiagnostics>>(
                 ssc => new WPFStreamSubscriber<ConnectionDiagnostics>(
                     ssc.Resolve<ILoggerFactory>()));

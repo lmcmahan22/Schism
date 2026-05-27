@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-C:\Users\lmcmahan\Github\Schism\Schism\obj\Debug\net8.0-windows\
+C:\Users\lmcmahan\Github\Schism\Schism (base)\obj\Debug\net8.0-windows\
 Schism
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-C:\Users\lmcmahan\Github\Schism\Schism\App.xaml
+C:\Users\lmcmahan\Github\Schism\Schism (base)\App.xaml
 5-1878529444
 11-1196425915
 19720790236
-209-1350309285
+238446362024
 Views\About.xaml;Views\ConnSettings.xaml;Views\Home.xaml;Views\MainWindow.xaml;Views\Themes.xaml;
 
 False

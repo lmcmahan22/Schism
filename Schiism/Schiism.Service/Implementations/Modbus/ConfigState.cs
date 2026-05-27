@@ -33,8 +33,8 @@ namespace Schiism.Service.Implementations.Modbus
         {
             this.iPAddress = "127.0.0.1"; // "192.168.100.20" for two device config. Otherwise, just use 127 for a single device localhost double duty build!
             this.dataLength = 10;
-            this.startAddress = 10;
-            this.selectedDataSize = DataSize.Bit32;
+            this.startAddress = 0;
+            this.selectedDataSize = DataSize.Bit16;
             this.tcpPort = 1502;
             this.scanRate = 1000;
             this.tcpTimeout = 4000;

@@ -4,9 +4,10 @@
 
 namespace Schiism.Cli.IPC
 {
-    using System.IO.Pipes;
+    using Microsoft.Extensions.Logging;
     using Schiism.Core.Abstractions.IPC.Streams;
     using Schiism.Core.Models.IPC;
+    using System.IO.Pipes;
 
     /// <summary>
     /// Stream subscriber implementation for the front end.
@@ -15,26 +16,26 @@ namespace Schiism.Cli.IPC
     /// <param name="pipeName">Name of pipe that the stream data will be received from.</param>
     public class FEStreamSubscriber<T>(string pipeName) : IStreamSubscriber<T>
     {
-        private readonly PipeSerializer Serializer => new();
+        private PipeSerializer Serializer => new();
 
         /// <inheritdoc/>
-        public async Task SubscribeAsync(Func<T, Task> onData, CancellationToken ct)
+        public async Task<T?> SubscribeAsync(PipeStream pipe, CancellationToken ct)
         {
             while (!ct.IsCancellationRequested)
             {
-                NamedPipeClientStream? pipe = null;
+                NamedPipeClientStream? clientPipe = null;
 
                 try
                 {
-                    pipe = new NamedPipeClientStream(
+                    clientPipe = new NamedPipeClientStream(
                         ".",
                         pipeName,
                         PipeDirection.In,
                         PipeOptions.Asynchronous);
 
-                    await pipe.ConnectAsync(ct);
+                    await clientPipe.ConnectAsync(ct);
 
-                    T? data = await this.Serializer.DeserializeAsync<T>(pipe, ct);
+                    T? data = await this.Serializer.DeserializeAsync<T>(clientPipe, ct);
 
                     if (data == null)
                     {
@@ -44,7 +45,8 @@ namespace Schiism.Cli.IPC
 
                     try
                     {
-                        await onData(data);
+                        Console.WriteLine($"Received data on {typeof(T).Name} pipe: {data}.");
+                        return data;
                     }
                     catch (Exception ex)
                     {
@@ -71,7 +73,7 @@ namespace Schiism.Cli.IPC
                 }
                 finally
                 {
-                    pipe?.Dispose();
+                    clientPipe?.Dispose();
                 }
             }
         }
