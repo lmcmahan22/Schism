@@ -285,7 +285,9 @@ public class ServiceControlDebugger
                 selectedPollType,
                 asciiEnable,
                 selectedNumericBase,
-                selectedEndian);
+                selectedEndian,
+                null,
+                null);
 
             Console.WriteLine("Sending settings command");
             await settCommandSender.SendAsync(cfg, cts.Token);

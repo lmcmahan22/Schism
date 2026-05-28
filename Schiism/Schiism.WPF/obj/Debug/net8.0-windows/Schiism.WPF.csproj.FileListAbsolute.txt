@@ -90,3 +90,7 @@ C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\obj\Debug\net8.0-windows\Sch
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\obj\Debug\net8.0-windows\ref\Schiism.WPF.dll
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\bin\Debug\net8.0-windows\Images\InterfaceConnected.png
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\bin\Debug\net8.0-windows\Images\InterfaceDisconnected.png
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\obj\Debug\net8.0-windows\Views\Controls\RegisterPollSettings.g.cs
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\obj\Debug\net8.0-windows\Views\Controls\RegisterPollSettings.baml
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\obj\Debug\net8.0-windows\Views\Controls\CoilPollSettings.g.cs
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.WPF\obj\Debug\net8.0-windows\Views\Controls\CoilPollSettings.baml

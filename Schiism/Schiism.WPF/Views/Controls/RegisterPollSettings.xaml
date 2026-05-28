@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="Schiism.WPF.Views.Controls.RegisterPollSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"   
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:viewmodels="clr-namespace:Schiism.WPF.ViewModels"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             Height="120" Width="700">
+    <Grid>
+        <StackPanel>
+            <TextBlock Text="Poll Settings" FontSize="16" FontWeight="Bold"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Row="0" Grid.Column="0">
+                    <TextBlock Text="Device ID" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                    <TextBox Text="{Binding ModbusSettState.DeviceId, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}" Margin="100,0,0,2" Width="60" Height="26" MaxLength="3" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14"/>
+                </Grid>
+                <Grid Grid.Row="1" Grid.Column="0">
+                    <TextBlock Text="Start Address" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                    <TextBox Text="{Binding ModbusSettState.StartAddress, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True,
+NotifyOnValidationError=True}" Margin="100,0,5,0" Width="60" Height="25" MaxLength="5" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                </Grid>
+                <Grid Grid.Row="0" Grid.Column="1">
+                    <TextBlock Text="Numeric Base" Margin="2,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding NonBoolData}" HorizontalAlignment="Left" FontSize="14"/>
+                    <ComboBox Name="BaseSystem" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding NumericBases}" SelectedValue="{Binding ModbusSettState.SelectedNumericBase, Mode=TwoWay}" IsEnabled="{Binding NonBoolData}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120" Height="25" FontSize="14">
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem">
+                                <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                    </ComboBox>
+                </Grid>
+                <Grid Grid.Row="0" Grid.Column="2">
+                    <TextBlock Text="ASCII Display" Margin="10,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding HexData}" HorizontalAlignment="Left" FontSize="14"/>
+                    <CheckBox IsChecked="{Binding ModbusSettState.AsciiEnable, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HexData}" Content="Enable" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                </Grid>
+                <Grid Grid.Row="1" Grid.Column="1">
+                    <TextBlock Text="Data Size" Margin="2,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding NonBoolData}" HorizontalAlignment="Left" FontSize="14"/>
+                    <ComboBox Name="DataSize" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding DataSizes}" SelectedValue="{Binding ModbusSettState.SelectedDataSize, Mode=TwoWay}" IsEnabled="{Binding NonBoolData}" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120" Height="26" FontSize="14" Grid.ColumnSpan="2">
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem">
+                                <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                    </ComboBox>
+                </Grid>
+                <Grid Grid.Row="1" Grid.Column="2">
+                    <TextBlock Text="Endian" Margin="10,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding EndianEnable}" HorizontalAlignment="Left" FontSize="14"/>
+                    <ComboBox Name="Endian" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding Endians}" SelectedValue="{Binding ModbusSettState.SelectedEndian, Mode=TwoWay}" IsEnabled="{Binding EndianEnable}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="190" Height="25" FontSize="14">
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem">
+                                <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                    </ComboBox>
+                </Grid>
+                <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+                    <TextBlock Text="Address Conv." Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                    <ComboBox Name="AddressConv" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding AddressConventions}" SelectedValue="{Binding SelectedAddressConvention, Mode=TwoWay}" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="580" Height="25" FontSize="14"/>
+                </Grid>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>
