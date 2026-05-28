@@ -5,11 +5,12 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewmodels="clr-namespace:Schiism.WPF.ViewModels"
              prism:ViewModelLocator.AutoWireViewModel="True"
-             Width="500" Height="170"
+             Width="500" Height="240"
              Background="DarkGray">
     
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
             <RowDefinition Height="80"/>
             <RowDefinition Height="80"/>
             <RowDefinition Height="*"/>
@@ -69,6 +70,35 @@
                         <Grid Grid.Row="1" Grid.Column="1">
                             <TextBlock Text="Timeout (ms):" Margin="17,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                             <TextBox Text="{Binding ModbusSettState.TCPTimeout, UpdateSourceTrigger=PropertyChanged}" Margin="110,5,5,0" Width="120" Height="25" MaxLength="5" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                        </Grid>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Border BorderBrush="Black" BorderThickness="1" Padding="5" CornerRadius="1" Margin="10,5,5,5" Grid.RowSpan="2" Grid.ColumnSpan="2">
+                <StackPanel>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Row="0" Grid.Column="0">
+                            <TextBlock Text= "Service" FontSize="16" FontWeight="Bold" />
+                        </Grid>
+                        <Grid Grid.Row="1" Grid.Column="0">
+                            <TextBlock Text="Run on Startup" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14" Grid.ColumnSpan="2"/>
+                            <CheckBox IsChecked="{Binding ModbusSettState.AutoStart}" Content="Enable" Margin="100,5,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                        </Grid>
+                        <Grid Grid.Row="1" Grid.Column="1">
+                            <TextBlock Text="Auto-Recover" Margin="102,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14" Grid.ColumnSpan="2"/>
+                            <CheckBox IsChecked="{Binding ModbusSettState.AutoRestart}" Content="Enable" Margin="200,5,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                         </Grid>
                     </Grid>
                 </StackPanel>

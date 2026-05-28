@@ -11,9 +11,7 @@
         "dependencies": {
           "Microsoft.Extensions.Hosting.WindowsServices": "10.0.7",
           "NModbus": "3.0.81",
-          "Schiism.Core": "1.0.0",
-          "StyleCop.Analyzers.Unstable": "1.2.0.556",
-          "System.IO.Pipes.AccessControl": "5.0.0"
+          "Schiism.Core": "1.0.0"
         },
         "runtime": {
           "Schiism.Service.dll": {}
@@ -397,7 +395,6 @@
           }
         }
       },
-      "Microsoft.NETCore.Platforms/5.0.0": {},
       "NModbus/3.0.81": {
         "runtime": {
           "lib/net6.0/NModbus.dll": {
@@ -406,7 +403,6 @@
           }
         }
       },
-      "StyleCop.Analyzers.Unstable/1.2.0.556": {},
       "System.Diagnostics.DiagnosticSource/10.0.7": {
         "runtime": {
           "lib/net8.0/System.Diagnostics.DiagnosticSource.dll": {
@@ -435,19 +431,6 @@
           }
         }
       },
-      "System.IO.Pipes.AccessControl/5.0.0": {
-        "dependencies": {
-          "System.Security.AccessControl": "5.0.0",
-          "System.Security.Principal.Windows": "5.0.0"
-        }
-      },
-      "System.Security.AccessControl/5.0.0": {
-        "dependencies": {
-          "Microsoft.NETCore.Platforms": "5.0.0",
-          "System.Security.Principal.Windows": "5.0.0"
-        }
-      },
-      "System.Security.Principal.Windows/5.0.0": {},
       "System.ServiceProcess.ServiceController/10.0.7": {
         "dependencies": {
           "System.Diagnostics.EventLog": "10.0.7"
@@ -691,26 +674,12 @@
       "path": "microsoft.extensions.primitives/10.0.7",
       "hashPath": "microsoft.extensions.primitives.10.0.7.nupkg.sha512"
     },
-    "Microsoft.NETCore.Platforms/5.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-VyPlqzH2wavqquTcYpkIIAQ6WdenuKoFN0BdYBbCWsclXacSOHNQn66Gt4z5NBqEYW0FAPm5rlvki9ZiCij5xQ==",
-      "path": "microsoft.netcore.platforms/5.0.0",
-      "hashPath": "microsoft.netcore.platforms.5.0.0.nupkg.sha512"
-    },
     "NModbus/3.0.81": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-EzKEp7CHD8ErBL36iMts+6IrZZ9FEqllaD7Y5XzhoRjlxt5yXRughQ1bxPs99QFYFkW5xfkANB0Qs1gAmYGP8Q==",
       "path": "nmodbus/3.0.81",
       "hashPath": "nmodbus.3.0.81.nupkg.sha512"
-    },
-    "StyleCop.Analyzers.Unstable/1.2.0.556": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-zvn9Mqs/ox/83cpYPignI8hJEM2A93s2HkHs8HYMOAQW0PkampyoErAiIyKxgTLqbbad29HX/shv/6LGSjPJNQ==",
-      "path": "stylecop.analyzers.unstable/1.2.0.556",
-      "hashPath": "stylecop.analyzers.unstable.1.2.0.556.nupkg.sha512"
     },
     "System.Diagnostics.DiagnosticSource/10.0.7": {
       "type": "package",
@@ -732,27 +701,6 @@
       "sha512": "sha512-LTxXYYKmRhPKWveYmfzuRTUnzsfY7CN+WOq6aTRgYE9vJ8BUvIWPCaSx4HxqBwXViTPSjR9cHDOVuVPuZGRR/Q==",
       "path": "system.io.pipelines/10.0.7",
       "hashPath": "system.io.pipelines.10.0.7.nupkg.sha512"
-    },
-    "System.IO.Pipes.AccessControl/5.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-P0FIsXSFNL1AXlHO9zpJ9atRUzVyoPZCkcbkYGZfXXMx9xlGA2H3HOGBwIhpKhB+h0eL3hry/z0UcfJZ+yb2kQ==",
-      "path": "system.io.pipes.accesscontrol/5.0.0",
-      "hashPath": "system.io.pipes.accesscontrol.5.0.0.nupkg.sha512"
-    },
-    "System.Security.AccessControl/5.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-dagJ1mHZO3Ani8GH0PHpPEe/oYO+rVdbQjvjJkBRNQkX4t0r1iaeGn8+/ybkSLEan3/slM0t59SVdHzuHf2jmw==",
-      "path": "system.security.accesscontrol/5.0.0",
-      "hashPath": "system.security.accesscontrol.5.0.0.nupkg.sha512"
-    },
-    "System.Security.Principal.Windows/5.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-t0MGLukB5WAVU9bO3MGzvlGnyJPgUlcwerXn1kzBRjwLKixT96XV0Uza41W49gVd8zEMFu9vQEFlv0IOrytICA==",
-      "path": "system.security.principal.windows/5.0.0",
-      "hashPath": "system.security.principal.windows.5.0.0.nupkg.sha512"
     },
     "System.ServiceProcess.ServiceController/10.0.7": {
       "type": "package",

@@ -3,7 +3,7 @@
 // </copyright>
 
 using Schiism.Cli.IPC;
-using Schiism.Core.NamingConstants;
+using Schiism.Core;
 using Schiism.Core.Enums;
 using Schiism.Core.Models.IPC.DTOs.Commands;
 using Schiism.Core.Models.IPC.DTOs.Streams;

@@ -21,8 +21,7 @@ namespace Schiism.Service.Implementations.RuntimeControl
                 return new ServiceRuntimeSettings
                 {
                     AutoStart = true,
-
-                    AutoRestart = false
+                    AutoRestart = false,
                 };
             }
 

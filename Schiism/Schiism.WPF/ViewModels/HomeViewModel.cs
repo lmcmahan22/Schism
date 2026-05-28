@@ -27,7 +27,7 @@ namespace Schiism.WPF.ViewModels
     {
         // Private variables
         private string title;
-        private string[] addressList;
+        private ObservableCollection<string> addressList;
         private AddressConvention selectedAddressConvention;
 
         // Visibility control
@@ -70,13 +70,14 @@ namespace Schiism.WPF.ViewModels
             this.logger = loggerFactory.CreateLogger<HomeViewModel>();
 
             title = "PVA MODBUS TCP Client";
-            addressList = ["0", "20", "40", "60", "80", "100"];
 
             // Visibility control
             colsVis = new ObservableCollection<Visibility> { Visibility.Visible, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed };
 
             // ViewModel grid elements
             shiftColumn = new ObservableCollection<string>();
+
+            addressList = [ModbusSettState.StartAddress.ToString()];
 
             // Selected Address Convention Handling
 
@@ -163,7 +164,7 @@ namespace Schiism.WPF.ViewModels
                 PollType.InputRegisters)
             && ModbusSettState.SelectedNumericBase is NumericBase.Hexadecimal;
 
-        public string[] AddressList
+        public ObservableCollection<string> AddressList
         {
             get => addressList;
             set => SetProperty(ref addressList, value);
@@ -179,13 +180,7 @@ namespace Schiism.WPF.ViewModels
         public ObservableCollection<string> ShiftColumn => shiftColumn;
 
         // Get is required in order for XAML to see this
-        public ObservableCollection<ModbusRow>[] ModbusRows { get; } = 
-            [new ObservableCollection<ModbusRow>(),
-            new ObservableCollection<ModbusRow>(),
-            new ObservableCollection<ModbusRow>(),
-            new ObservableCollection<ModbusRow>(),
-            new ObservableCollection<ModbusRow>(),
-            new ObservableCollection<ModbusRow>()];
+        public ObservableCollection<ModbusRow> ModbusRows { get; } = new ObservableCollection<ModbusRow>();
 
         // WPF Public Command properties
         public DelegateCommand SaveClick =>
@@ -245,8 +240,9 @@ namespace Schiism.WPF.ViewModels
                 lD.SavePollType,
                 lD.SaveAsciiEnable,
                 lD.SaveNumericBase,
-                lD.SaveEndian
-                );
+                lD.SaveEndian,
+                null,
+                null);
 
             ModbusSettState.Update(loadData);
 
@@ -327,6 +323,9 @@ namespace Schiism.WPF.ViewModels
 
                 // Update impacted UI
                 UpdateUIForLengthAndDataSize();
+
+                // Update Address Headers, since we may now have more or less columns to work with
+                UpdateAddressHeaders();
             }
 
             if (e.PropertyName is nameof(ModbusSettState.SelectedDataSize))
@@ -374,7 +373,7 @@ namespace Schiism.WPF.ViewModels
         // Build the table for the main UI based on the provided MODBUS Data from the MODBUSService Model
         private void UpdateModbusTable()
         {
-            // Prepare a cache of the name data, in case we need to keep some of the current names around
+            // Prepare a cache of the exisitng name data, in case we need to keep some of the current names around
             string[] namesCache = new string[ModbusSettState.DataLength];
             for (int i = 0; i < namesCache.Length; i++)
             {
@@ -382,65 +381,47 @@ namespace Schiism.WPF.ViewModels
             }
 
             // Retrieve the current names from every existing row of MODBUS data for the cache
-
             Application.Current.Dispatcher.Invoke(() =>
             {
-                for (int i = 0; i < ModbusRows.Length; i++)
+                for (int i = 0; i < ModbusRows.Count; i++)
                 {
-                    for (int j = 0; j < ModbusRows[i].Count; j++)
+                    // Only save this name for the new display if we know that we'll see it in the new length.
+                    // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
+                    if (i < ModbusSettState.DataLength)
                     {
-                        int idx = i * 20 + j; // Calculate the overall index based on column and row
-
-                        // Only save this name for the new display if we know that we'll see it in the new length.
-                        // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
-                        if (idx < ModbusSettState.DataLength)
+                        string? temp = ModbusRows[i].Name;
+                        if (temp == null)
                         {
-                            string? temp = ModbusRows[i][j].Name;
-                            if (temp == null)
-                            {
-                                namesCache[idx] = string.Empty;
-                            }
-                            else
-                            {
-                                namesCache[idx] = temp;
-                            }
+                            namesCache[i] = string.Empty;
+                        }
+                        else
+                        {
+                            namesCache[i] = temp;
                         }
                     }
 
-                    ModbusRows[i].Clear();
+                    ModbusRows.Clear();
                 }
             });
 
-            // Calculate how many columns we need based on the lengthm which may have changed (integer division)
-            byte reqCols = (byte)(((ModbusSettState.DataLength - 1) / 20) + 1);
-
-            // Add new MODBUS rows for the configured length with the names cache
-            for (int i = 0; i < reqCols; i++)
-            {
-                // Calculate how many rows we need in each column, ensuring we don't exceed the total length
-                int remaining = Math.Max(0, ModbusSettState.DataLength - (i * 20));
-                byte reqRows = (byte)Math.Min(remaining, 20);
-
-                // Add the new names and data iteratively to the new table
-                for (int j = 0; j < reqRows; j++)
-                {
-                    int idx = i * 20 + j; // Calculate the overall index based on column and row
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        ModbusRows[i].Add(new ModbusRow(namesCache[idx], string.Empty)); // Populate the name, data remains empty for now
-                    });
-
-                    // logger.LogInformation($"At Table Update: ModbusRow[{i}][{j}] = {namesCache[idx]}, {string.Empty}");
-                }
-            }
+            // Application.Current.Dispatcher.Invoke(() =>
+            // {
+            //    // Determine which columns should be visible, based on the provided length of the data
+            //    colsVis.Clear();
+            //    for (int i = 0; i < 6; i++)
+            //    {
+            //        colsVis.Add(ModbusSettState.DataLength > i * 20 ? Visibility.Visible : Visibility.Collapsed);
+            //    }
+            // });
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                // Determine which columns should be visible, based on the provided length of the data
-                colsVis.Clear();
-                for (int i = 0; i < 6; i++)
+                // Add new MODBUS rows for the configured length with the names cache
+                for (int i = 0; i < ModbusSettState.DataLength; i++)
                 {
-                    colsVis.Add(ModbusSettState.DataLength > i * 20 ? Visibility.Visible : Visibility.Collapsed);
+                    ModbusRows.Add(new ModbusRow(namesCache[i], string.Empty)); // Populate the name, data remains empty for now
+
+                    // logger.LogInformation($"At Table Update: ModbusRow[{i}] = {namesCache[i]}, {string.Empty}");
                 }
 
                 OnPropertyChanged(nameof(ModbusRows));
@@ -454,54 +435,52 @@ namespace Schiism.WPF.ViewModels
             Application.Current.Dispatcher.Invoke(() =>
             {
                 // Loop through all 6 column pairs of MODBUS names and data
-                for (int i = 0; i < ModbusRows.Length; i++)
+                for (int i = 0; i < ModbusRows.Count; i++)
                 {
-                    // Loop through each of the twenty rows
-                    for (int j = 0; j < ModbusRows[i].Count; j++)
+                    // Only try to take the MODBUS data if we have a connection and if the index is within the bounds of the current length.
+                    // i.e. the user can change the desired data length prior to connecting, so we don't necessarily want to try reading data here (it may not exist yet)
+                    string data = string.Empty;
+
+                    // Null check helps prevent a data race, since I managed to get here before ConnDiageState properly initialized.
+                    // I want to review the project for data races in the code cleanup phase
+                    // The design approach with this here is to take snapshots of the desired parameters, then act only when they're permissable.
+
+                    var contents = ConnDiagState.Contents;
+
+                    if (contents != null &&
+                        contents.IsConnected &&
+                        i < ModbusDataState.Contents.Data.Count)
                     {
-                        int idx = i * 20 + j; // Calculate the overall index based on current  column and row
 
-                        // Only try to take the MODBUS data if we have a connection and if the index is within the bounds of the current length.
-                        // i.e. the user can change the desired data length prior to connecting, so we don't necessarily want to try reading data here (it may not exist yet)
-                        string data = string.Empty;
-
-                        // Null check helps prevent a data race, since I managed to get here before ConnDiageState properly initialized.
-                        // I want to review the project for data races in the code cleanup phase
-                        // The design approach with this here is to take snapshots of the desired parameters, then act only when they're permissable.
-
-                        var contents = ConnDiagState.Contents;
-
-                        if (contents != null &&
-                            contents.IsConnected &&
-                            idx < ModbusDataState.Contents.Data.Count)
-                        {
-
-                            // Retrieve existing item if present; otherwise create one instance
-                            data = ModbusDataState.Contents.Data[idx]?.ToString() ?? string.Empty;
-                        }
-
-                        ModbusRows[i][j].Data = data;
-
-                        // logger.LogInformation($"At Data Update: ModbusRow[{i}][{j}] = {ModbusRows[i][j].Name}, {data}");
+                        // Retrieve existing item if present; otherwise create one instance
+                        data = ModbusDataState.Contents.Data[i]?.ToString() ?? string.Empty;
                     }
+
+                    ModbusRows[i].Data = data;
+
+                    // logger.LogInformation($"At Data Update: ModbusRow[{i}][{j}] = {ModbusRows[i].Name}, {data}");
                 }
+
+                OnPropertyChanged(nameof(ModbusRows));
             });
         }
 
         // Marshall these methods!
         private void UpdateAddressHeaders()
         {
-            // Update the address headers that sit above the data columns
-            for (int i = 0; i < addressList.Length; i++)
-            {
-                ushort startAdd = Convert.ToUInt16(ModbusSettState.StartAddress);
-                int addr = startAdd + i * 20;
-                addressList[i] = addr.ToString();
-            }
-
-            // Update the RawModbusData collection with the new data on the main UI thread
+            // Update the address headers that sit above the name/data columns
             Application.Current.Dispatcher.Invoke(() =>
             {
+                addressList.Clear();
+                int numCols = (Math.Max(0, this.ModbusSettState.DataLength - 1) / 20) + 1;
+
+                for (int i = 0; i < numCols; i++)
+                {
+                    ushort startAdd = Convert.ToUInt16(ModbusSettState.StartAddress);
+                    int addr = startAdd + (i * 20);
+                    addressList.Add(addr.ToString());
+                }
+
                 OnPropertyChanged(nameof(AddressList));
             });
 
