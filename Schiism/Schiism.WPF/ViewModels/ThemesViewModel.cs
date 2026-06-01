@@ -4,23 +4,22 @@
 
 namespace Schiism.WPF.ViewModels
 {
-    using System.Collections.ObjectModel;
+    using Schiism.WPF.Services;
     using System.Runtime.CompilerServices;
-    using Schiism.WPF.Controllers;
 
     public class ThemesViewModel : BindableBase
     {
         // Private variable
         private string title;
 
+        public ThemeService ThemeService { get; }
+
         // Constructor
-        public ThemesViewModel()
+        public ThemesViewModel(ThemeService ThemeService)
         {
             title = "Themes";
+            this.ThemeService = ThemeService;
         }
-
-        // Service Singleton that gets passed up to View
-        public ThemeController TS => ThemeController.Instance;
 
         // Public instance with getters/setters
         public string Title

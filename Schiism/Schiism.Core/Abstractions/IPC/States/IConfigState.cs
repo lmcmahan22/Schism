@@ -19,9 +19,10 @@ namespace Schiism.Core.Abstractions.IPC.States
         public string IPAddress { get; }
 
         /// <summary>
-        /// Gets Data Length in accordance with DataSize and StartAddress for min and max allowable value respectively.
+        /// Gets Data Length in accordance with DataSize and StartAddress for min and max allowable values respectively.
+        /// NOTE: Can NOT be controlled via UI.
         /// </summary>
-        public byte DataLength { get; }
+        public ushort DataLength { get; }
 
         /// <summary>
         /// Gets Starting Address.

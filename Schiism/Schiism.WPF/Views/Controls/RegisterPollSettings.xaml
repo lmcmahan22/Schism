@@ -4,7 +4,6 @@
              xmlns:prism="http://prismlibrary.com/"   
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewmodels="clr-namespace:Schiism.WPF.ViewModels"
-             prism:ViewModelLocator.AutoWireViewModel="True"
              Height="120" Width="700">
     <Grid>
         <StackPanel>
@@ -27,12 +26,12 @@
                 </Grid>
                 <Grid Grid.Row="1" Grid.Column="0">
                     <TextBlock Text="Start Address" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                    <TextBox Text="{Binding ModbusSettState.StartAddress, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True,
+                    <TextBox Text="{Binding StartAddress, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True,
 NotifyOnValidationError=True}" Margin="100,0,5,0" Width="60" Height="25" MaxLength="5" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                 </Grid>
                 <Grid Grid.Row="0" Grid.Column="1">
-                    <TextBlock Text="Numeric Base" Margin="2,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding NonBoolData}" HorizontalAlignment="Left" FontSize="14"/>
-                    <ComboBox Name="BaseSystem" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding NumericBases}" SelectedValue="{Binding ModbusSettState.SelectedNumericBase, Mode=TwoWay}" IsEnabled="{Binding NonBoolData}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120" Height="25" FontSize="14">
+                    <TextBlock Text="Numeric Base" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                    <ComboBox Name="BaseSystem" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding NumericBases}" SelectedValue="{Binding ModbusSettState.SelectedNumericBase, Mode=TwoWay}" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120" Height="25" FontSize="14">
                         <ComboBox.ItemContainerStyle>
                             <Style TargetType="ComboBoxItem">
                                 <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
@@ -45,8 +44,8 @@ NotifyOnValidationError=True}" Margin="100,0,5,0" Width="60" Height="25" MaxLeng
                     <CheckBox IsChecked="{Binding ModbusSettState.AsciiEnable, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HexData}" Content="Enable" Margin="100,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                 </Grid>
                 <Grid Grid.Row="1" Grid.Column="1">
-                    <TextBlock Text="Data Size" Margin="2,0,0,0" VerticalAlignment="Center" IsEnabled="{Binding NonBoolData}" HorizontalAlignment="Left" FontSize="14"/>
-                    <ComboBox Name="DataSize" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding DataSizes}" SelectedValue="{Binding ModbusSettState.SelectedDataSize, Mode=TwoWay}" IsEnabled="{Binding NonBoolData}" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120" Height="26" FontSize="14" Grid.ColumnSpan="2">
+                    <TextBlock Text="Data Size" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+                    <ComboBox Name="DataSize" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding DataSizes}" SelectedValue="{Binding ModbusSettState.SelectedDataSize, Mode=TwoWay}" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120" Height="26" FontSize="14" Grid.ColumnSpan="2">
                         <ComboBox.ItemContainerStyle>
                             <Style TargetType="ComboBoxItem">
                                 <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />

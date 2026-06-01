@@ -14,6 +14,7 @@ namespace Schiism.Core.Abstractions.IPC.States
     /// </summary>
     public interface IWPFConfigState : INotifyPropertyChanged
     {
+
         /// <summary>
         /// Gets IP Address.
         /// </summary>
@@ -21,11 +22,12 @@ namespace Schiism.Core.Abstractions.IPC.States
 
         /// <summary>
         /// Gets Data Length in accordance with DataSize and StartAddress for min and max allowable value respectively.
+        /// NOTE: Can NOT be controlled via UI.
         /// </summary>
-        public byte DataLength { get; set; }
+        public ushort DataLength { get; }
 
         /// <summary>
-        /// Gets Starting Address.
+        /// Gets Starting Address, as a string.
         /// </summary>
         public ushort StartAddress { get; set; }
 
@@ -73,6 +75,8 @@ namespace Schiism.Core.Abstractions.IPC.States
         /// Gets selected endian.
         /// </summary>
         public Endian SelectedEndian { get; set; }
+
+        public AddressConvention SelectedAddressConvention { get; set; }
 
         public bool AutoStart { get; set; }
 

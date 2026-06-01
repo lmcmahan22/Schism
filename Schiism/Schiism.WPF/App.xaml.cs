@@ -4,6 +4,7 @@
 
 namespace Schiism
 {
+    using System.Windows;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Prism.Ioc;
@@ -13,13 +14,12 @@ namespace Schiism
     using Schiism.Core.Abstractions.IPC.Streams;
     using Schiism.Core.Models.IPC.DTOs.Streams;
     using Schiism.WPF;
-    using Schiism.WPF.Controllers;
     using Schiism.WPF.FileLogging;
     using Schiism.WPF.IPC;
     using Schiism.WPF.IPC.Workers;
     using Schiism.WPF.Models.Implementations.States;
+    using Schiism.WPF.Services;
     using Schiism.WPF.Views;
-    using System.Windows;
 
     public partial class App
     {
@@ -48,14 +48,14 @@ namespace Schiism
 
             containerRegistry.RegisterInstance<ILoggerFactory>(loggerFactory);
 
-            // Local Singleton
-            containerRegistry.RegisterSingleton<ThemeController>();
-
             // State Singletons (for content tracking)
             containerRegistry.RegisterSingleton<WPFStreamDataState<ModbusData>, WPFStreamDataState<ModbusData>>();
             containerRegistry.RegisterSingleton<WPFStreamDataState<ConnectionDiagnostics>, WPFStreamDataState<ConnectionDiagnostics>>();
             containerRegistry.RegisterSingleton<IWPFConfigState, WPFConfigState>();
             containerRegistry.RegisterSingleton<WPFInitializedState>();
+
+            // Theme Controller Singleton
+            containerRegistry.RegisterSingleton<ThemeService>();
 
             // IPC Singletons (Subscribers, Command Receiver, and Command Sender)
             containerRegistry.RegisterSingleton<ICommandReceiver>(

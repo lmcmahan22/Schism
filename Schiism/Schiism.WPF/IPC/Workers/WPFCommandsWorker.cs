@@ -37,64 +37,9 @@ namespace Schiism.WPF.IPC.Workers
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // Task? sendTask = this.RunSenderLoopAsync(stoppingToken);
-            // Task? receiveTask = this.RunReceiverLoopAsync(stoppingToken);
-
-            // await Task.WhenAll(sendTask, receiveTask);
-
+            // Sender is handled via configState subscription.
             await RunReceiverLoopAsync(stoppingToken);
         }
-
-        //private async Task? RunSenderLoopAsync(CancellationToken stoppingToken)
-        //{
-        //    while (!stoppingToken.IsCancellationRequested)
-        //    {
-        //        try
-        //        {
-        //            if (initState.IsInitialized)
-        //            {
-        //                // Make this so it only sends UPDATED parameters, rather than everything every single time!
-        //                SettingsConfig currentConfig = new SettingsConfig(
-        //                    configSettState.IPAddress,
-        //                    configSettState.DataLength,
-        //                    configSettState.StartAddress,
-        //                    configSettState.TCPPort,
-        //                    configSettState.ScanRate,
-        //                    configSettState.TCPTimeout,
-        //                    configSettState.DeviceId,
-        //                    configSettState.SelectedDataSize,
-        //                    configSettState.SelectedPollType,
-        //                    configSettState.AsciiEnable,
-        //                    configSettState.SelectedNumericBase,
-        //                    configSettState.SelectedEndian);
-
-        //                if (!currentConfig.Equals(lastSentConfig))
-        //                {
-        //                    logger.LogInformation("Settings changed, sending update");
-
-        //                    await sender.SendAsync(currentConfig, stoppingToken);
-
-        //                    logger.LogInformation("Updated settings sent!");
-
-        //                    lastSentConfig = currentConfig;
-        //                }
-        //            }
-        //        }
-        //        catch (OperationCanceledException)
-        //        {
-        //            logger.LogError("Command send cancelled");
-        //            throw;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            logger.LogError(ex, "Failed to send command");
-        //            throw;
-        //        }
-
-        //        await Task.Delay(1000, stoppingToken); // This makes it so Settings can only be sent as fast as once per second.
-        //                                               // I think that's appropriate for now, assuming the user can make changes that quickly.
-        //    }
-        //}
 
         private async Task? RunReceiverLoopAsync(CancellationToken stoppingToken)
         {
@@ -127,6 +72,7 @@ namespace Schiism.WPF.IPC.Workers
 
             try
             {
+                // length is included here, so the UI can view the length, but it isn't able to set it
                 SettingsConfig currentConfig = new SettingsConfig(
                     configSettState.IPAddress,
                     configSettState.DataLength,

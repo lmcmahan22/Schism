@@ -26,7 +26,6 @@ public class ServiceControlDebugger
 {
     private static string ipAddress = "127.0.0.1";
     private static ushort startAddress = 0;
-    private static byte dataLength = 10;
     private static byte deviceId = 1;
     private static int scanRate = 1000;
     private static PollType selectedPollType = PollType.CoilStatus;
@@ -231,11 +230,6 @@ public class ServiceControlDebugger
                 Console.WriteLine($"Updated {field} to {value}");
                 break;
 
-            case "datalength":
-                dataLength = byte.Parse(value);
-                Console.WriteLine($"Updated {field} to {value}");
-                break;
-
             case "startaddress":
                 startAddress = ushort.Parse(value);
                 Console.WriteLine($"Updated {field} to {value}");
@@ -275,7 +269,7 @@ public class ServiceControlDebugger
         {
             SettingsConfig cfg = new SettingsConfig(
                 ipAddress,
-                dataLength,
+                null,
                 startAddress,
                 tCPPort,
                 scanRate,
@@ -309,7 +303,6 @@ public class ServiceControlDebugger
         Console.WriteLine($"TCPTimeoutMs  : {tCPTimeout}");
         Console.WriteLine($"StartAddress  : {startAddress}");
         Console.WriteLine($"ScanRateMs    : {scanRate}");
-        Console.WriteLine($"DataLength    : {dataLength}");
         Console.WriteLine($"DataSize      : {selectedDataSize}");
         Console.WriteLine($"Endian        : {selectedEndian}");
         Console.WriteLine($"NumericBase   : {selectedNumericBase}");
@@ -334,7 +327,6 @@ public class ServiceControlDebugger
     {
         // Acquire initial data
         ipAddress = cfg.IPAddress ?? ipAddress;
-        dataLength = cfg.DataLength ?? dataLength;
         startAddress = cfg.StartAddress ?? startAddress;
         tCPPort = cfg.TCPPort ?? tCPPort;
         scanRate = cfg.ScanRate ?? scanRate;

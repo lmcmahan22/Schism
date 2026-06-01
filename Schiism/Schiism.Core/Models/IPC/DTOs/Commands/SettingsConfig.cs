@@ -28,7 +28,7 @@ namespace Schiism.Core.Models.IPC.DTOs.Commands
         /// <param name="selectedNumericBase">The selected numeric base (e.g., Decimal, Hexadecimal).</param>
         /// <param name="selectedEndian">The selected endian type (e.g., Little Endian, Big Endian).</param>
         [JsonConstructor]
-        public SettingsConfig(string? iPAddress, byte? dataLength, ushort? startAddress, ushort? tCPPort, int? scanRate, int? tCPTimeout, byte? deviceId, DataSize? selectedDataSize, PollType? selectedPollType, bool? asciiEnable, NumericBase? selectedNumericBase, Endian? selectedEndian, bool? autoStart, bool? autoRestart)
+        public SettingsConfig(string? iPAddress, ushort? dataLength, ushort? startAddress, ushort? tCPPort, int? scanRate, int? tCPTimeout, byte? deviceId, DataSize? selectedDataSize, PollType? selectedPollType, bool? asciiEnable, NumericBase? selectedNumericBase, Endian? selectedEndian, bool? autoStart, bool? autoRestart)
         {
             this.IPAddress = iPAddress;
             this.DataLength = dataLength;
@@ -54,7 +54,7 @@ namespace Schiism.Core.Models.IPC.DTOs.Commands
         /// <summary>
         /// Gets Data Length in accordance with DataSize and StartAddress for min and max allowable value respectively.
         /// </summary>
-        public byte? DataLength { get; init; }
+        public ushort? DataLength { get; init; }
 
         /// <summary>
         /// Gets Starting Address. May alter DataLength, depending on the entered value.

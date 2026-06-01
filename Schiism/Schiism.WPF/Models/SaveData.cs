@@ -10,7 +10,6 @@ namespace Schiism.WPF.Models
     public class SaveData
     {
         // private variables
-        private byte saveLength;
         private ushort saveStartAddress;
         private byte saveDeviceID;
         private PollType savePollType;
@@ -21,9 +20,8 @@ namespace Schiism.WPF.Models
         private AddressConvention saveAddressConv;
 
         // Constructor
-        public SaveData(byte sL, ushort sSA, byte sDID, PollType sPT, NumericBase sNB, DataSize sDS, Endian sE, bool sAE, AddressConvention sAC)
+        public SaveData(ushort sSA, byte sDID, PollType sPT, NumericBase sNB, DataSize sDS, Endian sE, bool sAE, AddressConvention sAC)
         {
-            saveLength = sL;
             saveStartAddress = sSA;
             saveDeviceID = sDID;
             savePollType = sPT;
@@ -37,7 +35,6 @@ namespace Schiism.WPF.Models
         // Empty Constructor (for loading data)
         public SaveData()
         {
-            saveLength = 0;
             saveStartAddress = 0;
             saveDeviceID = 0;
             savePollType = PollType.CoilStatus;
@@ -49,8 +46,6 @@ namespace Schiism.WPF.Models
         }
 
         // Simple getters and setters for each variable
-        public byte SaveLength { get => saveLength; set => saveLength = value; }
-
         public ushort SaveStartAddress { get => saveStartAddress; set => saveStartAddress = value; }
 
         public byte SaveDeviceId { get => saveDeviceID; set => saveDeviceID = value; }

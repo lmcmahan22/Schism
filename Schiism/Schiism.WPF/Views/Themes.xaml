@@ -25,7 +25,7 @@
             </Grid>
             <Grid Grid.Row="1">
                 <TextBlock Text="Select:" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                <ComboBox Name="Theme" ItemsSource="{Binding TS.AvailableThemes, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding TS.SelectedTheme}" Margin="50,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="170" Height="25" FontSize="14" SelectionChanged="ThemeSelectionChanged"/>
+                <ComboBox Name="Theme" ItemsSource="{Binding ThemeService.AvailableThemes, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding ThemeService.SelectedTheme}" Margin="50,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="170" Height="25" FontSize="14" SelectionChanged="ThemeSelectionChanged"/>
             </Grid>
         </Grid>
     </Border>

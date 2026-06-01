@@ -26,7 +26,6 @@ public class ServiceDataDebugger
     // Local variables to hold current config values for display and command sending. Initialized with defaults matching the Service's default config.
     private static string ipAddress = "127.0.0.1";
     private static ushort startAddress = 0;
-    private static byte dataLength = 10;
     private static byte deviceId = 1;
     private static int scanRate = 1000;
     private static PollType selectedPollType = PollType.CoilStatus;
@@ -154,7 +153,6 @@ public class ServiceDataDebugger
         Console.WriteLine($"TCPTimeoutMs  : {tCPTimeout}");
         Console.WriteLine($"StartAddress  : {startAddress}");
         Console.WriteLine($"ScanRateMs    : {scanRate}");
-        Console.WriteLine($"DataLength    : {dataLength}");
         Console.WriteLine($"DataSize      : {selectedDataSize}");
         Console.WriteLine($"Endian        : {selectedEndian}");
         Console.WriteLine($"NumericBase   : {selectedNumericBase}");
@@ -181,7 +179,6 @@ public class ServiceDataDebugger
     {
         // Acquire initial data
         ipAddress = cfg.IPAddress ?? ipAddress;
-        dataLength = cfg.DataLength ?? dataLength;
         startAddress = cfg.StartAddress ?? startAddress;
         tCPPort = cfg.TCPPort ?? tCPPort;
         scanRate = cfg.ScanRate ?? scanRate;

@@ -8,6 +8,7 @@ namespace Schiism.WPF.Models.Implementations.States
     using Schiism.Core.Abstractions.IPC.States;
     using Schiism.Core.Enums;
     using Schiism.Core.Models.IPC.DTOs.Commands;
+    using Schiism.WPF.Models.Enums;
 
     /// <inheritdoc/>
     public class WPFConfigState : BindableBase, IWPFConfigState
@@ -15,9 +16,10 @@ namespace Schiism.WPF.Models.Implementations.States
         private readonly object configLock = new();
 
         // Private wariables (that which can be manipulated by more than one setter from this class, or non-nullable)
+        private ushort dataLength;
+
         private string iPAddress;
         private ushort tcpPort;
-        private byte dataLength;
         private ushort startAddress;
         private DataSize selectedDataSize;
         private int scanRate;
@@ -28,6 +30,8 @@ namespace Schiism.WPF.Models.Implementations.States
         private NumericBase selectedNumericBase;
         private Endian selectedEndian;
 
+        private AddressConvention selectedAddressConvention;
+
         private bool autoStart;
         private bool autoRestart;
 
@@ -35,17 +39,17 @@ namespace Schiism.WPF.Models.Implementations.States
         public WPFConfigState()
         {
             iPAddress = "127.0.0.1"; // "192.168.100.20" for two device config. Otherwise, just use 127 for a single device localhost double duty build!
-            dataLength = 15;
             startAddress = 0;
             selectedDataSize = DataSize.Bit16;
             tcpPort = 1502;
             scanRate = 2000;
             tcpTimeout = 5000;
-            deviceId = 5;
+            deviceId = 1;
             selectedPollType = PollType.CoilStatus;
-            asciiEnable = true;
-            selectedNumericBase = NumericBase.Hexadecimal;
-            selectedEndian = Endian.LittleEndian;
+            asciiEnable = false;
+            selectedNumericBase = NumericBase.Decimal;
+            selectedEndian = Endian.BigEndian;
+            this.selectedAddressConvention = AddressConvention.RegisterAddress;
             autoStart = false;
             autoRestart = false;
         }
@@ -57,73 +61,6 @@ namespace Schiism.WPF.Models.Implementations.States
             set => SetProperty(ref iPAddress, value);
         }
 
-        /// <summary>
-        /// Gets dataLength in accordance with DataSize and StartAddress for min and max allowable value respectively.
-        /// </summary>
-        public byte DataLength
-        {
-            get => dataLength;
-            set
-            {
-                byte minLen = GetMinLengthForDataSize();
-                byte maxLen = GetMaxLengthForStartAddress();
-                byte clampedDataLength = Math.Clamp(value, minLen, maxLen);
-
-                if (dataLength != clampedDataLength)
-                {
-                    SetProperty(ref dataLength, clampedDataLength);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets Starting Address. May alter DataLength, depending on the entered value.
-        /// </summary>
-        public ushort StartAddress
-        {
-            get => startAddress;
-            set
-            {
-                // NOTE: THE FOLLOWING COMMENTED CODE SHOULD BE CONTROLLED IN THE WPF APPLICATION PRIOR TO RECIEPT BY THE ENGINE HERE!!!
-
-                /* temp variable to help store the incoming decimal value, after possible hex conversion
-                // uint attemptDecVal = 0;
-
-                // StartAddress changed to ushort, because this string handling should be managed netirely in the UI
-                // If the value contains "h"
-                // if (value.Contains('h'))
-                // {
-                //    // Get rid of the "h" at the end ex. "Ah -> A"
-                //    string trun = value.Substring(0, value.Length - 1);
-
-                // convert hex string into a decimal int ex. "A -> 10"
-                //    attemptDecVal = Convert.ToUInt32(trun, 16);
-                // }
-
-                // If the value contains just numbers (no "h")
-                // else
-                // {
-                //    attemptDecVal = Convert.ToUInt32(value);
-                // }
-
-                // We can now confirm that the attempted decimal converted value is a short (1-65535), so we can type cast it!
-                // ushort decVal = Convert.ToUInt16(attemptDecVal); */
-
-                if (startAddress != value)
-                {
-                    SetProperty(ref startAddress, value);
-
-                    byte maxLen = GetMaxLengthForStartAddress();
-                    byte clampedDataLength = Math.Clamp(dataLength, (byte)1, maxLen);
-
-                    if (dataLength != clampedDataLength)
-                    {
-                        SetProperty(ref dataLength, clampedDataLength);
-                    }
-                }
-            }
-        }
-
         /// <inheritdoc/>
         public DataSize SelectedDataSize
         {
@@ -133,20 +70,16 @@ namespace Schiism.WPF.Models.Implementations.States
                 if (selectedDataSize != value)
                 {
                     SetProperty(ref selectedDataSize, value);
-
-                    byte minLen = GetMinLengthForDataSize();
-                    byte clampedDataLength = Math.Clamp(dataLength, minLen, (byte)120);
-
-                    if (dataLength != clampedDataLength)
-                    {
-                        SetProperty(ref dataLength, clampedDataLength);
-                    }
                 }
             }
         }
 
         /// <inheritdoc/>
         public ushort TCPPort { get => tcpPort; set => SetProperty(ref tcpPort, value); }
+
+        public ushort DataLength { get => dataLength; set => SetProperty(ref dataLength, value); }
+
+        public ushort StartAddress { get => startAddress; set => SetProperty(ref startAddress, value); }
 
         /// <inheritdoc/>
         public int ScanRate { get => scanRate; set => SetProperty(ref scanRate, value); }
@@ -168,6 +101,9 @@ namespace Schiism.WPF.Models.Implementations.States
 
         /// <inheritdoc/>
         public Endian SelectedEndian { get => selectedEndian; set => SetProperty(ref selectedEndian, value); }
+
+        // Does not get communicated to/from Service. Only here for multi-ViewModel control.
+        public AddressConvention SelectedAddressConvention { get => selectedAddressConvention; set => SetProperty(ref selectedAddressConvention, value); }
 
         public bool AutoStart { get => autoStart; set => SetProperty(ref autoStart, value); }
 
@@ -200,6 +136,8 @@ namespace Schiism.WPF.Models.Implementations.States
 
                 if (cmd.DataLength.HasValue)
                 {
+                    // NOTE: This only gets set via the initial config! Does not get set via UI.
+                    // This is here so the WPF knows how to assess the polling length in accordance with displaying the MODBUS table.
                     DataLength = cmd.DataLength.Value;
                 }
 
@@ -248,24 +186,6 @@ namespace Schiism.WPF.Models.Implementations.States
                     AutoRestart = cmd.AutoRestart.Value;
                 }
             }
-        }
-
-        // Prevent user from prompting a data overflow simply due to configuring the length and data size poorly
-        private byte GetMinLengthForDataSize()
-        {
-            return selectedDataSize switch
-            {
-                DataSize.Bit32 => 2,
-                DataSize.Bit64 => 4,
-                _ => 1, // "Bit16" or default
-            };
-        }
-
-        private byte GetMaxLengthForStartAddress()
-        {
-            int cap = ushort.MaxValue - startAddress + 1;
-            ushort clamped = (ushort)Math.Min(120, cap);
-            return (byte)clamped;
         }
     }
 }

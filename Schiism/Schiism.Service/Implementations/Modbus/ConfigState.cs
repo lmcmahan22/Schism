@@ -17,7 +17,7 @@ namespace Schiism.Service.Implementations.Modbus
         // Private wariables (that which can be manipulated by more than one setter from this class, or non-nullable)
         private string iPAddress;
         private ushort tcpPort;
-        private byte dataLength;
+        private ushort dataLength;
         private ushort startAddress;
         private DataSize selectedDataSize;
         private int scanRate;
@@ -32,14 +32,14 @@ namespace Schiism.Service.Implementations.Modbus
         public ConfigState()
         {
             this.iPAddress = "127.0.0.1"; // "192.168.100.20" for two device config. Otherwise, just use 127 for a single device localhost double duty build!
-            this.dataLength = 10;
+            this.dataLength = 500; // Default for the system. This will update with respect to UI modified StartAddress and DataType! Shoudl eventually be initialized in order to show ALL possible data, according to status coils data type.
             this.startAddress = 0;
             this.selectedDataSize = DataSize.Bit16;
             this.tcpPort = 1502;
             this.scanRate = 1000;
             this.tcpTimeout = 4000;
             this.deviceId = 1;
-            this.selectedPollType = PollType.HoldingRegisters;
+            this.selectedPollType = PollType.CoilStatus;
             this.asciiEnable = false;
             this.selectedNumericBase = NumericBase.Decimal;
             this.selectedEndian = Endian.BigEndian;
@@ -54,15 +54,17 @@ namespace Schiism.Service.Implementations.Modbus
 
         /// <summary>
         /// Gets dataLength in accordance with DataSize and StartAddress for min and max allowable value respectively.
+        /// Handled at the Service level, since UI is designed to not have control over this.
+        /// NOTE: Should be updated according to "max possible" length.
         /// </summary>
-        public byte DataLength
+        public ushort DataLength
         {
             get => this.dataLength;
             private set
             {
-                byte minLen = this.GetMinLengthForDataSize();
-                byte maxLen = this.GetMaxLengthForStartAddress();
-                byte clampedDataLength = Math.Clamp(value, minLen, maxLen);
+                ushort minLen = this.GetMinLengthForDataSize();
+                ushort maxLen = this.GetMaxLengthForStartAddress();
+                ushort clampedDataLength = Math.Clamp(value, minLen, maxLen);
 
                 if (this.dataLength != clampedDataLength)
                 {
@@ -79,37 +81,12 @@ namespace Schiism.Service.Implementations.Modbus
             get => this.startAddress;
             private set
             {
-                // NOTE: THE FOLLOWING COMMENTED CODE SHOULD BE CONTROLLED IN THE WPF APPLICATION PRIOR TO RECIEPT BY THE ENGINE HERE!!!
-
-                /* temp variable to help store the incoming decimal value, after possible hex conversion
-                // uint attemptDecVal = 0;
-
-                // StartAddress changed to ushort, because this string handling should be managed netirely in the UI
-                // If the value contains "h"
-                // if (value.Contains('h'))
-                // {
-                //    // Get rid of the "h" at the end ex. "Ah -> A"
-                //    string trun = value.Substring(0, value.Length - 1);
-
-                // convert hex string into a decimal int ex. "A -> 10"
-                //    attemptDecVal = Convert.ToUInt32(trun, 16);
-                // }
-
-                // If the value contains just numbers (no "h")
-                // else
-                // {
-                //    attemptDecVal = Convert.ToUInt32(value);
-                // }
-
-                // We can now confirm that the attempted decimal converted value is a short (1-65535), so we can type cast it!
-                // ushort decVal = Convert.ToUInt16(attemptDecVal); */
-
                 if (this.startAddress != value)
                 {
                     this.startAddress = value;
 
-                    byte maxLen = this.GetMaxLengthForStartAddress();
-                    byte clampedDataLength = Math.Clamp(this.dataLength, (byte)1, maxLen);
+                    ushort maxLen = this.GetMaxLengthForStartAddress();
+                    ushort clampedDataLength = Math.Clamp(this.dataLength, (ushort)1, maxLen);
 
                     if (this.dataLength != clampedDataLength)
                     {
@@ -129,8 +106,8 @@ namespace Schiism.Service.Implementations.Modbus
                 {
                     this.selectedDataSize = value;
 
-                    byte minLen = this.GetMinLengthForDataSize();
-                    byte clampedDataLength = Math.Clamp(this.dataLength, minLen, (byte)120);
+                    ushort minLen = this.GetMinLengthForDataSize();
+                    ushort clampedDataLength = Math.Clamp(this.dataLength, minLen, (ushort)65535);
 
                     if (this.dataLength != clampedDataLength)
                     {
@@ -191,7 +168,7 @@ namespace Schiism.Service.Implementations.Modbus
 
                 if (cmd.DataLength.HasValue)
                 {
-                    this.DataLength = cmd.DataLength.Value;
+                    this.dataLength = cmd.DataLength.Value;
                 }
 
                 if (cmd.ScanRate.HasValue)
@@ -232,7 +209,7 @@ namespace Schiism.Service.Implementations.Modbus
         }
 
         // Prevent user from prompting a data overflow simply due to configuring the length and data size poorly
-        private byte GetMinLengthForDataSize()
+        private ushort GetMinLengthForDataSize()
         {
             return this.selectedDataSize switch
             {
@@ -242,11 +219,11 @@ namespace Schiism.Service.Implementations.Modbus
             };
         }
 
-        private byte GetMaxLengthForStartAddress()
+        private ushort GetMaxLengthForStartAddress()
         {
             int cap = ushort.MaxValue - this.startAddress + 1;
             ushort clamped = (ushort)Math.Min(120, cap);
-            return (byte)clamped;
+            return clamped;
         }
     }
 }

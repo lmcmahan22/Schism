@@ -6,13 +6,15 @@
              xmlns:viewmodels="clr-namespace:Schiism.WPF.ViewModels"
              xmlns:helpers="clr-namespace:Schiism.WPF.Models.Helpers"
              xmlns:controls="clr-namespace:Schiism.WPF.Views.Controls"
+             xmlns:controlVMs="clr-namespace:Schiism.WPF.ViewModels.Controls"
              prism:ViewModelLocator.AutoWireViewModel="True"
-             Background="{Binding TS.Main, UpdateSourceTrigger=PropertyChanged}"
+             Background="{Binding ThemeService.Main, UpdateSourceTrigger=PropertyChanged}"
              Height="810" Width="1440">
 
     <!-- Top level resources for use across the entire XAML file -->
     <!-- Includes style manipulations and proxy class instance (from "Helpers" directory) -->
     <UserControl.Resources>
+        
         <Style TargetType="ComboBox">
             <Style.Triggers>
                 <Trigger Property="IsEnabled" Value="False">
@@ -43,6 +45,14 @@
             </Style.Triggers>
         </Style>
 
+        <DataTemplate DataType="{x:Type controlVMs:CoilPollSettingsViewModel}">
+            <controls:CoilPollSettings />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type controlVMs:RegisterPollSettingsViewModel}">
+            <controls:RegisterPollSettings />
+        </DataTemplate>
+
         <!-- Proxy for DataGrid column visibility control -->
         <helpers:BindingProxy x:Key="proxy" Data="{Binding}" />
 
@@ -67,7 +77,7 @@
                 <MenuItem Header="File">
                     <MenuItem Header="Save Config" Command="{Binding SaveClick}"/>
                     <MenuItem Header="Load Config" Command="{Binding LoadClick}"/>
-                    <Separator Background="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Separator Background="{Binding ThemeService.Accent3, UpdateSourceTrigger=PropertyChanged}"/>
                     <MenuItem Header="Exit App" Command="{Binding ExitClick}"/>
                 </MenuItem>
                 <MenuItem Header="Connection">
@@ -89,28 +99,22 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Border BorderBrush="{Binding TS.Accent3}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1" Background="{Binding TS.Accent1}">
+            <Border BorderBrush="{Binding ThemeService.Accent3}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1" Background="{Binding ThemeService.Accent1}">
                 <StackPanel Orientation="Horizontal">
                     <Grid Grid.Column="0">
-                        <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,0,5,5" Background="{Binding TS.Accent2, UpdateSourceTrigger=PropertyChanged}">
-                            <TabControl>
-                                <TabItem Header="Digital Coils">
-                                    <controls:CoilPollSettings/>
-                                </TabItem>
-                                <TabItem Header="Digital Inputs">
-                                    <controls:CoilPollSettings/>
-                                </TabItem>
-                                <TabItem Header="Holding Registers">
-                                    <controls:RegisterPollSettings/>
-                                </TabItem>
-                                <TabItem Header="Input Registers">
-                                    <controls:RegisterPollSettings/>
-                                </TabItem>
+                        <Border BorderBrush="{Binding ThemeService.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,0,5,5" Background="{Binding ThemeService.Accent2, UpdateSourceTrigger=PropertyChanged}">
+                            <TabControl ItemsSource="{Binding PollTabs}" SelectedItem="{Binding SelectedPollTab}">
+                                <TabControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Header}" />
+                                    </DataTemplate>
+                                </TabControl.ItemTemplate>
+
                             </TabControl>
                         </Border>
                     </Grid>
                     <Grid Grid.Column="1">
-                        <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding TS.Accent2, UpdateSourceTrigger=PropertyChanged}">
+                        <Border BorderBrush="{Binding ThemeService.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding ThemeService.Accent2, UpdateSourceTrigger=PropertyChanged}">
                             <StackPanel>
                                 <TextBlock Text="Connection Status" FontSize="16" FontWeight="Bold"/>
                                 <Grid>
@@ -175,7 +179,7 @@
 
         <!-- Row 4: MODBUS Data (dynamic sizing) -->
         <Grid Grid.Row="2">
-            <Border BorderBrush="{Binding TS.Accent3}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1" Background="{Binding TS.Accent1}">
+            <Border BorderBrush="{Binding ThemeService.Accent3}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1" Background="{Binding ThemeService.Accent1}">
                 <Grid>
                     <!-- Header row + content row -->
                     <Grid.RowDefinitions>
@@ -194,7 +198,7 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- Fixed Shift header -->
-                        <Border BorderBrush="{Binding TS.Accent1}" BorderThickness="1" Background="{Binding TS.Accent4}">
+                        <Border BorderBrush="{Binding ThemeService.Accent1}" BorderThickness="1" Background="{Binding ThemeService.Accent4}">
                             <TextBlock Text="Shift" Height="20" HorizontalAlignment="Center"/>
                         </Border>
 
@@ -209,12 +213,12 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
-                                            <Border BorderBrush="{Binding DataContext.TS.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                 BorderThickness="1" Background="{Binding DataContext.TS.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                            <Border BorderBrush="{Binding DataContext.ThemeService.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                 BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
                                                 <TextBlock Text="Name" Width="100" Height="20" HorizontalAlignment="Center"/>
                                             </Border>
-                                            <Border BorderBrush="{Binding DataContext.TS.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                BorderThickness="1" Background="{Binding DataContext.TS.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                            <Border BorderBrush="{Binding DataContext.ThemeService.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
                                                 <TextBlock Text="{Binding}" Width="100" Height="20" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
@@ -240,14 +244,14 @@
                                 <!-- Individual item template -->
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border BorderBrush="{Binding DataContext.TS.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
+                                        <Border BorderBrush="{Binding DataContext.ThemeService.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
                                             <Border.Style>
                                                 <Style TargetType="Border">
-                                                    <Setter Property="Background" Value="{Binding DataContext.TS.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                    <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter},
                                                                Path=(ItemsControl.AlternationIndex)}" Value="1">
-                                                            <Setter Property="Background" Value="{Binding DataContext.TS.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                            <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -272,27 +276,27 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation = "Horizontal">
-                                            <Border BorderBrush="{Binding DataContext.TS.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
+                                            <Border BorderBrush="{Binding DataContext.ThemeService.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
                                                 <Border.Style>
                                                     <Style TargetType="Border">
-                                                        <Setter Property="Background" Value="{Binding DataContext.TS.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                        <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter},Path=(ItemsControl.AlternationIndex)}" Value="1">
-                                                                <Setter Property="Background" Value="{Binding DataContext.TS.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                                <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
                                                 </Border.Style>
                                                 <TextBox Text="{Binding Name}" Height="20" Width="100" MinWidth="50" MaxWidth="500" Background="Transparent"
-                                                             BorderBrush="{Binding DataContext.TS.TextColor, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                             BorderBrush="{Binding DataContext.ThemeService.TextColor, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                                             </Border>
-                                            <Border BorderBrush="{Binding DataContext.TS.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
+                                            <Border BorderBrush="{Binding DataContext.ThemeService.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
                                                 <Border.Style>
                                                     <Style TargetType="Border">
-                                                        <Setter Property="Background" Value="{Binding DataContext.TS.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                        <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter},Path=(ItemsControl.AlternationIndex)}" Value="1">
-                                                                <Setter Property="Background" Value="{Binding DataContext.TS.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                                <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -311,7 +315,7 @@
 
         <!-- Row 5: Connection Details -->
         <Grid Grid.Row="3">
-            <Border BorderBrush="{Binding TS.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,10" CornerRadius="1" Background="{Binding TS.Accent2, UpdateSourceTrigger=PropertyChanged}">
+            <Border BorderBrush="{Binding ThemeService.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Margin="10,10,20,10" CornerRadius="1" Background="{Binding ThemeService.Accent2, UpdateSourceTrigger=PropertyChanged}">
                 <StackPanel>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -329,10 +333,10 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Row="0" Grid.Column="0">
-                            <TextBlock Text="Error Message:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16" Foreground="{Binding TS.ErrorColor}" FontWeight="Bold"/>
+                            <TextBlock Text="Error Message:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16" Foreground="{Binding ThemeService.ErrorColor}" FontWeight="Bold"/>
                         </Grid>
                         <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8">
-                            <TextBlock Text="{Binding ConnDiagState.Contents.ErrorMessage}" Margin="10,0,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14" Foreground="{Binding TS.ErrorColor}"/>
+                            <TextBlock Text="{Binding ConnDiagState.Contents.ErrorMessage}" Margin="10,0,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14" Foreground="{Binding ThemeService.ErrorColor}"/>
                         </Grid>
                         <Grid Grid.Row="0" Grid.Column="4">
                             <TextBlock Text="Requests:" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="16"/>
