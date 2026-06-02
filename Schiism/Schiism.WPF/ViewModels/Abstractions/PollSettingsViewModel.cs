@@ -84,8 +84,6 @@ namespace Schiism.WPF.ViewModels.Abstractions
             new() { Value = AddressConvention.RegisterNumber,  Display = "Register Number (starting from 1)" },
         ];
 
-        public AddressConvention SelectedAddressConvention { get; set; } = AddressConvention.RegisterAddress;
-
         // INotifyPropertyChanged interface for ViewModels
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {

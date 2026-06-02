@@ -97,19 +97,18 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="500"/>
             </Grid.ColumnDefinitions>
             <Border BorderBrush="{Binding ThemeService.Accent3}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1" Background="{Binding ThemeService.Accent1}">
                 <StackPanel Orientation="Horizontal">
                     <Grid Grid.Column="0">
-                        <Border BorderBrush="{Binding ThemeService.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,0,5,5" Background="{Binding ThemeService.Accent2, UpdateSourceTrigger=PropertyChanged}">
+                        <Border BorderBrush="{Binding ThemeService.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding ThemeService.Accent2, UpdateSourceTrigger=PropertyChanged}">
                             <TabControl ItemsSource="{Binding PollTabs}" SelectedItem="{Binding SelectedPollTab}">
                                 <TabControl.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Header}" />
                                     </DataTemplate>
                                 </TabControl.ItemTemplate>
-
                             </TabControl>
                         </Border>
                     </Grid>
@@ -170,8 +169,8 @@
                             </StackPanel>
                         </Border>
                     </Grid>
-                    <Grid Grid.Column="2">
-                        <Image Source="/Images/PVALogo.png" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,25,0" Width="200"/>
+                    <Grid Grid.Column="2" Margin="245,0,25,0">
+                        <Image Source="/Images/PVALogo.png" VerticalAlignment="Center" Width="200"/>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -241,12 +240,16 @@
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
                                             <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                                <TextBlock Text="Watch" Width="50" Height="20" HorizontalAlignment="Center" />
+                                            </Border>
+                                            <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                      BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
                                                 <TextBlock Text="Name" Width="100" Height="20" HorizontalAlignment="Center"/>
                                             </Border>
                                             <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                     BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                                <TextBlock Text="{Binding}" Width="100" Height="20" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding}" Width="475" MinWidth="50" MaxWidth="475" Height="20" HorizontalAlignment="Center" />
                                             </Border>
                                         </StackPanel>
                                     </DataTemplate>
@@ -274,8 +277,7 @@
                                                         </Style.Triggers>
                                                     </Style>
                                                 </Border.Style>
-                                                <TextBox Text="{Binding Name}" Height="20" Width="100" MinWidth="50" MaxWidth="500" Background="Transparent"
-                                                                 BorderBrush="Transparent"/>
+                                                <CheckBox IsChecked="{Binding IsUpdating}" Height="20" Width="50" MinWidth="50" MaxWidth="500" HorizontalAlignment="Center"/>
                                             </Border>
                                             <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
                                                 <Border.Style>
@@ -288,7 +290,20 @@
                                                         </Style.Triggers>
                                                     </Style>
                                                 </Border.Style>
-                                                <TextBlock Text="{Binding Data}" Height="20" Width="100" MinWidth="50" MaxWidth="500"/>
+                                                <TextBox Text="{Binding Name}" Height="20" Width="100" MinWidth="50" MaxWidth="500" Background="Transparent" BorderBrush="Transparent"/>
+                                            </Border>
+                                            <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter},Path=(ItemsControl.AlternationIndex)}" Value="1">
+                                                                <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <TextBlock Text="{Binding Data}" Height="20" Width="475" MinWidth="50" MaxWidth="475"/>
                                             </Border>
                                         </StackPanel>
                                     </DataTemplate>

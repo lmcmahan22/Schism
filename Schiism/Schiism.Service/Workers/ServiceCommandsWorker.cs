@@ -28,11 +28,17 @@ namespace Schiism.Service.Workers
     /// <param name="control">The Modbus Control wrapper, used to control engine restarts.</param>
     /// <param name="fEInitState"> The Frontend status wrapper, used to determine if the Initializing command needs to be sent.</param>
     /// <param name="logger">Logger object used to write data to a text file.</param>
-    public class ServiceCommandsWorker(ICommandReceiver receiver, ICommandSender initSender, IConfigState config, IModbusControl control, IInitializedState fEInitState, IServiceSettingsStore startupSettings, ILogger<ServiceCommandsWorker> logger) : BackgroundService
+    public class ServiceCommandsWorker(ICommandReceiver receiver, ICommandSender initSender, IConfigState config, IModbusControl control, IInitializedState fEInitState, IServiceSettingsStore startupSettings, ILogger<ServiceCommandsWorker> logger, IHostApplicationLifetime lifetime) : BackgroundService
     {
         /// <inheritdoc/>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            // Don't run this worker until the application is fully started (i.e. all Worker's StartAsync() methods are complete).
+            await Task.Run(
+                () => lifetime.ApplicationStarted.WaitHandle.WaitOne(), stoppingToken);
+
+            logger.LogInformation($"Service Commands Worker for {NamingConstants.SettingsCommandName} and {NamingConstants.InitSettingsCommandName} has started");
+
             Task? sendTask = this.RunSenderLoopAsync(stoppingToken);
             Task? receiveTask = this.RunReceiverLoopAsync(stoppingToken);
 

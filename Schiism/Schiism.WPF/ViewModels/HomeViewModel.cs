@@ -17,9 +17,9 @@ namespace Schiism.WPF.ViewModels
     using Schiism.Core.Enums;
     using Schiism.Core.Models.IPC.DTOs.Commands;
     using Schiism.Core.Models.IPC.DTOs.Streams;
-    using Schiism.WPF.Services;
     using Schiism.WPF.Models;
     using Schiism.WPF.Models.Implementations.States;
+    using Schiism.WPF.Services;
     using Schiism.WPF.ViewModels.Abstractions;
     using Schiism.WPF.ViewModels.Controls;
     using Schiism.WPF.Views;
@@ -89,6 +89,7 @@ namespace Schiism.WPF.ViewModels
 
             ModbusSettState.PropertyChanged += this.ModbusSettChanged;
             ModbusDataState.PropertyChanged += this.ModbusDataChanged;
+            ConnDiagState.PropertyChanged += this.ConnDiagStateChanged;
 
             // Subscribe to the tab viewmodels too? How else will you know if the Address Convention changed?
             PollTabs = new ObservableCollection<PollSettingsViewModel>
@@ -130,8 +131,8 @@ namespace Schiism.WPF.ViewModels
             }
         }
 
-    // Public instances of the ViewModel for control in the View
-    public string Title
+        // Public instances of the ViewModel for control in the View
+        public string Title
         {
             get => title;
             set => SetProperty(ref title, value);
@@ -290,6 +291,12 @@ namespace Schiism.WPF.ViewModels
                 // Marshall this as well, if you haven't already!
                 UpdateModbusTable();
             }
+
+            // Update the shift column if the opened settings tab changes the convention, since the values in this column are based on the convention
+            if (e.PropertyName is nameof(ModbusSettState.SelectedAddressConvention))
+             {
+                UpdateShiftColumn();
+            }
         }
 
         private void ModbusDataChanged(object? sender, PropertyChangedEventArgs e)
@@ -302,14 +309,25 @@ namespace Schiism.WPF.ViewModels
             }
         }
 
+        private void ConnDiagStateChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is nameof(ConnDiagState.Contents))
+            {
+                logger.LogInformation($"Implementing update from Connection Diagnostics: {this.ConnDiagState.Contents.ToString}");
+            }
+        }
+
         // Build the table for the main UI based on the provided MODBUS Data from the MODBUSService Model
         private void UpdateModbusTable()
         {
-            // Prepare a cache of the exisitng name data, in case we need to keep some of the current names around
+            // Prepare a cache of the exisitng name and updating data, in case we need to keep some of the current names around
             string[] namesCache = new string[ModbusSettState.DataLength];
-            for (int i = 0; i < namesCache.Length; i++)
+            bool[] updatingCache = new bool[ModbusSettState.DataLength];
+
+            for (int i = 0; i < ModbusSettState.DataLength; i++)
             {
                 namesCache[i] = string.Empty; // Initialize the cache with empty strings to avoid null issues
+                updatingCache[i] = false; // Initialize the cache with false to avoid null issues
             }
 
             // Retrieve the current names from every existing row of MODBUS data for the cache
@@ -322,6 +340,8 @@ namespace Schiism.WPF.ViewModels
                     if (i < ModbusSettState.DataLength)
                     {
                         string? temp = ModbusRows[i].Name;
+                        bool? tempUpdating = ModbusRows[i].IsUpdating;
+
                         if (temp == null)
                         {
                             namesCache[i] = string.Empty;
@@ -329,6 +349,15 @@ namespace Schiism.WPF.ViewModels
                         else
                         {
                             namesCache[i] = temp;
+                        }
+
+                        if (!tempUpdating.HasValue)
+                        {
+                            updatingCache[i] = false;
+                        }
+                        else
+                        {
+                            updatingCache[i] = tempUpdating.Value;
                         }
                     }
 
@@ -341,7 +370,7 @@ namespace Schiism.WPF.ViewModels
                 // Add new MODBUS rows for the configured length with the names cache
                 for (int i = 0; i < ModbusSettState.DataLength; i++)
                 {
-                    ModbusRows.Add(new ModbusRow(namesCache[i], string.Empty)); // Populate the name, data remains empty for now
+                    ModbusRows.Add(new ModbusRow(namesCache[i], string.Empty, updatingCache[i])); // Populate the name, data remains empty for now
 
                     // logger.LogInformation($"At Table Update: ModbusRow[{i}] = {namesCache[i]}, {string.Empty}");
                 }
@@ -383,6 +412,13 @@ namespace Schiism.WPF.ViewModels
                 // Loop through all 6 column pairs of MODBUS names and data
                 for (int i = 0; i < ModbusRows.Count; i++)
                 {
+
+                    // Don't update if this row isn't checked for updating
+                    if (!ModbusRows[i].IsUpdating)
+                    {
+                        continue; // Skip updating this row's data if it's currently being updated by the user in the UI
+                    }
+
                     // Only try to take the MODBUS data if we have a connection and if the index is within the bounds of the current length.
                     // i.e. the user can change the desired data length prior to connecting, so we don't necessarily want to try reading data here (it may not exist yet)
                     string data = string.Empty;

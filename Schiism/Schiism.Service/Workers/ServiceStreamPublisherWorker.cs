@@ -13,11 +13,17 @@ namespace Schiism.Service.Workers
     /// Publishing Worker. Both ModbusData and ConnectionDiagnostics are published through this same worker type, just seperate instances.
     /// </summary>
     /// <typeparam name="T">The type of the stream item, either ModbusData or ConnectionDiagnostics.</typeparam>
-    public class ServiceStreamPublisherWorker<T>(string pipeName, IConfigState config, IInitializedState fEInitState, IStreamQueue<T> queue, IStreamPublisher<T> publisher, ILogger<ServiceStreamPublisherWorker<T>> logger) : BackgroundService
+    public class ServiceStreamPublisherWorker<T>(string pipeName, IConfigState config, IInitializedState fEInitState, IStreamQueue<T> queue, IStreamPublisher<T> publisher, ILogger<ServiceStreamPublisherWorker<T>> logger, IHostApplicationLifetime lifetime) : BackgroundService
     {
         /// <inheritdoc/>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            // Don't run this worker until the application is fully started (i.e. all three Worker's StartAsync() methods are complete).
+            await Task.Run(
+                () => lifetime.ApplicationStarted.WaitHandle.WaitOne(), stoppingToken);
+
+            logger.LogInformation($"Service Stream Publisher Worker for {pipeName} has started");
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 if (!fEInitState.IsInitialized)

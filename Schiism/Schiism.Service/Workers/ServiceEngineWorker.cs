@@ -12,7 +12,7 @@ namespace Schiism.Service.Workers
     /// <summary>
     /// Worker class runs the MODBUS Engine in a background thread, allowing it to run independently of the main service thread and be restarted when necessary.
     /// </summary>
-    public class ServiceEngineWorker(IEngine engine, IConfigState config, IModbusControl modbusControl, ILogger<ServiceEngineWorker> logger) : BackgroundService
+    public class ServiceEngineWorker(IEngine engine, IConfigState config, IModbusControl modbusControl, ILogger<ServiceEngineWorker> logger, IHostApplicationLifetime lifetime) : BackgroundService
     {
         /// <summary>
         /// Executes the background service, managing the lifecycle of the MODBUS Engine.
@@ -21,6 +21,12 @@ namespace Schiism.Service.Workers
         /// <returns>A task that represents the asynchronous operation.</returns>
         protected override async Task ExecuteAsync(CancellationToken ct)
         {
+            // Don't run this worker until the application is fully started (i.e. all three Worker's StartAsync() methods are complete).
+            await Task.Run(
+                () => lifetime.ApplicationStarted.WaitHandle.WaitOne(), ct);
+
+            logger.LogInformation("Service Engine Worker started");
+
             while (!ct.IsCancellationRequested)
             {
                 using var sessionCts = CancellationTokenSource.CreateLinkedTokenSource(ct);

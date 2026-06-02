@@ -105,7 +105,8 @@ namespace Schiism.Service
                     ew.GetRequiredService<IEngine>(),
                     ew.GetRequiredService<IConfigState>(),
                     ew.GetRequiredService<IModbusControl>(),
-                    ew.GetRequiredService<ILogger<ServiceEngineWorker>>()));
+                    ew.GetRequiredService<ILogger<ServiceEngineWorker>>(),
+                    ew.GetRequiredService<IHostApplicationLifetime>()));
             builder.Services.AddHostedService<ServiceStreamPublisherWorker<ModbusData>>(
                 spm => new ServiceStreamPublisherWorker<ModbusData>(
                     NamingConstants.ModbusDataStreamName,
@@ -113,7 +114,8 @@ namespace Schiism.Service
                     spm.GetRequiredService<IInitializedState>(),
                     spm.GetRequiredService<IStreamQueue<ModbusData>>(),
                     spm.GetRequiredService<IStreamPublisher<ModbusData>>(),
-                    spm.GetRequiredService<ILogger<ServiceStreamPublisherWorker<ModbusData>>>()));
+                    spm.GetRequiredService<ILogger<ServiceStreamPublisherWorker<ModbusData>>>(),
+                    spm.GetRequiredService<IHostApplicationLifetime>()));
             builder.Services.AddHostedService<ServiceStreamPublisherWorker<ConnectionDiagnostics>>(
                 spc => new ServiceStreamPublisherWorker<ConnectionDiagnostics>(
                     NamingConstants.ConnDiagStreamName,
@@ -121,7 +123,8 @@ namespace Schiism.Service
                     spc.GetRequiredService<IInitializedState>(),
                     spc.GetRequiredService<IStreamQueue<ConnectionDiagnostics>>(),
                     spc.GetRequiredService<IStreamPublisher<ConnectionDiagnostics>>(),
-                    spc.GetRequiredService<ILogger<ServiceStreamPublisherWorker<ConnectionDiagnostics>>>()));
+                    spc.GetRequiredService<ILogger<ServiceStreamPublisherWorker<ConnectionDiagnostics>>>(),
+                    spc.GetRequiredService<IHostApplicationLifetime>()));
             builder.Services.AddHostedService<ServiceCommandsWorker>(
                 cw => new ServiceCommandsWorker(
                     cw.GetRequiredService<ICommandReceiver>(),
@@ -130,7 +133,8 @@ namespace Schiism.Service
                     cw.GetRequiredService<IModbusControl>(),
                     cw.GetRequiredService<IInitializedState>(),
                     cw.GetRequiredService<IServiceSettingsStore>(),
-                    cw.GetRequiredService<ILogger<ServiceCommandsWorker>>()));
+                    cw.GetRequiredService<ILogger<ServiceCommandsWorker>>(),
+                    cw.GetRequiredService<IHostApplicationLifetime>()));
 
             // Not used right now, it's just a logger that doesn't actually log correctly atm
             // builder.Services.AddHostedService<QueueMonitorWorker>();

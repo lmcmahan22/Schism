@@ -9,6 +9,7 @@ namespace Schiism.WPF.Models
     {
         private string name;
         private string data;
+        private bool isUpdating;
 
         public string Name
         {
@@ -22,10 +23,17 @@ namespace Schiism.WPF.Models
             set => SetProperty(ref data, value);
         }
 
-        public ModbusRow(string name, string data)
+        public bool IsUpdating
+        {
+            get => isUpdating;
+            set => SetProperty(ref isUpdating, value);
+        }
+
+        public ModbusRow(string name, string data, bool isUpdating)
         {
             this.name = name;
             this.data = data;
+            this.isUpdating = isUpdating;
         }
     }
 }

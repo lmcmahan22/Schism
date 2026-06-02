@@ -65,7 +65,7 @@ NotifyOnValidationError=True}" Margin="100,0,5,0" Width="60" Height="25" MaxLeng
                 </Grid>
                 <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
                     <TextBlock Text="Address Conv." Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                    <ComboBox Name="AddressConv" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding AddressConventions}" SelectedValue="{Binding SelectedAddressConvention, Mode=TwoWay}" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="580" Height="25" FontSize="14"/>
+                    <ComboBox Name="AddressConv" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding AddressConventions}" SelectedValue="{Binding ModbusSettState.SelectedAddressConvention, Mode=TwoWay}" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="580" Height="25" FontSize="14"/>
                 </Grid>
             </Grid>
         </StackPanel>
