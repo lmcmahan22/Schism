@@ -120,10 +120,17 @@ namespace Schiism.Service.Implementations.Modbus
             ushort dataLength,
             bool isInputs)
         {
-            ushort[] rawData;
-            rawData = isInputs ? master.ReadInputRegisters(deviceId, startAddress, dataLength) : master.ReadHoldingRegisters(deviceId, startAddress, dataLength);
+            List<ushort> rawData = new List<ushort>();
 
-            return [.. rawData];
+            // Reads ModbusData in chunks of 125 registers, since that's the maximum allowed by the protocol. This prevents issues with trying to read too much data at once.
+            for (int i = 0; i < dataLength; i += 125)
+            {
+                ushort chunkSize = (ushort)Math.Min(125, dataLength - i);
+                ushort[] chunkData = isInputs ? master.ReadInputRegisters(deviceId, (ushort)(startAddress + i), chunkSize) : master.ReadHoldingRegisters(deviceId, (ushort)(startAddress + i), chunkSize);
+                rawData.AddRange(chunkData);
+            }
+
+            return rawData;
         }
 
         private static TcpClient CreateClient(string ipAddr, int tcpPort, int tcpTimeout)

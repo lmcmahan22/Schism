@@ -182,75 +182,34 @@
             <Border BorderBrush="{Binding ThemeService.Accent3}" BorderThickness="1" Margin="10,10,20,0" CornerRadius="1" Background="{Binding ThemeService.Accent1}">
                 <Grid>
                     <!-- Header row + content row -->
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                    <!-- ===================== -->
-                    <!-- HEADER ROW -->
-                    <!-- ===================== -->
+                    <Grid Grid.Column="0">
 
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
 
-                        <!-- Fixed Shift header -->
-                        <Border BorderBrush="{Binding ThemeService.Accent1}" BorderThickness="1" Background="{Binding ThemeService.Accent4}">
-                            <TextBlock Text="Shift" Height="20" HorizontalAlignment="Center"/>
-                        </Border>
+                            <Border BorderBrush="{Binding ThemeService.Main}" Grid.Row="0" BorderThickness="1" Background="{Binding ThemeService.Accent4}">
+                                <TextBlock Text="Shift" Height="20" HorizontalAlignment="Center"/>
+                            </Border>
 
-                        <!-- Scrollable headers -->
-                        <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
-                            <ItemsControl ItemsSource="{Binding AddressList}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="Horizontal"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border BorderBrush="{Binding DataContext.ThemeService.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                 BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                                <TextBlock Text="Name" Width="100" Height="20" HorizontalAlignment="Center"/>
-                                            </Border>
-                                            <Border BorderBrush="{Binding DataContext.ThemeService.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                                <TextBlock Text="{Binding}" Width="100" Height="20" HorizontalAlignment="Center" />
-                                            </Border>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
-                    </Grid>
-
-                    <!-- ===================== -->
-                    <!-- CONTENT ROW -->
-                    <!-- ===================== -->
-                    <Grid Grid.Row="1">
-
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <!-- Shift column -->
-                        <Grid Grid.Column="0">
-                            <ItemsControl ItemsSource="{Binding ShiftColumn}" AlternationCount="2">
+                            <ItemsControl ItemsSource="{Binding ShiftColumn}" AlternationCount="2" Grid.Row="1">
                                 <!-- Individual item template -->
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border BorderBrush="{Binding DataContext.ThemeService.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
+                                        <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
                                             <Border.Style>
                                                 <Style TargetType="Border">
                                                     <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter},
-                                                               Path=(ItemsControl.AlternationIndex)}" Value="1">
+                                                                   Path=(ItemsControl.AlternationIndex)}" Value="1">
                                                             <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -262,10 +221,38 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </Grid>
+                    </Grid>
 
-                        <!-- Scrollable MODBUS area -->
-                        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
-                            <ItemsControl ItemsSource="{Binding ModbusRows}" AlternationCount="2">
+                    <!-- Scrollable MODBUS area -->
+                    <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" Grid.ColumnSpan="2">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <ItemsControl Grid.Row="0" ItemsSource="{Binding AddressList}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                                <TextBlock Text="Name" Width="100" Height="20" HorizontalAlignment="Center"/>
+                                            </Border>
+                                            <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                                <TextBlock Text="{Binding}" Width="100" Height="20" HorizontalAlignment="Center" />
+                                            </Border>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <ItemsControl Grid.Row="1" Height="450" ItemsSource="{Binding ModbusRows}" AlternationCount="2">
                                 <!-- Wrap behavior -->
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -276,7 +263,7 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation = "Horizontal">
-                                            <Border BorderBrush="{Binding DataContext.ThemeService.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
+                                            <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
                                                 <Border.Style>
                                                     <Style TargetType="Border">
                                                         <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
@@ -288,9 +275,9 @@
                                                     </Style>
                                                 </Border.Style>
                                                 <TextBox Text="{Binding Name}" Height="20" Width="100" MinWidth="50" MaxWidth="500" Background="Transparent"
-                                                             BorderBrush="{Binding DataContext.ThemeService.TextColor, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                                 BorderBrush="Transparent"/>
                                             </Border>
-                                            <Border BorderBrush="{Binding DataContext.ThemeService.Accent1, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
+                                            <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
                                                 <Border.Style>
                                                     <Style TargetType="Border">
                                                         <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
@@ -307,8 +294,8 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                        </ScrollViewer>
-                    </Grid>
+                        </Grid>
+                    </ScrollViewer>
                 </Grid>
             </Border>
         </Grid>

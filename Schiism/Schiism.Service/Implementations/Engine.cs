@@ -109,10 +109,16 @@ namespace Schiism.Service.Implementations
                 logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to IO Error. Attempting to reconnect...", config.IPAddress, config.TCPPort);
                 throw;
             }
+            catch (ArgumentException ex)
+            {
+                await this.OnError(ex, ct);
+                logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to Argument Error. Check configuration. Attempting to reconnect...", config.IPAddress, config.TCPPort);
+                throw;
+            }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 await this.OnError(ex, ct);
-                logger.LogError(ex, "Unknown error from Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
+                logger.LogError(ex, "Unknown error from Modbus Server at {IP}:{Port} --> {ex}", config.IPAddress, config.TCPPort, ex);
             }
         }
 
