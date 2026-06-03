@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Schiism.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e17a1e7b06b9d8f0e2b1a43512b8a802a99dd89a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7c218649f04135b3aa4ca7180aa501be7634b829")]
 [assembly: System.Reflection.AssemblyProductAttribute("Schiism.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Schiism.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

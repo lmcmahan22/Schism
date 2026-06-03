@@ -7,6 +7,7 @@
              xmlns:helpers="clr-namespace:Schiism.WPF.Models.Helpers"
              xmlns:controls="clr-namespace:Schiism.WPF.Views.Controls"
              xmlns:controlVMs="clr-namespace:Schiism.WPF.ViewModels.Controls"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              prism:ViewModelLocator.AutoWireViewModel="True"
              Background="{Binding ThemeService.Main, UpdateSourceTrigger=PropertyChanged}"
              Height="810" Width="1440">
@@ -156,7 +157,7 @@
                                                     <Style.Triggers>
                                                         <MultiDataTrigger>
                                                             <MultiDataTrigger.Conditions>
-                                                                <Condition Binding="{Binding ConnDiagState.Contents.IsConnected}" Value="True" />
+                                                                <Condition Binding="{Binding ServerConnected}" Value="True" />
                                                             </MultiDataTrigger.Conditions>
                                                             <Setter Property="Source" Value="/Images/InterfaceConnected.png"/>
                                                         </MultiDataTrigger>
@@ -241,15 +242,60 @@
                                         <StackPanel Orientation="Horizontal">
                                             <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                     BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                                <TextBlock Text="Watch" Width="50" Height="20" HorizontalAlignment="Center" />
+                                                <Grid Height="20" Width = "{Binding DataContext.WatchColumnWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                      MinWidth="50" MaxWidth="475">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="5" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0"
+                                                           Text="Watch"
+                                                           VerticalAlignment="Center"
+                                                           HorizontalAlignment="Center"/>
+                                                    <Thumb Grid.Column="1" Cursor="SizeWE" HorizontalAlignment="Stretch">
+                                                        <i:Interaction.Behaviors>
+                                                            <helpers:ThumbDragBehavior
+                                                            Command="{Binding DataContext.ResizeWatchColumnCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+                                                        </i:Interaction.Behaviors>
+                                                    </Thumb>
+                                                </Grid>
                                             </Border>
                                             <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                      BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                                <TextBlock Text="Name" Width="100" Height="20" HorizontalAlignment="Center"/>
+                                                <Grid Height="20" Width = "{Binding DataContext.NameColumnWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                      MinWidth="50" MaxWidth="475">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="5" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0"
+                                                       Text="Name"
+                                                       VerticalAlignment="Center"
+                                                       HorizontalAlignment="Center"/>
+                                                    <Thumb Grid.Column="1" Cursor="SizeWE" HorizontalAlignment="Stretch">
+                                                        <i:Interaction.Behaviors>
+                                                            <helpers:ThumbDragBehavior
+                                                            Command="{Binding DataContext.ResizeNameColumnCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+                                                        </i:Interaction.Behaviors>
+                                                    </Thumb>
+                                                </Grid>
                                             </Border>
                                             <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                     BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                                <TextBlock Text="{Binding}" Width="475" MinWidth="50" MaxWidth="475" Height="20" HorizontalAlignment="Center" />
+                                                <Grid Height="20" Width = "{Binding DataContext.DataColumnWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                      MinWidth="50" MaxWidth="475">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="5" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding}" />
+                                                    <Thumb Grid.Column="1" Cursor="SizeWE" HorizontalAlignment="Stretch">
+                                                        <i:Interaction.Behaviors>
+                                                            <helpers:ThumbDragBehavior
+                                                            Command="{Binding DataContext.ResizeDataColumnCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+                                                        </i:Interaction.Behaviors>
+                                                    </Thumb>
+                                                </Grid>
                                             </Border>
                                         </StackPanel>
                                     </DataTemplate>
@@ -277,7 +323,8 @@
                                                         </Style.Triggers>
                                                     </Style>
                                                 </Border.Style>
-                                                <CheckBox IsChecked="{Binding IsUpdating}" Height="20" Width="50" MinWidth="50" MaxWidth="500" HorizontalAlignment="Center"/>
+                                                <CheckBox IsChecked="{Binding IsUpdating}" Height="20" MinWidth="50" MaxWidth="475" HorizontalAlignment="Center"
+                                                          Width = "{Binding DataContext.WatchColumnWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
                                             </Border>
                                             <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
                                                 <Border.Style>
@@ -290,7 +337,8 @@
                                                         </Style.Triggers>
                                                     </Style>
                                                 </Border.Style>
-                                                <TextBox Text="{Binding Name}" Height="20" Width="100" MinWidth="50" MaxWidth="500" Background="Transparent" BorderBrush="Transparent"/>
+                                                <TextBox Text="{Binding Name}" Height="20" MinWidth="50" MaxWidth="475" Background="Transparent" BorderBrush="Transparent"
+                                                         Width = "{Binding DataContext.NameColumnWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
                                             </Border>
                                             <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
                                                 <Border.Style>
@@ -303,7 +351,8 @@
                                                         </Style.Triggers>
                                                     </Style>
                                                 </Border.Style>
-                                                <TextBlock Text="{Binding Data}" Height="20" Width="475" MinWidth="50" MaxWidth="475"/>
+                                                <TextBlock Text="{Binding Data}" Height="20" MinWidth="50" MaxWidth="475"
+                                                           Width = "{Binding DataContext.DataColumnWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                                             </Border>
                                         </StackPanel>
                                     </DataTemplate>

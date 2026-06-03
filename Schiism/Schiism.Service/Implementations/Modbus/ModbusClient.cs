@@ -105,8 +105,15 @@ namespace Schiism.Service.Implementations.Modbus
             ushort dataLength,
             bool isInputs)
         {
-            bool[] rawData;
-            rawData = isInputs ? master.ReadInputs(deviceId, startAddress, dataLength) : master.ReadCoils(deviceId, startAddress, dataLength);
+            List<bool> rawData = new List<bool>();
+
+            // Reads ModbusData in chunks of 2000 coils, since that's the maximum allowed by the protocol. This prevents issues with trying to read too much data at once.
+            for (int i = 0; i < dataLength; i += 2000)
+            {
+                ushort chunkSize = (ushort)Math.Min(2000, dataLength - i);
+                bool[] chunkData = isInputs ? master.ReadInputs(deviceId, (ushort)(startAddress + i), chunkSize) : master.ReadCoils(deviceId, (ushort)(startAddress + i), chunkSize);
+                rawData.AddRange(chunkData);
+            }
 
             // Convert to ushorts, so bools can be displayed as 1s and 0s.
             // This also makes it so we can handle this data in a similar manner as register data, which returns as ushorts natively.

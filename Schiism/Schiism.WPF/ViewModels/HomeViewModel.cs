@@ -38,6 +38,10 @@ namespace Schiism.WPF.ViewModels
 
         private readonly ILogger logger;
 
+        private double watchColumnWidth = 50;
+        private double nameColumnWidth = 100;
+        private double dataColumnWidth = 475;
+
         // ViewModel Commands
         private DelegateCommand? saveClick;
         private DelegateCommand? loadClick;
@@ -45,6 +49,9 @@ namespace Schiism.WPF.ViewModels
         private DelegateCommand? settClick;
         private DelegateCommand? themesClick;
         private DelegateCommand? aboutClick;
+        private DelegateCommand<double?> resizeWatchColumnCommand;
+        private DelegateCommand<double?> resizeNameColumnCommand;
+        private DelegateCommand<double?> resizeDataColumnCommand;
 
         public IWPFConfigState ModbusSettState { get; }
 
@@ -57,6 +64,9 @@ namespace Schiism.WPF.ViewModels
         public ObservableCollection<PollSettingsViewModel> PollTabs { get; }
 
         public ThemeService ThemeService { get; }
+
+        // Inidicates server connection from the connection diagnostics state, but also turns off, if the initialized state has been turned off.
+        public bool ServerConnected { get; set; }
 
         // ViewModel constructor
         public HomeViewModel(
@@ -90,6 +100,7 @@ namespace Schiism.WPF.ViewModels
             ModbusSettState.PropertyChanged += this.ModbusSettChanged;
             ModbusDataState.PropertyChanged += this.ModbusDataChanged;
             ConnDiagState.PropertyChanged += this.ConnDiagStateChanged;
+            InitState.PropertyChanged += this.InitStateChanged;
 
             // Subscribe to the tab viewmodels too? How else will you know if the Address Convention changed?
             PollTabs = new ObservableCollection<PollSettingsViewModel>
@@ -144,6 +155,37 @@ namespace Schiism.WPF.ViewModels
             set => SetProperty(ref addressList, value);
         }
 
+        // Jointed column widths
+        public double WatchColumnWidth
+        {
+            get => watchColumnWidth;
+            set
+            {
+                watchColumnWidth = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double NameColumnWidth
+        {
+            get => nameColumnWidth;
+            set
+            {
+                nameColumnWidth = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double DataColumnWidth
+        {
+            get => dataColumnWidth;
+            set
+            {
+                dataColumnWidth = value;
+                OnPropertyChanged();
+            }
+        }
+
         // Grid collections
         public ObservableCollection<string> ShiftColumn => shiftColumn;
 
@@ -151,6 +193,15 @@ namespace Schiism.WPF.ViewModels
         public ObservableCollection<ModbusRow> ModbusRows { get; } = new ObservableCollection<ModbusRow>();
 
         // WPF Public Command properties
+        public DelegateCommand<double?> ResizeWatchColumnCommand =>
+            resizeWatchColumnCommand ??= new DelegateCommand<double?>(OnWatchResizeColumn);
+
+        public DelegateCommand<double?> ResizeNameColumnCommand =>
+            resizeNameColumnCommand ??= new DelegateCommand<double?>(OnNameResizeColumn);
+
+        public DelegateCommand<double?> ResizeDataColumnCommand =>
+            resizeDataColumnCommand ??= new DelegateCommand<double?>(OnDataResizeColumn);
+
         public DelegateCommand SaveClick =>
             saveClick ??= new DelegateCommand(ExecuteSaveClick);
 
@@ -311,9 +362,19 @@ namespace Schiism.WPF.ViewModels
 
         private void ConnDiagStateChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName is nameof(ConnDiagState.Contents))
+            if (e.PropertyName is nameof(this.ConnDiagState.Contents))
             {
-                logger.LogInformation($"Implementing update from Connection Diagnostics: {this.ConnDiagState.Contents.ToString}");
+                this.ServerConnected = (this.ConnDiagState.Contents?.IsConnected ?? false) && this.InitState.IsInitialized;
+                this.OnPropertyChanged(nameof(this.ServerConnected));
+            }
+        }
+
+        private void InitStateChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is nameof(this.InitState.IsInitialized))
+            {
+                this.ServerConnected = (this.ConnDiagState.Contents?.IsConnected ?? false) && this.InitState.IsInitialized;
+                this.OnPropertyChanged(nameof(this.ServerConnected));
             }
         }
 
@@ -565,6 +626,42 @@ namespace Schiism.WPF.ViewModels
                 // return empty data (i.e. nothing is loaded for the user)
                 return new SaveData();
             }
+        }
+
+        private void OnWatchResizeColumn(double? delta)
+        {
+            if (!delta.HasValue)
+            {
+                return;
+            }
+
+            WatchColumnWidth = Math.Max(
+                50,
+                WatchColumnWidth + delta.Value);
+        }
+
+        private void OnNameResizeColumn(double? delta)
+        {
+            if (!delta.HasValue)
+            {
+                return;
+            }
+
+            NameColumnWidth = Math.Max(
+                50,
+                NameColumnWidth + delta.Value);
+        }
+
+        private void OnDataResizeColumn(double? delta)
+        {
+            if (!delta.HasValue)
+            {
+                return;
+            }
+
+            DataColumnWidth = Math.Max(
+                50,
+                DataColumnWidth + delta.Value);
         }
     }
 }

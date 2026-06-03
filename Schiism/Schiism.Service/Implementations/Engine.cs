@@ -24,7 +24,7 @@ namespace Schiism.Service.Implementations
     /// <param name="modbusStreamQueue">The Modbus data stream queue, DI'd.</param>
     /// <param name="connStreamQueue">The connection diagnostics stream queue, DI'd.</param>
     /// <param name="logger">The logger object, DI'd.</param>
-    public class Engine(IConfigState config, IModbusClient client, IModbusInterpreter interpreter, IStreamQueue<ModbusData> modbusStreamQueue, IStreamQueue<ConnectionDiagnostics> connStreamQueue, ILogger<Engine> logger) : IEngine
+    public class Engine(IConfigState config, IModbusClient client, IModbusInterpreter interpreter, IStreamQueue<ModbusData> modbusStreamQueue, IStreamQueue<ConnectionDiagnostics> connStreamQueue, IInitializedState fEInitState, ILogger<Engine> logger) : IEngine
     {
         private int numRequests = 0;
         private int numResponses = 0;
@@ -85,10 +85,15 @@ namespace Schiism.Service.Implementations
                     ? interpreter.InterpretRegs(config, rawData)
                     : rawData.Select(x => x.ToString()).ToList();
 
-                // Enqueue the modbus data for downstream processing
-                ModbusData data = new(config.DeviceId, interp, DateTime.UtcNow);
-                await modbusStreamQueue.EnqueueAsync(data, ct);
+                // Only queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
+                if (fEInitState.IsInitialized)
+                {
+                    // Enqueue the modbus data for downstream processing
+                    ModbusData data = new(config.DeviceId, interp, DateTime.UtcNow);
+                    await modbusStreamQueue.EnqueueAsync(data, ct);
+                }
 
+                // Regardless of whether we queued up the last stream contents or not, this was still a successful poll, so we update the diagnostics and connection status accordingly.
                 await this.OnSuccess(ct);
                 logger.LogInformation("Successfully polled Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
             }
@@ -125,8 +130,13 @@ namespace Schiism.Service.Implementations
         private async Task OnRequest(CancellationToken ct)
         {
             this.numRequests++;
-            ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.IsConnected, DateTime.UtcNow);
-            await connStreamQueue.EnqueueAsync(diag, ct);
+
+            // Only queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
+            if (fEInitState.IsInitialized)
+            {
+                ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.IsConnected, DateTime.UtcNow);
+                await connStreamQueue.EnqueueAsync(diag, ct);
+            }
         }
 
         private async Task OnSuccess(CancellationToken ct)
@@ -135,9 +145,15 @@ namespace Schiism.Service.Implementations
             this.numResponses++;
             this.numOKs++;
             this.errorMessage = string.Empty;
-            ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.IsConnected, DateTime.UtcNow);
-            // logger.LogError($"Client is sending server Connection Status: {this.IsConnected}");
-            await connStreamQueue.EnqueueAsync(diag, ct);
+
+            // Only queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
+            if (fEInitState.IsInitialized)
+            {
+                ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.IsConnected, DateTime.UtcNow);
+
+                // logger.LogError($"Client is sending server Connection Status: {this.IsConnected}");
+                await connStreamQueue.EnqueueAsync(diag, ct);
+            }
         }
 
         private async Task OnError(Exception ex, CancellationToken ct)
@@ -146,9 +162,15 @@ namespace Schiism.Service.Implementations
             this.numResponses++;
             this.numErrors++;
             this.errorMessage = this.MapError(ex);
-            ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.IsConnected, DateTime.UtcNow);
-            // logger.LogError($"Client is sending server Connection Status: {this.IsConnected}");
-            await connStreamQueue.EnqueueAsync(diag, ct);
+
+            // Only queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
+            if (fEInitState.IsInitialized)
+            {
+                ConnectionDiagnostics diag = new(this.numRequests, this.numResponses, this.numOKs, this.numErrors, this.errorMessage, this.IsConnected, DateTime.UtcNow);
+
+                // logger.LogError($"Client is sending server Connection Status: {this.IsConnected}");
+                await connStreamQueue.EnqueueAsync(diag, ct);
+            }
         }
 
         private string MapError(Exception ex)

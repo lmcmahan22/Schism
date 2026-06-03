@@ -65,6 +65,7 @@ namespace Schiism.Service
 
             // Define Core Services (Builder.Services is a dependency container)
             // Make this its own method (ChatGPT originally advised making this its own CLASS???)
+            // No constructor parameters needed here, DI automatically resolves these! :D
             builder.Services.AddSingleton<IConfigState, ConfigState>();
             builder.Services.AddSingleton<IModbusClient, ModbusClient>();
             builder.Services.AddSingleton<IEngine, Engine>();
