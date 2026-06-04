@@ -37,5 +37,9 @@ namespace Schiism.Core.Abstractions.Modbus
         /// MODBUS data is returned as a List of ushorts (0-65535) with one uShort for each coil/register, regardless of configuration settings.
         /// </returns>
         List<ushort> ReadData(IConfigState mC);
+
+        List<ushort> ReadCoilData(IConfigState mC);
+
+        List<ushort> ReadRegisterData(IConfigState mC);
     }
 }

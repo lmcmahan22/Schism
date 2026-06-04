@@ -74,22 +74,40 @@ namespace Schiism.Service.Implementations
             {
                 await this.OnRequest(ct);
 
-                List<ushort> rawData = client.ReadData(config);
+                // Poll both types of data for logging, only queue and publish selected for frontend.
+                List<ushort> rawCoilData = client.ReadCoilData(config);
+                List<ushort> rawRegisterData = client.ReadRegisterData(config);
 
-                if (rawData is null || rawData.Count != config.DataLength)
+                if (rawCoilData is null || rawCoilData.Count != config.DataLength)
                 {
-                    throw new Exception("Invalid Modbus response");
+                    throw new Exception("Invalid Modbus Coil response");
                 }
 
-                List<string>? interp = config.SelectedPollType is PollType.HoldingRegisters or PollType.InputRegisters
-                    ? interpreter.InterpretRegs(config, rawData)
-                    : rawData.Select(x => x.ToString()).ToList();
+                if (rawRegisterData is null || rawRegisterData.Count != config.DataLength)
+                {
+                    throw new Exception("Invalid Modbus Register response");
+                }
+
+                List<string>? interp;
+                ModbusData data;
 
                 // Only queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
                 if (fEInitState.IsInitialized)
                 {
+
+                    if (config.SelectedPollType is PollType.HoldingRegisters)
+                    {
+                        // Data needs to be interpretted, according to config settings
+                        interp = interpreter.InterpretRegs(config, rawRegisterData);
+                    }
+                    else
+                    {
+                        // No interpretation needed for coils, just convert to string for uniformity in the frontend
+                        interp = rawCoilData.Select(x => x.ToString()).ToList();
+                    }
+
                     // Enqueue the modbus data for downstream processing
-                    ModbusData data = new(config.DeviceId, interp, DateTime.UtcNow);
+                    data = new(config.DeviceId, interp, DateTime.UtcNow);
                     await modbusStreamQueue.EnqueueAsync(data, ct);
                 }
 

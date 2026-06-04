@@ -103,6 +103,7 @@ namespace Schiism.WPF.ViewModels
             InitState.PropertyChanged += this.InitStateChanged;
 
             // Subscribe to the tab viewmodels too? How else will you know if the Address Convention changed?
+            // Only show the Status Coil and Register tabs, since these are the only two that Vision PLCs use.
             PollTabs = new ObservableCollection<PollSettingsViewModel>
             {
                 new CoilPollSettingsViewModel(
@@ -111,21 +112,9 @@ namespace Schiism.WPF.ViewModels
                     this.ModbusSettState,
                     this.ThemeService),
 
-                new CoilPollSettingsViewModel(
-                    "Status Inputs",
-                    PollType.InputStatus,
-                    this.ModbusSettState,
-                    this.ThemeService),
-
                 new RegisterPollSettingsViewModel(
                     "Holding Registers",
                     PollType.HoldingRegisters,
-                    this.ModbusSettState,
-                    this.ThemeService),
-
-                new RegisterPollSettingsViewModel(
-                    "Input Registers",
-                    PollType.InputRegisters,
                     this.ModbusSettState,
                     this.ThemeService),
             };
