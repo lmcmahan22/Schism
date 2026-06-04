@@ -392,7 +392,15 @@ namespace Schiism.WPF.ViewModels
             }
 
             // Retrieve the current names from every existing row of MODBUS data for the cache
-            Application.Current.Dispatcher.Invoke(() =>
+            // Keep this above the loops, so you don't spam in and out of the main thread
+            var app = Application.Current;
+
+            if (app == null)
+            {
+                return;
+            }
+
+            app.Dispatcher.Invoke(() =>
             {
                 for (int i = 0; i < ModbusRows.Count; i++)
                 {
@@ -426,7 +434,7 @@ namespace Schiism.WPF.ViewModels
                 }
             });
 
-            Application.Current.Dispatcher.Invoke(() =>
+            app.Dispatcher.Invoke(() =>
             {
                 // Add new MODBUS rows for the configured length with the names cache
                 for (int i = 0; i < ModbusSettState.DataLength; i++)
@@ -444,7 +452,14 @@ namespace Schiism.WPF.ViewModels
         private void UpdateAddressHeaders()
         {
             // Update the address headers that sit above the name/data columns
-            Application.Current.Dispatcher.Invoke(() =>
+            var app = Application.Current;
+
+            if (app == null)
+            {
+                return;
+            }
+
+            app.Dispatcher.Invoke(() =>
             {
                 addressList.Clear();
                 int numCols = (Math.Max(0, this.ModbusSettState.DataLength - 1) / 20) + 1;
@@ -468,9 +483,21 @@ namespace Schiism.WPF.ViewModels
         private void UpdateModbusData()
         {
             // Keep this above the loops, so you don't spam in and out of the main thread
-            Application.Current.Dispatcher.Invoke(() =>
+            var app = Application.Current;
+
+            if (app == null)
+            {
+                return;
+            }
+
+            app.Dispatcher.Invoke(() =>
             {
                 // Loop through all 6 column pairs of MODBUS names and data
+                if (ModbusRows == null)
+                {
+                    return;
+                }
+
                 for (int i = 0; i < ModbusRows.Count; i++)
                 {
 
@@ -511,7 +538,15 @@ namespace Schiism.WPF.ViewModels
         private void UpdateShiftColumn()
         {
             // Update the RawModbusData collection with the new data on the main UI thread
-            Application.Current.Dispatcher.Invoke(() =>
+            // Keep this above the loops, so you don't spam in and out of the main thread
+            var app = Application.Current;
+
+            if (app == null)
+            {
+                return;
+            }
+
+            app.Dispatcher.Invoke(() =>
             {
                 // Update ShiftColumn contents, since the values here will need to be modified as a result of the convention changing
                 shiftColumn.Clear();
