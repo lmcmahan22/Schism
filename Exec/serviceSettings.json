@@ -1,4 +1,4 @@
 {
   "AutoStart": true,
-  "AutoRestart": false
+  "AutoRestart": true
 }

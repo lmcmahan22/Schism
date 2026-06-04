@@ -19,8 +19,14 @@ namespace Schiism.Service.Implementations.Modbus
     public class ModbusClient : IModbusClient
     {
         private readonly SemaphoreSlim connectionLock = new(1, 1);
+        private readonly ILogger<ModbusClient> logger;
         private TcpClient? client;
         private IModbusMaster? master;
+
+        public ModbusClient(ILogger<ModbusClient> logger)
+        {
+            this.logger = logger;
+        }
 
         /// <inheritdoc/>
         public async Task InitializeAsync(IConfigState config)
@@ -98,7 +104,27 @@ namespace Schiism.Service.Implementations.Modbus
             };
         }
 
-        private static List<ushort> ReadDigitals(
+        public List<ushort> ReadCoilData(IConfigState config)
+        {
+            if (this.master == null)
+            {
+                throw new InvalidOperationException("Modbus client not connected for Coil poll.");
+            }
+
+            return ReadDigitals(this.master, config.DeviceId, config.StartAddress, config.DataLength, false);
+        }
+
+        public List<ushort> ReadRegisterData(IConfigState config)
+        {
+            if (this.master == null)
+            {
+                throw new InvalidOperationException("Modbus client not connected for Register poll.");
+            }
+
+            return ReadRegisters(this.master, config.DeviceId, config.StartAddress, config.DataLength, false);
+        }
+
+        private List<ushort> ReadDigitals(
             IModbusMaster master,
             byte deviceId,
             ushort startAddress,
@@ -117,10 +143,11 @@ namespace Schiism.Service.Implementations.Modbus
 
             // Convert to ushorts, so bools can be displayed as 1s and 0s.
             // This also makes it so we can handle this data in a similar manner as register data, which returns as ushorts natively.
+            logger.LogInformation("Raw digital data read from Modbus device: {Data}", string.Join(", ", rawData.Select(x => x ? "1" : "0")));
             return [.. rawData.Select(x => Convert.ToUInt16(x))];
         }
 
-        private static List<ushort> ReadRegisters(
+        private List<ushort> ReadRegisters(
             IModbusMaster master,
             byte deviceId,
             ushort startAddress,
@@ -137,6 +164,7 @@ namespace Schiism.Service.Implementations.Modbus
                 rawData.AddRange(chunkData);
             }
 
+            logger.LogInformation("Raw register data read from Modbus device: {Data}", string.Join(", ", rawData));
             return rawData;
         }
 
