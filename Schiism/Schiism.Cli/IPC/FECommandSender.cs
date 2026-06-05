@@ -6,9 +6,9 @@ namespace Schiism.Cli.IPC
 {
     using System;
     using System.IO.Pipes;
-    using Schiism.Core.Abstractions.IPC.Commands;
-    using Schiism.Core.Models.IPC;
-    using Schiism.Core.Models.IPC.DTOs.Commands;
+    using Schiism.Core.IPC;
+    using Schiism.Core.IPC.Commands;
+    using Schiism.Core.IPC.DTOs.Commands;
 
     /// <summary>
     /// Frontend Command Sender implementation.

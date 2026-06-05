@@ -4,22 +4,24 @@
 
 namespace Schiism
 {
-    using System.Windows;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Prism.Ioc;
     using Schiism.Core;
-    using Schiism.Core.Abstractions.IPC.Commands;
-    using Schiism.Core.Abstractions.IPC.States;
-    using Schiism.Core.Abstractions.IPC.Streams;
-    using Schiism.Core.Models.IPC.DTOs.Streams;
+    using Schiism.Core.Configuration.StateControl;
+    using Schiism.Core.IPC.Commands;
+    using Schiism.Core.IPC.DTOs;
+    using Schiism.Core.IPC.PipeControl;
+    using Schiism.Core.IPC.Serialization;
+    using Schiism.Core.IPC.StateWrappers;
+    using Schiism.Core.IPC.Streams;
+    using Schiism.Core.Logging;
     using Schiism.WPF;
-    using Schiism.WPF.FileLogging;
+    using Schiism.WPF.Tabs;
     using Schiism.WPF.IPC;
-    using Schiism.WPF.IPC.Workers;
-    using Schiism.WPF.Models.Implementations.States;
-    using Schiism.WPF.Services;
     using Schiism.WPF.Views;
+    using System.Runtime.Intrinsics.X86;
+    using System.Windows;
 
     public partial class App
     {
@@ -42,59 +44,72 @@ namespace Schiism
                 builder.ClearProviders();
 
                 builder.AddProvider(
-                    new WPFFileLoggerProvider(
-                        @"C:\Users\lmcmahan\OneDrive - Precision Valve and Automation\Desktop\SchiismLogs"));
+                    new FileLoggerProvider(
+                        @"C:\Users\lmcmahan\OneDrive - Precision Valve and Automation\Desktop\SchiismLogs", "WPF"));
             });
 
             containerRegistry.RegisterInstance<ILoggerFactory>(loggerFactory);
 
             // State Singletons (for content tracking)
-            containerRegistry.RegisterSingleton<WPFStreamDataState<ModbusData>, WPFStreamDataState<ModbusData>>();
-            containerRegistry.RegisterSingleton<WPFStreamDataState<ConnectionDiagnostics>, WPFStreamDataState<ConnectionDiagnostics>>();
-            containerRegistry.RegisterSingleton<IWPFConfigState, WPFConfigState>();
-            containerRegistry.RegisterSingleton<WPFInitializedState>();
+            // containerRegistry.RegisterSingleton<StreamDataState<ModbusData>, StreamStore<ModbusData>>();
+            // containerRegistry.RegisterSingleton<StreamDataState<ConnectionDiagnostics>, StreamStore<ConnectionDiagnostics>>();
+            containerRegistry.RegisterSingleton<ConfigState>();
+            containerRegistry.RegisterSingleton<InitStatus>();
+            containerRegistry.RegisterSingleton<INamedPipeFactory, BasePipeFactory>();
+            containerRegistry.RegisterSingleton<PipeSerializer>();
+            containerRegistry.RegisterSingleton<StreamStore<ModbusData>>();
+            containerRegistry.RegisterSingleton<StreamStore<ConnectionDiagnostics>>();
 
             // Theme Controller Singleton
-            containerRegistry.RegisterSingleton<ThemeService>();
+            containerRegistry.RegisterSingleton<ThemesControl>();
 
             // IPC Singletons (Subscribers, Command Receiver, and Command Sender)
-            containerRegistry.RegisterSingleton<ICommandReceiver>(
-                cr => new WPFCommandReceiver(
+            containerRegistry.RegisterSingleton<CommandReceiver>(
+                cr => new CommandReceiver(
                     NamingConstants.InitSettingsCommandName,
-                    cr.Resolve<ILoggerFactory>()));
-            containerRegistry.RegisterSingleton<ICommandSender>(
-                cs => new WPFCommandSender(
+                    cr.Resolve<INamedPipeFactory>(),
+                    cr.Resolve<PipeSerializer>(),
+                    cr.Resolve<ILoggerFactory>().CreateLogger<CommandReceiver>()));
+            containerRegistry.RegisterSingleton<CommandSender>(
+                cs => new CommandSender(
                     NamingConstants.SettingsCommandName,
-                    cs.Resolve<ILoggerFactory>()));
-            containerRegistry.RegisterSingleton<IStreamSubscriber<ConnectionDiagnostics>>(
-                ssc => new WPFStreamSubscriber<ConnectionDiagnostics>(
-                    ssc.Resolve<ILoggerFactory>()));
-            containerRegistry.RegisterSingleton<IStreamSubscriber<ModbusData>>(
-                ssm => new WPFStreamSubscriber<ModbusData>(
-                    ssm.Resolve<ILoggerFactory>()));
+                    cs.Resolve<INamedPipeFactory>(),
+                    cs.Resolve<PipeSerializer>(),
+                    cs.Resolve<ILoggerFactory>().CreateLogger<CommandSender>()));
+            containerRegistry.RegisterSingleton<StreamSubscriber<ConnectionDiagnostics>>(
+                ssc => new StreamSubscriber<ConnectionDiagnostics>(
+                    ssc.Resolve<PipeSerializer>(),
+                    ssc.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriber<ConnectionDiagnostics>>()));
+            containerRegistry.RegisterSingleton<StreamSubscriber<ModbusData>>(
+                ssm => new StreamSubscriber<ModbusData>(
+                    ssm.Resolve<PipeSerializer>(),
+                    ssm.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriber<ModbusData>>()));
 
             // Workers (to run the subscription and command loops/calls)
-            containerRegistry.Register<WPFCommandsWorker>(
-            cw => new WPFCommandsWorker(
-                cw.Resolve<ICommandReceiver>(),
-                cw.Resolve<ICommandSender>(),
-                cw.Resolve<IWPFConfigState>(),
-                cw.Resolve<WPFInitializedState>(),
-                cw.Resolve<ILoggerFactory>()));
-            containerRegistry.Register<WPFSubscriberWorker<ModbusData>>(
-            swm => new WPFSubscriberWorker<ModbusData>(
+            containerRegistry.Register<CommandsWorker>(
+            cw => new CommandsWorker(
+                cw.Resolve<CommandReceiver>(),
+                cw.Resolve<INamedPipeFactory>(),
+                cw.Resolve<CommandSender>(),
+                cw.Resolve<ConfigState>(),
+                cw.Resolve<InitStatus>(),
+                cw.Resolve<ILoggerFactory>().CreateLogger<CommandsWorker>()));
+            containerRegistry.Register<StreamSubscriberWorker<ModbusData>>(
+            swm => new StreamSubscriberWorker<ModbusData>(
                 NamingConstants.ModbusDataStreamName,
-                swm.Resolve<IStreamSubscriber<ModbusData>>(),
-                swm.Resolve<WPFStreamDataState<ModbusData>>(),
-                swm.Resolve<WPFInitializedState>(),
-                swm.Resolve<ILoggerFactory>()));
-            containerRegistry.Register<WPFSubscriberWorker<ConnectionDiagnostics>>(
-                swc => new WPFSubscriberWorker<ConnectionDiagnostics>(
+                swm.Resolve<INamedPipeFactory>(),
+                swm.Resolve<StreamSubscriber<ModbusData>>(),
+                swm.Resolve<StreamStore<ModbusData>>(),
+                swm.Resolve<InitStatus>(),
+                swm.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriberWorker<ModbusData>>()));
+            containerRegistry.Register<StreamSubscriberWorker<ConnectionDiagnostics>>(
+                swc => new StreamSubscriberWorker<ConnectionDiagnostics>(
                 NamingConstants.ConnDiagStreamName,
-                swc.Resolve<IStreamSubscriber<ConnectionDiagnostics>>(),
-                swc.Resolve<WPFStreamDataState<ConnectionDiagnostics>>(),
-                swc.Resolve<WPFInitializedState>(),
-                swc.Resolve<ILoggerFactory>()));
+                swc.Resolve<INamedPipeFactory>(),
+                swc.Resolve<StreamSubscriber<ConnectionDiagnostics>>(),
+                swc.Resolve<StreamStore<ConnectionDiagnostics>>(),
+                swc.Resolve<InitStatus>(),
+                swc.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriberWorker<ConnectionDiagnostics>>()));
         }
 
         // Configures the module catalog, which is responsible for managing the modules in the application. This method is called during application initialization.
@@ -110,9 +125,9 @@ namespace Schiism
             base.OnInitialized();
 
             // This resolves the workers 
-            hostedServices.Add(Container.Resolve<WPFCommandsWorker>());
-            hostedServices.Add(Container.Resolve<WPFSubscriberWorker<ModbusData>>());
-            hostedServices.Add(Container.Resolve<WPFSubscriberWorker<ConnectionDiagnostics>>());
+            hostedServices.Add(Container.Resolve<CommandsWorker>());
+            hostedServices.Add(Container.Resolve<StreamSubscriberWorker<ModbusData>>());
+            hostedServices.Add(Container.Resolve<StreamSubscriberWorker<ConnectionDiagnostics>>());
 
             foreach (var service in hostedServices)
             {

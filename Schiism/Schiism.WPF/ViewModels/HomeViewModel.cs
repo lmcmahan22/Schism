@@ -13,15 +13,16 @@ namespace Schiism.WPF.ViewModels
     using System.Windows;
     using Microsoft.Extensions.Logging;
     using Microsoft.Win32;
-    using Schiism.Core.Abstractions.IPC.States;
-    using Schiism.Core.Enums;
-    using Schiism.Core.Models.IPC.DTOs.Commands;
-    using Schiism.Core.Models.IPC.DTOs.Streams;
+    using Schiism.Core.Configuration.Enums;
+    using Schiism.Core.Configuration.FileControl;
+    using Schiism.Core.Configuration.StateControl;
+    using Schiism.Core.IPC.DTOs;
+    using Schiism.Core.IPC.StateWrappers;
+    using Schiism.Core.IPC.Streams;
+    using Schiism.WPF.Tabs;
     using Schiism.WPF.Models;
-    using Schiism.WPF.Models.Implementations.States;
-    using Schiism.WPF.Services;
     using Schiism.WPF.ViewModels.Abstractions;
-    using Schiism.WPF.ViewModels.Controls;
+    using Schiism.WPF.ViewModels.Tabs;
     using Schiism.WPF.Views;
 
     public class HomeViewModel : BindableBase, INotifyPropertyChanged
@@ -53,17 +54,19 @@ namespace Schiism.WPF.ViewModels
         private DelegateCommand<double?> resizeNameColumnCommand;
         private DelegateCommand<double?> resizeDataColumnCommand;
 
-        public IWPFConfigState ModbusSettState { get; }
+        public ConfigState ModbusSettState { get; }
 
-        public WPFStreamDataState<ModbusData> ModbusDataState { get; }
+        public StreamStore<ModbusData> ModbusDataState { get; }
 
-        public WPFStreamDataState<ConnectionDiagnostics> ConnDiagState { get; }
+        public StreamStore<ConnectionDiagnostics> ConnDiagState { get; }
 
-        public WPFInitializedState InitState { get; }
+        public InitStatus InitStatus { get; }
 
         public ObservableCollection<PollSettingsViewModel> PollTabs { get; }
 
-        public ThemeService ThemeService { get; }
+        public ThemesControl ThemeService { get; }
+
+        public SelectedAddressConvention SelConv { get; }
 
         // Inidicates server connection from the connection diagnostics state, but also turns off, if the initialized state has been turned off.
         public bool ServerConnected { get; set; }
@@ -71,19 +74,21 @@ namespace Schiism.WPF.ViewModels
         // ViewModel constructor
         public HomeViewModel(
             IDialogService dialogService,
-            IWPFConfigState ModbusSettState,
-            WPFStreamDataState<ModbusData> ModbusDataState,
-            WPFStreamDataState<ConnectionDiagnostics> ConnDiagState,
-            WPFInitializedState InitState,
-            ThemeService ThemeService,
-            ILoggerFactory loggerFactory)
+            ConfigState ModbusSettState,
+            StreamStore<ModbusData> ModbusDataState,
+            StreamStore<ConnectionDiagnostics> ConnDiagState,
+            InitStatus InitStatus,
+            ThemesControl ThemeService,
+            SelectedAddressConvention selConv,
+            ILoggerFactory factory)
         {
             this.ModbusSettState = ModbusSettState;
             this.ModbusDataState = ModbusDataState;
             this.ConnDiagState = ConnDiagState;
-            this.InitState = InitState;
+            this.InitStatus = InitStatus;
             this.ThemeService = ThemeService;
-            this.logger = loggerFactory.CreateLogger<HomeViewModel>();
+            this.SelConv = selConv;
+            this.logger = factory.CreateLogger<HomeViewModel>();
 
             title = "PVA MODBUS TCP Client";
 
@@ -100,7 +105,7 @@ namespace Schiism.WPF.ViewModels
             ModbusSettState.PropertyChanged += this.ModbusSettChanged;
             ModbusDataState.PropertyChanged += this.ModbusDataChanged;
             ConnDiagState.PropertyChanged += this.ConnDiagStateChanged;
-            InitState.PropertyChanged += this.InitStateChanged;
+            InitStatus.PropertyChanged += this.InitStatusChanged;
 
             // Subscribe to the tab viewmodels too? How else will you know if the Address Convention changed?
             // Only show the Status Coil and Register tabs, since these are the only two that Vision PLCs use.
@@ -110,12 +115,14 @@ namespace Schiism.WPF.ViewModels
                     "Status Coils",
                     PollType.CoilStatus,
                     this.ModbusSettState,
+                    this.SelConv,
                     this.ThemeService),
 
                 new RegisterPollSettingsViewModel(
                     "Holding Registers",
                     PollType.HoldingRegisters,
                     this.ModbusSettState,
+                    this.SelConv,
                     this.ThemeService),
             };
         }
@@ -214,7 +221,7 @@ namespace Schiism.WPF.ViewModels
         public void ExecuteSaveClick()
         {
             // Create a SaveData object with the current state of the ViewModel
-            SaveData sD = new SaveData
+            ConfigSaveData sD = new ConfigSaveData
             {
                 SaveDeviceId = ModbusSettState.DeviceId,
                 SaveStartAddress = ModbusSettState.StartAddress,
@@ -225,14 +232,14 @@ namespace Schiism.WPF.ViewModels
                 SaveAsciiEnable = ModbusSettState.AsciiEnable,
 
                 // Get this from the Settings tab.
-                SaveAddressConv = ModbusSettState.SelectedAddressConvention,
+                SaveAddressConv = this.SelConv.Selected,
             };
             Save(sD);
         }
 
         public void ExecuteLoadClick()
         {
-            SaveData lD = Load();
+            ConfigSaveData lD = Load();
 
             // Update ViewModel properties with loaded data
             // NOTE: Setting the public instances of variables runs the logic in the setters implicitly! ;)
@@ -255,9 +262,9 @@ namespace Schiism.WPF.ViewModels
             ModbusSettState.Update(loadData);
 
             // ViewModel specific save parameter
-            ModbusSettState.SelectedAddressConvention = lD.SaveAddressConv;
+            this.SelConv.Selected = lD.SaveAddressConv;
 
-            OnPropertyChanged(nameof(ModbusSettState.SelectedAddressConvention));
+            OnPropertyChanged(nameof(this.SelConv.Selected));
 
             // Since you're updating these parameters in the Service, your subscription from the constructor will catch this and update the UI automatically.
             // Load --> Update Service --> Subscription pings --> Table is rebuilt
@@ -333,7 +340,7 @@ namespace Schiism.WPF.ViewModels
             }
 
             // Update the shift column if the opened settings tab changes the convention, since the values in this column are based on the convention
-            if (e.PropertyName is nameof(ModbusSettState.SelectedAddressConvention))
+            if (e.PropertyName is nameof(this.SelConv.Selected))
              {
                 UpdateShiftColumn();
             }
@@ -353,16 +360,16 @@ namespace Schiism.WPF.ViewModels
         {
             if (e.PropertyName is nameof(this.ConnDiagState.Contents))
             {
-                this.ServerConnected = (this.ConnDiagState.Contents?.IsConnected ?? false) && this.InitState.IsInitialized;
+                this.ServerConnected = (this.ConnDiagState.Contents?.IsConnected ?? false) && this.InitStatus.IsInitialized;
                 this.OnPropertyChanged(nameof(this.ServerConnected));
             }
         }
 
-        private void InitStateChanged(object? sender, PropertyChangedEventArgs e)
+        private void InitStatusChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName is nameof(this.InitState.IsInitialized))
+            if (e.PropertyName is nameof(this.InitStatus.IsInitialized))
             {
-                this.ServerConnected = (this.ConnDiagState.Contents?.IsConnected ?? false) && this.InitState.IsInitialized;
+                this.ServerConnected = (this.ConnDiagState.Contents?.IsConnected ?? false) && this.InitStatus.IsInitialized;
                 this.OnPropertyChanged(nameof(this.ServerConnected));
             }
         }
@@ -542,7 +549,7 @@ namespace Schiism.WPF.ViewModels
                 for (int i = 0; i < 20; i++)
                 {
                     // This will print each index as i if counting from 0, or i+1 if counting from 1
-                    string content = $"+{(ModbusSettState.SelectedAddressConvention == AddressConvention.RegisterAddress ? i : i + 1)}";
+                    string content = $"+{(this.SelConv.Selected == AddressConvention.RegisterAddress ? i : i + 1)}";
                     this.shiftColumn.Add(new string(content));
                 }
 
@@ -550,8 +557,10 @@ namespace Schiism.WPF.ViewModels
             });
         }
 
+        // TAKE THESE OUT OF THE VIEWMODEL! THIS HAS NOTHING TO DO WITH WPF!
+
         // Logic to save data
-        private void Save(SaveData sD)
+        private void Save(ConfigSaveData sD)
         {
             // Specify the saving directory upon pop up. If it doesn't exist, create it!
             string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Schiism");
@@ -605,10 +614,10 @@ namespace Schiism.WPF.ViewModels
         }
 
         // Logic to load data
-        private SaveData Load()
+        private ConfigSaveData Load()
         {
             // Nullable SaveData dummy until we get the data from the json file
-            SaveData? lD = new();
+            ConfigSaveData? lD = new();
 
             OpenFileDialog? openFileDialog = new OpenFileDialog();
 
@@ -632,7 +641,7 @@ namespace Schiism.WPF.ViewModels
 
                 try
                 {
-                    lD = JsonSerializer.Deserialize<SaveData>(json, options);
+                    lD = JsonSerializer.Deserialize<ConfigSaveData>(json, options);
                 }
                 catch
                 {
@@ -648,7 +657,7 @@ namespace Schiism.WPF.ViewModels
             else
             {
                 // return empty data (i.e. nothing is loaded for the user)
-                return new SaveData();
+                return new ConfigSaveData();
             }
         }
 

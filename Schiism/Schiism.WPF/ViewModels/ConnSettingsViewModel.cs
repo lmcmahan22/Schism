@@ -4,7 +4,8 @@
 
 namespace Schiism.WPF.ViewModels
 {
-    using Schiism.Core.Abstractions.IPC.States;
+    using Schiism.Core.Configuration;
+    using Schiism.Core.Configuration.StateControl;
     using System.Runtime.CompilerServices;
 
     public class ConnSettingsViewModel : BindableBase
@@ -12,10 +13,10 @@ namespace Schiism.WPF.ViewModels
         // Private variable
         private string title;
 
-        public IWPFConfigState ModbusSettState { get; }
+        public ConfigState ModbusSettState { get; }
 
         // Constructor
-        public ConnSettingsViewModel(IWPFConfigState ModbusSettState)
+        public ConnSettingsViewModel(ConfigState ModbusSettState)
         {
             title = "Connection Settings";
             this.ModbusSettState = ModbusSettState;

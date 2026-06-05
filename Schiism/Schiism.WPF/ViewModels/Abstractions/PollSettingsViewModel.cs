@@ -1,14 +1,15 @@
-﻿using Schiism.Core.Abstractions.IPC.States;
-using Schiism.Core.Enums;
-using Schiism.WPF.Services;
-using Schiism.WPF.Models.Enums;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows;
-
-namespace Schiism.WPF.ViewModels.Abstractions
+﻿namespace Schiism.WPF.ViewModels.Abstractions
 {
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Runtime.CompilerServices;
+    using System.Windows;
+    using Schiism.Core.Configuration;
+    using Schiism.WPF.Tabs;
+    using Schiism.Core.Configuration.Enums;
+    using Schiism.Core.Configuration.StateControl;
+    using Schiism.WPF.Models;
+
     public abstract class PollSettingsViewModel : BindableBase
     {
 
@@ -21,12 +22,12 @@ namespace Schiism.WPF.ViewModels.Abstractions
         public PollType PollTyp { get; }
 
         // DI
-        public IWPFConfigState ModbusSettState { get; }
+        public ConfigState ModbusSettState { get; }
 
-        public ThemeService ThemeService { get; }
+        public ThemesControl ThemeService { get; }
 
         // Constructor
-        public PollSettingsViewModel(string header, PollType polltype, IWPFConfigState modbusSettState, ThemeService themeController)
+        public PollSettingsViewModel(string header, PollType polltype, ConfigState modbusSettState, SelectedAddressConvention SelConv, ThemesControl themeController)
         {
             this.Header = header;
             this.PollTyp = polltype;

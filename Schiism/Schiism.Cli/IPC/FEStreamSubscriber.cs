@@ -5,8 +5,8 @@
 namespace Schiism.Cli.IPC
 {
     using Microsoft.Extensions.Logging;
-    using Schiism.Core.Abstractions.IPC.Streams;
-    using Schiism.Core.Models.IPC;
+    using Schiism.Core.IPC;
+    using Schiism.Core.IPC.Interfaces;
     using System.IO.Pipes;
 
     /// <summary>

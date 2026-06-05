@@ -4,9 +4,10 @@
              xmlns:prism="http://prismlibrary.com/"   
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewmodels="clr-namespace:Schiism.WPF.ViewModels"
-             xmlns:helpers="clr-namespace:Schiism.WPF.Models.Helpers"
-             xmlns:controls="clr-namespace:Schiism.WPF.Views.Controls"
-             xmlns:controlVMs="clr-namespace:Schiism.WPF.ViewModels.Controls"
+             xmlns:helpers="clr-namespace:Schiism.WPF.Helpers"
+             xmlns:behaviors="clr-namespace:Schiism.WPF.Behaviors"
+             xmlns:tabs="clr-namespace:Schiism.WPF.Views.Tabs"
+             xmlns:tabVMs="clr-namespace:Schiism.WPF.ViewModels.Tabs"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              prism:ViewModelLocator.AutoWireViewModel="True"
              Background="{Binding ThemeService.Main, UpdateSourceTrigger=PropertyChanged}"
@@ -46,15 +47,15 @@
             </Style.Triggers>
         </Style>
 
-        <DataTemplate DataType="{x:Type controlVMs:CoilPollSettingsViewModel}">
-            <controls:CoilPollSettings />
+        <DataTemplate DataType="{x:Type tabVMs:CoilPollSettingsViewModel}">
+            <tabs:CoilPollSettings />
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type controlVMs:RegisterPollSettingsViewModel}">
-            <controls:RegisterPollSettings />
+        <DataTemplate DataType="{x:Type tabVMs:RegisterPollSettingsViewModel}">
+            <tabs:RegisterPollSettings />
         </DataTemplate>
 
-        <!-- Proxy for DataGrid column visibility control -->
+        <!-- Proxy for DataGrid column visibility tab -->
         <helpers:BindingProxy x:Key="proxy" Data="{Binding}" />
 
     </UserControl.Resources>
@@ -137,7 +138,7 @@
                                                     <Style.Triggers>
                                                         <MultiDataTrigger>
                                                             <MultiDataTrigger.Conditions>
-                                                                <Condition Binding="{Binding InitState.IsInitialized}" Value="True" />
+                                                                <Condition Binding="{Binding InitStatus.IsInitialized}" Value="True" />
                                                             </MultiDataTrigger.Conditions>
                                                             <Setter Property="Source" Value="/Images/InterfaceConnected.png"/>
                                                         </MultiDataTrigger>
@@ -254,7 +255,7 @@
                                                            HorizontalAlignment="Center"/>
                                                     <Thumb Grid.Column="1" Cursor="SizeWE" HorizontalAlignment="Stretch">
                                                         <i:Interaction.Behaviors>
-                                                            <helpers:ThumbDragBehavior
+                                                            <behaviors:ThumbDragBehavior
                                                             Command="{Binding DataContext.ResizeWatchColumnCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
                                                         </i:Interaction.Behaviors>
                                                     </Thumb>
@@ -274,7 +275,7 @@
                                                        HorizontalAlignment="Center"/>
                                                     <Thumb Grid.Column="1" Cursor="SizeWE" HorizontalAlignment="Stretch">
                                                         <i:Interaction.Behaviors>
-                                                            <helpers:ThumbDragBehavior
+                                                            <behaviors:ThumbDragBehavior
                                                             Command="{Binding DataContext.ResizeNameColumnCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
                                                         </i:Interaction.Behaviors>
                                                     </Thumb>
@@ -291,7 +292,7 @@
                                                     <TextBlock Text="{Binding}" />
                                                     <Thumb Grid.Column="1" Cursor="SizeWE" HorizontalAlignment="Stretch">
                                                         <i:Interaction.Behaviors>
-                                                            <helpers:ThumbDragBehavior
+                                                            <behaviors:ThumbDragBehavior
                                                             Command="{Binding DataContext.ResizeDataColumnCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
                                                         </i:Interaction.Behaviors>
                                                     </Thumb>

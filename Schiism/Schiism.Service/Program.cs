@@ -7,19 +7,17 @@ namespace Schiism.Service
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Schiism.Core;
-    using Schiism.Core.Abstractions;
-    using Schiism.Core.Abstractions.IPC.Commands;
-    using Schiism.Core.Abstractions.IPC.States;
-    using Schiism.Core.Abstractions.IPC.Streams;
-    using Schiism.Core.Abstractions.Modbus;
-    using Schiism.Core.Abstractions.RuntimeControl;
-    using Schiism.Core.Models.IPC.DTOs.Streams;
-    using Schiism.Service.FileLogging;
-    using Schiism.Service.Implementations;
-    using Schiism.Service.Implementations.IPC;
-    using Schiism.Service.Implementations.Modbus;
-    using Schiism.Service.Implementations.RuntimeControl;
-    using Schiism.Service.Workers;
+    using Schiism.Core.Configuration.FileControl;
+    using Schiism.Core.Configuration.StateControl;
+    using Schiism.Core.IPC.Commands;
+    using Schiism.Core.IPC.DTOs;
+    using Schiism.Core.IPC.PipeControl;
+    using Schiism.Core.IPC.Serialization;
+    using Schiism.Core.IPC.StateWrappers;
+    using Schiism.Core.IPC.Streams;
+    using Schiism.Core.Logging;
+    using Schiism.Core.Modbus;
+    using Schiism.Service.HostedServices;
     using System.Diagnostics;
 
     /// <summary>
@@ -54,7 +52,7 @@ namespace Schiism.Service
 
             builder.Services.AddWindowsService();
             builder.Logging.ClearProviders();
-            builder.Logging.AddProvider(new FileLoggerProvider($"C:\\Users\\lmcmahan\\OneDrive - Precision Valve and Automation\\Desktop\\SchiismLogs"));
+            builder.Logging.AddProvider(new FileLoggerProvider($"C:\\Users\\lmcmahan\\OneDrive - Precision Valve and Automation\\Desktop\\SchiismLogs", "Service"));
 
             // Control via checkboxes in UI when it's ready!
             var settingsStore = new ServiceSettingsStore();
@@ -66,75 +64,84 @@ namespace Schiism.Service
             // Define Core Services (Builder.Services is a dependency container)
             // Make this its own method (ChatGPT originally advised making this its own CLASS???)
             // No constructor parameters needed here, DI automatically resolves these! :D
-            builder.Services.AddSingleton<IConfigState, ConfigState>();
-            builder.Services.AddSingleton<IModbusClient, ModbusClient>();
-            builder.Services.AddSingleton<IEngine, Engine>();
-            builder.Services.AddSingleton<IModbusInterpreter, ModbusInterpreter>();
-            builder.Services.AddSingleton<IModbusControl, ModbusControl>();
-            builder.Services.AddSingleton<IServiceSettingsStore, ServiceSettingsStore>();
+            builder.Services.AddSingleton<ConfigState>();
+            builder.Services.AddSingleton<ModbusClient>();
+            builder.Services.AddSingleton<Engine>();
+            builder.Services.AddSingleton<ModbusInterpreter>();
+            builder.Services.AddSingleton<PollControl>();
+            builder.Services.AddSingleton<ServiceSettingsStore>();
+            builder.Services.AddSingleton<INamedPipeFactory, AdminPipeFactory>();
+            builder.Services.AddSingleton<PipeSerializer>();
 
             // ConnectionState
-            builder.Services.AddSingleton<IInitializedState, FrontendInitializedState>();
+            builder.Services.AddSingleton<InitStatus>();
 
             // Stream Publishers
-            builder.Services.AddSingleton<IStreamPublisher<ModbusData>, ServiceStreamPublisher<ModbusData>>(
-                sp => new ServiceStreamPublisher<ModbusData>(
-                sp.GetRequiredService<ILogger<ServiceStreamPublisher<ModbusData>>>()));
-            builder.Services.AddSingleton<IStreamPublisher<ConnectionDiagnostics>, ServiceStreamPublisher<ConnectionDiagnostics>>(
-                sp => new ServiceStreamPublisher<ConnectionDiagnostics>(
-                sp.GetRequiredService<ILogger<ServiceStreamPublisher<ConnectionDiagnostics>>>()));
+            builder.Services.AddSingleton<StreamPublisher<ModbusData>, StreamPublisher<ModbusData>>(
+                sp => new StreamPublisher<ModbusData>(
+                sp.GetRequiredService<PipeSerializer>(),
+                sp.GetRequiredService<ILogger<StreamPublisher<ModbusData>>>()));
+            builder.Services.AddSingleton<StreamPublisher<ConnectionDiagnostics>, StreamPublisher<ConnectionDiagnostics>>(
+                sp => new StreamPublisher<ConnectionDiagnostics>(
+                sp.GetRequiredService<PipeSerializer>(),
+                sp.GetRequiredService<ILogger<StreamPublisher<ConnectionDiagnostics>>>()));
 
             // Stream Queues
-            builder.Services.AddSingleton<IStreamQueue<ModbusData>, ServiceStreamQueue<ModbusData>>();
-            builder.Services.AddSingleton<IStreamQueue<ConnectionDiagnostics>, ServiceStreamQueue<ConnectionDiagnostics>>();
+            builder.Services.AddSingleton<StreamQueue<ModbusData>, StreamQueue<ModbusData>>();
+            builder.Services.AddSingleton<StreamQueue<ConnectionDiagnostics>, StreamQueue<ConnectionDiagnostics>>();
 
             // Commmand Server
-            builder.Services.AddSingleton<ICommandReceiver, ServiceCommandReceiver>(
-                sp => new ServiceCommandReceiver(
+            builder.Services.AddSingleton<CommandReceiver>(
+                sp => new CommandReceiver(
                 NamingConstants.SettingsCommandName,
-                sp.GetRequiredService<ILogger<ServiceCommandReceiver>>()));
+                sp.GetRequiredService<INamedPipeFactory>(),
+                sp.GetRequiredService<PipeSerializer>(),
+                sp.GetRequiredService<ILogger<CommandReceiver>>()));
 
             // Command Client (for first config population)
-            builder.Services.AddSingleton<ICommandSender, ServiceCommandSender>(
-                sp => new ServiceCommandSender(
+            builder.Services.AddSingleton<CommandSender>(
+                sp => new CommandSender(
                 NamingConstants.InitSettingsCommandName,
-                sp.GetRequiredService<ILogger<ServiceCommandSender>>()));
+                sp.GetRequiredService<INamedPipeFactory>(),
+                sp.GetRequiredService<PipeSerializer>(),
+                sp.GetRequiredService<ILogger<CommandSender>>()));
 
             // Add an instance of the Worker classes as the hosted services (1 engine, 2 stream workers, 1 stream queue worker, 1 command worker)
-            builder.Services.AddHostedService<ServiceEngineWorker>(
-                ew => new ServiceEngineWorker(
-                    ew.GetRequiredService<IEngine>(),
-                    ew.GetRequiredService<IConfigState>(),
-                    ew.GetRequiredService<IModbusControl>(),
-                    ew.GetRequiredService<ILogger<ServiceEngineWorker>>(),
+            builder.Services.AddHostedService<ModbusEngineWorker>(
+                ew => new ModbusEngineWorker(
+                    ew.GetRequiredService<Engine>(),
+                    ew.GetRequiredService<ConfigState>(),
+                    ew.GetRequiredService<PollControl>(),
+                    ew.GetRequiredService<ILogger<ModbusEngineWorker>>(),
                     ew.GetRequiredService<IHostApplicationLifetime>()));
-            builder.Services.AddHostedService<ServiceStreamPublisherWorker<ModbusData>>(
-                spm => new ServiceStreamPublisherWorker<ModbusData>(
+            builder.Services.AddHostedService<StreamPublisherWorker<ModbusData>>(
+                spm => new StreamPublisherWorker<ModbusData>(
                     NamingConstants.ModbusDataStreamName,
-                    spm.GetRequiredService<IConfigState>(),
-                    spm.GetRequiredService<IInitializedState>(),
-                    spm.GetRequiredService<IStreamQueue<ModbusData>>(),
-                    spm.GetRequiredService<IStreamPublisher<ModbusData>>(),
-                    spm.GetRequiredService<ILogger<ServiceStreamPublisherWorker<ModbusData>>>(),
+                    spm.GetRequiredService<INamedPipeFactory>(),
+                    spm.GetRequiredService<ConfigState>(),
+                    spm.GetRequiredService<InitStatus>(),
+                    spm.GetRequiredService<StreamQueue<ModbusData>>(),
+                    spm.GetRequiredService<StreamPublisher<ModbusData>>(),
+                    spm.GetRequiredService<ILogger<StreamPublisherWorker<ModbusData>>>(),
                     spm.GetRequiredService<IHostApplicationLifetime>()));
-            builder.Services.AddHostedService<ServiceStreamPublisherWorker<ConnectionDiagnostics>>(
-                spc => new ServiceStreamPublisherWorker<ConnectionDiagnostics>(
+            builder.Services.AddHostedService<StreamPublisherWorker<ConnectionDiagnostics>>(
+                spc => new StreamPublisherWorker<ConnectionDiagnostics>(
                     NamingConstants.ConnDiagStreamName,
-                    spc.GetRequiredService<IConfigState>(),
-                    spc.GetRequiredService<IInitializedState>(),
-                    spc.GetRequiredService<IStreamQueue<ConnectionDiagnostics>>(),
-                    spc.GetRequiredService<IStreamPublisher<ConnectionDiagnostics>>(),
-                    spc.GetRequiredService<ILogger<ServiceStreamPublisherWorker<ConnectionDiagnostics>>>(),
+                    spc.GetRequiredService<INamedPipeFactory>(),
+                    spc.GetRequiredService<ConfigState>(),
+                    spc.GetRequiredService<InitStatus>(),
+                    spc.GetRequiredService<StreamQueue<ConnectionDiagnostics>>(),
+                    spc.GetRequiredService<StreamPublisher<ConnectionDiagnostics>>(),
+                    spc.GetRequiredService<ILogger<StreamPublisherWorker<ConnectionDiagnostics>>>(),
                     spc.GetRequiredService<IHostApplicationLifetime>()));
-            builder.Services.AddHostedService<ServiceCommandsWorker>(
-                cw => new ServiceCommandsWorker(
-                    cw.GetRequiredService<ICommandReceiver>(),
-                    cw.GetRequiredService<ICommandSender>(),
-                    cw.GetRequiredService<IConfigState>(),
-                    cw.GetRequiredService<IModbusControl>(),
-                    cw.GetRequiredService<IInitializedState>(),
-                    cw.GetRequiredService<IServiceSettingsStore>(),
-                    cw.GetRequiredService<ILogger<ServiceCommandsWorker>>(),
+            builder.Services.AddHostedService<CommandsWorker>(
+                cw => new CommandsWorker(
+                    cw.GetRequiredService<ConfigState>(),
+                    cw.GetRequiredService<CommandSender>(),
+                    cw.GetRequiredService<CommandReceiver>(),
+                    cw.GetRequiredService<PollControl>(),
+                    cw.GetRequiredService<InitStatus>(),
+                    cw.GetRequiredService<ILogger<CommandsWorker>>(),
                     cw.GetRequiredService<IHostApplicationLifetime>()));
 
             // Not used right now, it's just a logger that doesn't actually log correctly atm

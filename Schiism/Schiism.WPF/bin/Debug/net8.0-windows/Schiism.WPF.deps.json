@@ -394,6 +394,14 @@
           }
         }
       },
+      "NModbus/3.0.81": {
+        "runtime": {
+          "lib/net6.0/NModbus.dll": {
+            "assemblyVersion": "3.0.81.0",
+            "fileVersion": "3.0.81.0"
+          }
+        }
+      },
       "Prism.Container.Abstractions/9.0.106": {
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.8"
@@ -554,6 +562,11 @@
         }
       },
       "Schiism.Core/1.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.Hosting": "10.0.8",
+          "Microsoft.Extensions.Hosting.Abstractions": "10.0.8",
+          "NModbus": "3.0.81"
+        },
         "runtime": {
           "Schiism.Core.dll": {
             "assemblyVersion": "1.0.0.0",
@@ -764,6 +777,13 @@
       "sha512": "sha512-c47wA/8GHiQ9w+O6+mdqrZhZrxHogx2/fSZyRKL9tz0k+ypoTiwOx6fID0X3jr5LnCazJbCk7KiAcL0zVnNgNA==",
       "path": "microsoft.xaml.behaviors.wpf/1.1.142",
       "hashPath": "microsoft.xaml.behaviors.wpf.1.1.142.nupkg.sha512"
+    },
+    "NModbus/3.0.81": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-EzKEp7CHD8ErBL36iMts+6IrZZ9FEqllaD7Y5XzhoRjlxt5yXRughQ1bxPs99QFYFkW5xfkANB0Qs1gAmYGP8Q==",
+      "path": "nmodbus/3.0.81",
+      "hashPath": "nmodbus.3.0.81.nupkg.sha512"
     },
     "Prism.Container.Abstractions/9.0.106": {
       "type": "package",

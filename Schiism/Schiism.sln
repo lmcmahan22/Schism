@@ -9,11 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schiism.WPF", "Schiism.WPF\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schiism.Service", "Schiism.Service\Schiism.Service.csproj", "{3185F97B-262D-478E-B009-271CEC4A7097}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schiism.Cli", "Schiism.Cli\Schiism.Cli.csproj", "{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3185F97B-262D-478E-B009-271CEC4A7097} = {3185F97B-262D-478E-B009-271CEC4A7097}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,10 +27,6 @@ Global
 		{3185F97B-262D-478E-B009-271CEC4A7097}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3185F97B-262D-478E-B009-271CEC4A7097}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3185F97B-262D-478E-B009-271CEC4A7097}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2C9F8D6D-F20B-4DB8-BD0C-7484E487EB76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -82,7 +82,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Views\Controls\CoilPollSettings.xaml.cs">
+    <Compile Update="Views\Tabs\CoilPollSettings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\Themes.xaml.cs">

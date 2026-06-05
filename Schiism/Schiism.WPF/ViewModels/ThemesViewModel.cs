@@ -4,7 +4,7 @@
 
 namespace Schiism.WPF.ViewModels
 {
-    using Schiism.WPF.Services;
+    using Schiism.WPF.Tabs;
     using System.Runtime.CompilerServices;
 
     public class ThemesViewModel : BindableBase
@@ -12,10 +12,10 @@ namespace Schiism.WPF.ViewModels
         // Private variable
         private string title;
 
-        public ThemeService ThemeService { get; }
+        public ThemesControl ThemeService { get; }
 
         // Constructor
-        public ThemesViewModel(ThemeService ThemeService)
+        public ThemesViewModel(ThemesControl ThemeService)
         {
             title = "Themes";
             this.ThemeService = ThemeService;

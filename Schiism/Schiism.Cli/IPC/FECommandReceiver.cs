@@ -8,9 +8,9 @@ namespace Schiism.Cli.IPC
     using System.IO;
     using System.IO.Pipes;
     using System.Threading.Tasks;
-    using Schiism.Core.Abstractions.IPC.Commands;
-    using Schiism.Core.Models.IPC;
-    using Schiism.Core.Models.IPC.DTOs.Commands;
+    using Schiism.Core.IPC;
+    using Schiism.Core.IPC.Commands;
+    using Schiism.Core.IPC.DTOs.Commands;
 
     /// <summary>
     /// Command Receiver implementation for the front end.

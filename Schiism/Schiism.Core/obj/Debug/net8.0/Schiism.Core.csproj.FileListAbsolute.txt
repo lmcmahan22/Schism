@@ -10,3 +10,4 @@ C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Core\obj\Debug\net8.0\Schiism.Co
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Core\obj\Debug\net8.0\refint\Schiism.Core.dll
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Core\obj\Debug\net8.0\Schiism.Core.pdb
 C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Core\obj\Debug\net8.0\ref\Schiism.Core.dll
+C:\Users\lmcmahan\Github\Schism\Schiism\Schiism.Core\obj\Debug\net8.0\Schiism.Core.csproj.AssemblyReference.cache

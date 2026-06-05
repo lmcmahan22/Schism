@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "NPNmaGZxZqc=",
+  "dgSpecHash": "4koRpR3VdQs=",
   "success": true,
   "projectFilePath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\Schiism.WPF.csproj",
   "expectedPackageFiles": [
@@ -32,6 +32,7 @@
     "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.extensions.options.configurationextensions\\10.0.8\\microsoft.extensions.options.configurationextensions.10.0.8.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.extensions.primitives\\10.0.8\\microsoft.extensions.primitives.10.0.8.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.xaml.behaviors.wpf\\1.1.142\\microsoft.xaml.behaviors.wpf.1.1.142.nupkg.sha512",
+    "C:\\Users\\lmcmahan\\.nuget\\packages\\nmodbus\\3.0.81\\nmodbus.3.0.81.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\prism.container.abstractions\\9.0.106\\prism.container.abstractions.9.0.106.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\prism.container.unity\\9.0.106\\prism.container.unity.9.0.106.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\prism.core\\9.0.537\\prism.core.9.0.537.nupkg.sha512",

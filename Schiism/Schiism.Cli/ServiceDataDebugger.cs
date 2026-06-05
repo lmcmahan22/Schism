@@ -3,10 +3,11 @@
 // </copyright>
 
 using Schiism.Cli.IPC;
-using Schiism.Core;
-using Schiism.Core.Enums;
-using Schiism.Core.Models.IPC.DTOs.Commands;
-using Schiism.Core.Models.IPC.DTOs.Streams;
+using Schiism.Core.Common;
+using Schiism.Core.Configuration.Enums;
+using Schiism.Core.IPC.DTOs.Commands;
+using Schiism.Core.IPC.DTOs.Streams;
+
 
 // To switch between the two debuggers, set the Startup object in project properties to either ServiceControlDebugger or ServiceDataDebugger
 
