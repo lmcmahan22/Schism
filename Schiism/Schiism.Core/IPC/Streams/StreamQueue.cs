@@ -22,12 +22,11 @@ namespace Schiism.Core.IPC.Streams
         /// </summary>
         public StreamQueue()
         {
+            // Max capacity 5, and if we see more data incoming, replace the newest in the queue. This will prompt little "jumps" that the user won't be able to detect.
             channel = Channel.CreateBounded<T>(
-                new BoundedChannelOptions(1000)
+                new BoundedChannelOptions(1)
                 {
-                    FullMode = BoundedChannelFullMode.DropOldest,
-                    SingleReader = false,
-                    SingleWriter = false,
+                    FullMode = BoundedChannelFullMode.DropNewest,
                 });
         }
 

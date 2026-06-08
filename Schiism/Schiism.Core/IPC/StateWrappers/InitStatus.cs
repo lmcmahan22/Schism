@@ -25,7 +25,7 @@ namespace Schiism.Core.IPC.StateWrappers
             set
             {
                 isInitialized = value;
-                OnPropertyChanged(nameof(isInitialized));
+                OnPropertyChanged(nameof(IsInitialized));
             }
         }
 

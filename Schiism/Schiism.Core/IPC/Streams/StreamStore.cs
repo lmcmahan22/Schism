@@ -17,7 +17,9 @@ namespace Schiism.Core.IPC.Streams
             private set
             {
                 contents = value;
-                OnPropertyChanged(nameof(contents));
+
+                // OnPropertyChanged takes the property name, not the field name! It's not OnFieldChanged!
+                OnPropertyChanged(nameof(Contents));
             }
         }
 

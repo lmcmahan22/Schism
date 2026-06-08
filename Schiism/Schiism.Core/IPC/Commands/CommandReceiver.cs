@@ -20,30 +20,43 @@ namespace Schiism.Core.IPC.Commands
     public class CommandReceiver(string pipeName, INamedPipeFactory pipeFactory, PipeSerializer serializer, ILogger<CommandReceiver> logger)
     {
         /// <inheritdoc/>
-        public async Task ReceiveAsync(Func<SettingsConfig, Task> handler, CancellationToken ct)
+        public async Task ReceiveAsync(Func<SettingsConfigDTO, Task> handler, CancellationToken ct)
         {
-            while (!ct.IsCancellationRequested)
-            {
+            //while (!ct.IsCancellationRequested)
+            //{
                 try
                 {
+                    // logger.LogInformation(
+                    //    "Creating named pipe for {PipeName}",
+                    //    pipeName);
+
+                    // using var pipe = pipeFactory.CreateServer(pipeName);
+
+                    // logger.LogInformation(
+                    //    "Waiting for sender connection on {PipeName}",
+                    //    pipeName);
+
+                    // await pipe.WaitForConnectionAsync(ct);
+
+                    // logger.LogInformation(
+                    //    "Sender connected to {PipeName}",
+                    //    pipeName);
+
                     logger.LogInformation(
-                        "Creating named pipe for {PipeName}",
+                        "Connecting to {PipeName}",
                         pipeName);
 
-                    using var pipe = pipeFactory.CreateServer(pipeName);
+                    using var pipe = pipeFactory.CreateNPClient(pipeName);
+
+                    await pipe.ConnectAsync(ct);
 
                     logger.LogInformation(
-                        "Waiting for sender connection on {PipeName}",
+                        "Connected to {PipeName}",
                         pipeName);
 
-                    await pipe.WaitForConnectionAsync(ct);
-
-                    logger.LogInformation(
-                        "Sender connected to {PipeName}",
-                        pipeName);
                     while (pipe.IsConnected && !ct.IsCancellationRequested)
                     {
-                        SettingsConfig? cmd = await serializer.DeserializeAsync<SettingsConfig>(pipe, ct);
+                        SettingsConfigDTO? cmd = await serializer.DeserializeAsync<SettingsConfigDTO>(pipe, ct);
 
                         if (cmd is null)
                         {
@@ -66,9 +79,9 @@ namespace Schiism.Core.IPC.Commands
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Command server error");
+                    logger.LogError(ex, $"Command server error {ex}");
                 }
-            }
+            // }
         }
     }
 }

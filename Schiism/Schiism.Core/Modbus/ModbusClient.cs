@@ -143,7 +143,7 @@ namespace Schiism.Core.Modbus
 
             // Convert to ushorts, so bools can be displayed as 1s and 0s.
             // This also makes it so we can handle this data in a similar manner as register data, which returns as ushorts natively.
-            logger.LogInformation("Raw digital data read from Modbus device: {Data}", string.Join(", ", rawData.Select(x => x ? "1" : "0")));
+            // logger.LogInformation("Raw digital data read from Modbus device: {Data}", string.Join(", ", rawData.Select(x => x ? "1" : "0")));
             return [.. rawData.Select(x => Convert.ToUInt16(x))];
         }
 

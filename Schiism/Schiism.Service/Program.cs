@@ -77,18 +77,18 @@ namespace Schiism.Service
             builder.Services.AddSingleton<InitStatus>();
 
             // Stream Publishers
-            builder.Services.AddSingleton<StreamPublisher<ModbusData>, StreamPublisher<ModbusData>>(
-                sp => new StreamPublisher<ModbusData>(
+            builder.Services.AddSingleton<StreamPublisher<ModbusDataDTO>, StreamPublisher<ModbusDataDTO>>(
+                sp => new StreamPublisher<ModbusDataDTO>(
                 sp.GetRequiredService<PipeSerializer>(),
-                sp.GetRequiredService<ILogger<StreamPublisher<ModbusData>>>()));
-            builder.Services.AddSingleton<StreamPublisher<ConnectionDiagnostics>, StreamPublisher<ConnectionDiagnostics>>(
-                sp => new StreamPublisher<ConnectionDiagnostics>(
+                sp.GetRequiredService<ILogger<StreamPublisher<ModbusDataDTO>>>()));
+            builder.Services.AddSingleton<StreamPublisher<ConnDiagDTO>, StreamPublisher<ConnDiagDTO>>(
+                sp => new StreamPublisher<ConnDiagDTO>(
                 sp.GetRequiredService<PipeSerializer>(),
-                sp.GetRequiredService<ILogger<StreamPublisher<ConnectionDiagnostics>>>()));
+                sp.GetRequiredService<ILogger<StreamPublisher<ConnDiagDTO>>>()));
 
             // Stream Queues
-            builder.Services.AddSingleton<StreamQueue<ModbusData>, StreamQueue<ModbusData>>();
-            builder.Services.AddSingleton<StreamQueue<ConnectionDiagnostics>, StreamQueue<ConnectionDiagnostics>>();
+            builder.Services.AddSingleton<StreamQueue<ModbusDataDTO>, StreamQueue<ModbusDataDTO>>();
+            builder.Services.AddSingleton<StreamQueue<ConnDiagDTO>, StreamQueue<ConnDiagDTO>>();
 
             // Commmand Server
             builder.Services.AddSingleton<CommandReceiver>(
@@ -114,25 +114,25 @@ namespace Schiism.Service
                     ew.GetRequiredService<PollControl>(),
                     ew.GetRequiredService<ILogger<ModbusEngineWorker>>(),
                     ew.GetRequiredService<IHostApplicationLifetime>()));
-            builder.Services.AddHostedService<StreamPublisherWorker<ModbusData>>(
-                spm => new StreamPublisherWorker<ModbusData>(
+            builder.Services.AddHostedService<StreamPublisherWorker<ModbusDataDTO>>(
+                spm => new StreamPublisherWorker<ModbusDataDTO>(
                     NamingConstants.ModbusDataStreamName,
                     spm.GetRequiredService<INamedPipeFactory>(),
                     spm.GetRequiredService<ConfigState>(),
                     spm.GetRequiredService<InitStatus>(),
-                    spm.GetRequiredService<StreamQueue<ModbusData>>(),
-                    spm.GetRequiredService<StreamPublisher<ModbusData>>(),
-                    spm.GetRequiredService<ILogger<StreamPublisherWorker<ModbusData>>>(),
+                    spm.GetRequiredService<StreamQueue<ModbusDataDTO>>(),
+                    spm.GetRequiredService<StreamPublisher<ModbusDataDTO>>(),
+                    spm.GetRequiredService<ILogger<StreamPublisherWorker<ModbusDataDTO>>>(),
                     spm.GetRequiredService<IHostApplicationLifetime>()));
-            builder.Services.AddHostedService<StreamPublisherWorker<ConnectionDiagnostics>>(
-                spc => new StreamPublisherWorker<ConnectionDiagnostics>(
+            builder.Services.AddHostedService<StreamPublisherWorker<ConnDiagDTO>>(
+                spc => new StreamPublisherWorker<ConnDiagDTO>(
                     NamingConstants.ConnDiagStreamName,
                     spc.GetRequiredService<INamedPipeFactory>(),
                     spc.GetRequiredService<ConfigState>(),
                     spc.GetRequiredService<InitStatus>(),
-                    spc.GetRequiredService<StreamQueue<ConnectionDiagnostics>>(),
-                    spc.GetRequiredService<StreamPublisher<ConnectionDiagnostics>>(),
-                    spc.GetRequiredService<ILogger<StreamPublisherWorker<ConnectionDiagnostics>>>(),
+                    spc.GetRequiredService<StreamQueue<ConnDiagDTO>>(),
+                    spc.GetRequiredService<StreamPublisher<ConnDiagDTO>>(),
+                    spc.GetRequiredService<ILogger<StreamPublisherWorker<ConnDiagDTO>>>(),
                     spc.GetRequiredService<IHostApplicationLifetime>()));
             builder.Services.AddHostedService<CommandsWorker>(
                 cw => new CommandsWorker(

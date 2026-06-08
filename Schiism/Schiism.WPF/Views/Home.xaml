@@ -105,7 +105,7 @@
                 <StackPanel Orientation="Horizontal">
                     <Grid Grid.Column="0">
                         <Border BorderBrush="{Binding ThemeService.Accent3, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" Padding="5,0" CornerRadius="1" Margin="10,5,5,5" Background="{Binding ThemeService.Accent2, UpdateSourceTrigger=PropertyChanged}">
-                            <TabControl ItemsSource="{Binding PollTabs}" SelectedItem="{Binding SelectedPollTab}">
+                            <TabControl ItemsSource="{Binding PollTabs}" SelectedItem="{Binding SelectedPollTab, Mode=TwoWay}">
                                 <TabControl.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Header}" />

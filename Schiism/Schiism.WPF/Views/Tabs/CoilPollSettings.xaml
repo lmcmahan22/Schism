@@ -22,6 +22,7 @@
                     <TextBlock Text="Device ID" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                     <TextBox Text="{Binding ModbusSettState.DeviceId, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}" Margin="100,0,0,2" Width="60" Height="26" MaxLength="3" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14"/>
                 </Grid>
+                <!--
                 <Grid Grid.Row="1" Grid.Column="0">
                     <TextBlock Text="Start Address" Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
                     <TextBox Text="{Binding StartAddress, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True,
@@ -29,9 +30,10 @@ NotifyOnValidationError=True}" Margin="100,0,5,0" Width="60" Height="25" MaxLeng
                 </Grid>
                 <Grid Grid.Row="0" Grid.Column="1">
                 </Grid>
+                -->
                 <Grid Grid.Row="2" Grid.Column="0">
                     <TextBlock Text="Address Conv." Margin="2,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-                    <ComboBox Name="AddressConv" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding AddressConventions}" SelectedValue="{Binding SelConv.Selected, Mode=TwoWay}" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="300" Height="25" FontSize="14"/>
+                    <ComboBox Name="AddressConv" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding AddressConventions}" SelectedValue="{Binding SelConv.Selected, Mode=TwoWay}" Margin="100,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="510" Height="25" FontSize="14"/>
                 </Grid>
             </Grid>
         </StackPanel>

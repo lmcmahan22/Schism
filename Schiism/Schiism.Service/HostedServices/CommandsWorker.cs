@@ -66,7 +66,7 @@ namespace Schiism.Service.HostedServices
                         await initSender.SendAsync(config.Push(), stoppingToken);
 
                         initStatus.IsInitialized = true; // Ensure the state is set to true after successful send
-                        logger.LogWarning("Frontend Initialization State set to True!");
+                        logger.LogInformation("Frontend Initialization State set to True!");
                     }
                 }
                 catch (OperationCanceledException)
@@ -101,7 +101,7 @@ namespace Schiism.Service.HostedServices
             }
         }
 
-        private Task ReceiveHandler(SettingsConfig cmd)
+        private Task ReceiveHandler(SettingsConfigDTO cmd)
         {
             config.Update(cmd);
 
@@ -109,6 +109,7 @@ namespace Schiism.Service.HostedServices
             ServiceSaveData ssd = new ServiceSaveData(config.AutoStart, config.AutoRestart);
             this.servSett.Save(ssd);
 
+            // Efficiency improvement, only run this if a setting other than the poll type was modified. We always poll both Status Coils and Holding Registers, so we no longer need to restart for that!
             pollControl.RestartRequested = true;
 
             logger.LogInformation("Implemented configuration command successfully.");

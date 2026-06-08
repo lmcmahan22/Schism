@@ -4,8 +4,6 @@
 
 namespace Schiism.Core.Modbus
 {
-    using System.Net.Sockets;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using NModbus;
     using Schiism.Core.Configuration.Enums;
@@ -13,18 +11,23 @@ namespace Schiism.Core.Modbus
     using Schiism.Core.IPC.DTOs;
     using Schiism.Core.IPC.StateWrappers;
     using Schiism.Core.IPC.Streams;
+    using System.Collections.Generic;
+    using System.Net.Sockets;
+    using System.Threading.Tasks;
+    using static System.Runtime.InteropServices.JavaScript.JSType;
 
     /// <summary>
     /// Implemnting class for the IEngine interface.
     /// No looping or scheduling done in this class, only singular connect, disconnect, and polling attempts.
     /// </summary>
-    public class Engine(ILogger<Engine> logger, ConfigState config, ModbusClient client, InitStatus initStatus, ModbusInterpreter interpreter, StreamQueue<ModbusData> modbusSQ, StreamQueue<ConnectionDiagnostics> connSQ)
+    public class Engine(ILogger<Engine> logger, ConfigState config, ModbusClient client, InitStatus initStatus, ModbusInterpreter interpreter, StreamQueue<ModbusDataDTO> modbusSQ, StreamQueue<ConnDiagDTO> connSQ)
     {
         private int numRequests = 0;
         private int numResponses = 0;
         private int numOKs = 0;
         private int numErrors = 0;
         private string errorMessage = string.Empty;
+        private DateTime lastDiagTS = DateTime.UtcNow;
 
         // Referenced by the worker
         public bool IsConnected { get; private set; }
@@ -62,8 +65,10 @@ namespace Schiism.Core.Modbus
         }
 
         /// <inheritdoc/>
-        public async Task PollOnceAsync(CancellationToken ct)
+        public async Task<List<string>> PollOnceAsync(CancellationToken ct, List<string> prevData)
         {
+            ModbusDataDTO? modbusDTO = null;
+
             try
             {
                 await OnRequest(ct);
@@ -83,9 +88,8 @@ namespace Schiism.Core.Modbus
                 }
 
                 List<string>? interp;
-                ModbusData data;
 
-                // Only queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
+                // Only attmpt to queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
                 if (initStatus.IsInitialized)
                 {
 
@@ -101,41 +105,57 @@ namespace Schiism.Core.Modbus
                     }
 
                     // Enqueue the modbus data for downstream processing
-                    data = new(config.DeviceId, interp, DateTime.UtcNow);
-                    await modbusSQ.EnqueueAsync(data, ct);
+                    // Only enqueue and publish to UI if we've identified a purposeful difference in the data, regardless of the scan rate!
+                    if (!Enumerable.SequenceEqual(interp, prevData))
+                    {
+                        modbusDTO = new(config.DeviceId, interp, DateTime.UtcNow);
+                        logger.LogWarning("Enqueuing ModbusData: {x}", string.Join(", ", modbusDTO.Data));
+                        await modbusSQ.EnqueueAsync(modbusDTO, ct);
+                    }
                 }
 
                 // Regardless of whether we queued up the last stream contents or not, this was still a successful poll, so we update the diagnostics and connection status accordingly.
                 await OnSuccess(ct);
                 logger.LogInformation("Successfully polled Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
+
+                // Pass up the enqueued data. The DTO will be null if nothing was sent, which is okay.
+                if (modbusDTO is null)
+                {
+                    return prevData;
+                }
+                else
+                {
+                    return modbusDTO.Data;
+                }
             }
             catch (OperationCanceledException ex)
             {
                 logger.LogWarning("Connection cancelled on Client Engine.");
-                throw;
+                return new List<string>();
             }
             catch (SocketException ex)
             {
                 await OnError(ex, ct);
                 logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to Socket Error. Attempting to reconnect...", config.IPAddress, config.TCPPort);
-                throw;
+                return new List<string>();
             }
             catch (IOException ex)
             {
                 await OnError(ex, ct);
                 logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to IO Error. Attempting to reconnect...", config.IPAddress, config.TCPPort);
-                throw;
+                return new List<string>();
             }
             catch (ArgumentException ex)
             {
                 await OnError(ex, ct);
                 logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to Argument Error. Check configuration. Attempting to reconnect...", config.IPAddress, config.TCPPort);
-                throw;
+                return new List<string>();
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 await OnError(ex, ct);
                 logger.LogError(ex, "Unknown error from Modbus Server at {IP}:{Port} --> {ex}", config.IPAddress, config.TCPPort, ex);
+                return new List<string>();
             }
         }
 
@@ -144,9 +164,16 @@ namespace Schiism.Core.Modbus
             numRequests++;
 
             // Only queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
-            if (initStatus.IsInitialized)
+            int diff = (int)(DateTime.UtcNow - this.lastDiagTS).TotalMilliseconds;
+            logger.LogInformation("Time since last Request ConnDiag send: {x}", diff);
+
+            if (initStatus.IsInitialized && (diff > 500))
             {
-                ConnectionDiagnostics diag = new(numRequests, numResponses, numOKs, numErrors, errorMessage, IsConnected, DateTime.UtcNow);
+                ConnDiagDTO diag = new(numRequests, numResponses, numOKs, numErrors, errorMessage, IsConnected, DateTime.UtcNow);
+                lastDiagTS = diag.Timestamp;
+
+                // Enqueue the ConnectionDiagnostics
+                logger.LogWarning("Enqueuing Request ConnDiags: {x}", diag);
                 await connSQ.EnqueueAsync(diag, ct);
             }
         }
@@ -159,11 +186,17 @@ namespace Schiism.Core.Modbus
             errorMessage = string.Empty;
 
             // Only queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
-            if (initStatus.IsInitialized)
-            {
-                ConnectionDiagnostics diag = new(numRequests, numResponses, numOKs, numErrors, errorMessage, IsConnected, DateTime.UtcNow);
+            int diff = (int)(DateTime.UtcNow - this.lastDiagTS).TotalMilliseconds;
+            logger.LogInformation("Time since last Response ConnDiag send: {x}", diff);
 
+            if (initStatus.IsInitialized && (diff > 500))
+            {
+                ConnDiagDTO diag = new(numRequests, numResponses, numOKs, numErrors, errorMessage, IsConnected, DateTime.UtcNow);
+                lastDiagTS = diag.Timestamp;
+
+                // Enqueue the ConnectionDiagnostics
                 // logger.LogError($"Client is sending server Connection Status: {this.IsConnected}");
+                logger.LogWarning("Enqueuing Response ConnDiags: {x}", diag);
                 await connSQ.EnqueueAsync(diag, ct);
             }
         }
@@ -178,7 +211,7 @@ namespace Schiism.Core.Modbus
             // Only queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
             if (initStatus.IsInitialized)
             {
-                ConnectionDiagnostics diag = new(numRequests, numResponses, numOKs, numErrors, errorMessage, IsConnected, DateTime.UtcNow);
+                ConnDiagDTO diag = new(numRequests, numResponses, numOKs, numErrors, errorMessage, IsConnected, DateTime.UtcNow);
 
                 // logger.LogError($"Client is sending server Connection Status: {this.IsConnected}");
                 await connSQ.EnqueueAsync(diag, ct);

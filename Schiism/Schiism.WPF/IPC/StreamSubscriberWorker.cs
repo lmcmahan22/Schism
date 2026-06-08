@@ -41,7 +41,7 @@ namespace Schiism.WPF.IPC
 
             while (!cts.IsCancellationRequested)
             {
-                using var pipe = pipeFactory.CreateClient(pipeName);
+                using var pipe = pipeFactory.CreateNPClient(pipeName);
 
                 try
                 {

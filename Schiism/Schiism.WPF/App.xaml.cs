@@ -57,8 +57,8 @@ namespace Schiism
             containerRegistry.RegisterSingleton<InitStatus>();
             containerRegistry.RegisterSingleton<INamedPipeFactory, BasePipeFactory>();
             containerRegistry.RegisterSingleton<PipeSerializer>();
-            containerRegistry.RegisterSingleton<StreamStore<ModbusData>>();
-            containerRegistry.RegisterSingleton<StreamStore<ConnectionDiagnostics>>();
+            containerRegistry.RegisterSingleton<StreamStore<ModbusDataDTO>>();
+            containerRegistry.RegisterSingleton<StreamStore<ConnDiagDTO>>();
 
             // Theme Controller Singleton
             containerRegistry.RegisterSingleton<ThemesControl>();
@@ -76,14 +76,14 @@ namespace Schiism
                     cs.Resolve<INamedPipeFactory>(),
                     cs.Resolve<PipeSerializer>(),
                     cs.Resolve<ILoggerFactory>().CreateLogger<CommandSender>()));
-            containerRegistry.RegisterSingleton<StreamSubscriber<ConnectionDiagnostics>>(
-                ssc => new StreamSubscriber<ConnectionDiagnostics>(
+            containerRegistry.RegisterSingleton<StreamSubscriber<ConnDiagDTO>>(
+                ssc => new StreamSubscriber<ConnDiagDTO>(
                     ssc.Resolve<PipeSerializer>(),
-                    ssc.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriber<ConnectionDiagnostics>>()));
-            containerRegistry.RegisterSingleton<StreamSubscriber<ModbusData>>(
-                ssm => new StreamSubscriber<ModbusData>(
+                    ssc.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriber<ConnDiagDTO>>()));
+            containerRegistry.RegisterSingleton<StreamSubscriber<ModbusDataDTO>>(
+                ssm => new StreamSubscriber<ModbusDataDTO>(
                     ssm.Resolve<PipeSerializer>(),
-                    ssm.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriber<ModbusData>>()));
+                    ssm.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriber<ModbusDataDTO>>()));
 
             // Workers (to run the subscription and command loops/calls)
             containerRegistry.Register<CommandsWorker>(
@@ -94,22 +94,22 @@ namespace Schiism
                 cw.Resolve<ConfigState>(),
                 cw.Resolve<InitStatus>(),
                 cw.Resolve<ILoggerFactory>().CreateLogger<CommandsWorker>()));
-            containerRegistry.Register<StreamSubscriberWorker<ModbusData>>(
-            swm => new StreamSubscriberWorker<ModbusData>(
+            containerRegistry.Register<StreamSubscriberWorker<ModbusDataDTO>>(
+            swm => new StreamSubscriberWorker<ModbusDataDTO>(
                 NamingConstants.ModbusDataStreamName,
                 swm.Resolve<INamedPipeFactory>(),
-                swm.Resolve<StreamSubscriber<ModbusData>>(),
-                swm.Resolve<StreamStore<ModbusData>>(),
+                swm.Resolve<StreamSubscriber<ModbusDataDTO>>(),
+                swm.Resolve<StreamStore<ModbusDataDTO>>(),
                 swm.Resolve<InitStatus>(),
-                swm.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriberWorker<ModbusData>>()));
-            containerRegistry.Register<StreamSubscriberWorker<ConnectionDiagnostics>>(
-                swc => new StreamSubscriberWorker<ConnectionDiagnostics>(
+                swm.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriberWorker<ModbusDataDTO>>()));
+            containerRegistry.Register<StreamSubscriberWorker<ConnDiagDTO>>(
+                swc => new StreamSubscriberWorker<ConnDiagDTO>(
                 NamingConstants.ConnDiagStreamName,
                 swc.Resolve<INamedPipeFactory>(),
-                swc.Resolve<StreamSubscriber<ConnectionDiagnostics>>(),
-                swc.Resolve<StreamStore<ConnectionDiagnostics>>(),
+                swc.Resolve<StreamSubscriber<ConnDiagDTO>>(),
+                swc.Resolve<StreamStore<ConnDiagDTO>>(),
                 swc.Resolve<InitStatus>(),
-                swc.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriberWorker<ConnectionDiagnostics>>()));
+                swc.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriberWorker<ConnDiagDTO>>()));
         }
 
         // Configures the module catalog, which is responsible for managing the modules in the application. This method is called during application initialization.
@@ -126,8 +126,8 @@ namespace Schiism
 
             // This resolves the workers 
             hostedServices.Add(Container.Resolve<CommandsWorker>());
-            hostedServices.Add(Container.Resolve<StreamSubscriberWorker<ModbusData>>());
-            hostedServices.Add(Container.Resolve<StreamSubscriberWorker<ConnectionDiagnostics>>());
+            hostedServices.Add(Container.Resolve<StreamSubscriberWorker<ModbusDataDTO>>());
+            hostedServices.Add(Container.Resolve<StreamSubscriberWorker<ConnDiagDTO>>());
 
             foreach (var service in hostedServices)
             {

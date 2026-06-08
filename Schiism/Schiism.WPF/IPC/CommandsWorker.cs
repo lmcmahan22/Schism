@@ -22,7 +22,7 @@
         private readonly InitStatus initStatus;
 
         // Track if the config actually needs to be sent or not.
-        private SettingsConfig? lastSentConfig;
+        private SettingsConfigDTO? lastSentConfig;
 
         public CommandsWorker(
             CommandReceiver initReceiver,
@@ -80,7 +80,7 @@
             try
             {
                 // length is included here, so the UI can view the length, but it isn't able to set it
-                SettingsConfig currentConfig = new SettingsConfig(
+                SettingsConfigDTO currentConfig = new SettingsConfigDTO(
                     config.IPAddress,
                     config.DataLength,
                     config.StartAddress,
@@ -115,7 +115,7 @@
             }
         }
 
-        private Task ReceiveHandler(SettingsConfig cmd)
+        private Task ReceiveHandler(SettingsConfigDTO cmd)
         {
             // Trigger a PropertyChanged event to notify the view model for a UI update
             config.Update(cmd);

@@ -14,6 +14,9 @@ namespace Schiism.Service.HostedServices
     /// </summary>
     public class ModbusEngineWorker(Engine engine, ConfigState config, PollControl pollControl, ILogger<ModbusEngineWorker> logger, IHostApplicationLifetime lifetime) : BackgroundService
     {
+
+        private List<string> latestData = new List<string>();
+
         /// <summary>
         /// Executes the background service, managing the lifecycle of the MODBUS Engine.
         /// </summary>
@@ -60,9 +63,6 @@ namespace Schiism.Service.HostedServices
                         await engine.DisconnectAsync();
                     }
                 }
-
-                // This shouldn't need to be here, since connect and pollingloop both have their own delays.
-                // await Task.Delay(config.ScanRate, ct);
             }
         }
 
@@ -70,7 +70,7 @@ namespace Schiism.Service.HostedServices
         {
             while (!ct.IsCancellationRequested)
             {
-                await engine.PollOnceAsync(ct);
+                latestData = await engine.PollOnceAsync(ct, latestData);
 
                 if (pollControl.RestartRequested)
                 {

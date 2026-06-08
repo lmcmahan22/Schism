@@ -18,20 +18,30 @@ namespace Schiism.Core.IPC.Commands
     public class CommandSender(string pipeName, INamedPipeFactory pipeFactory, PipeSerializer serializer, ILogger<CommandSender> logger)
     {
         /// <inheritdoc/>
-        public async Task SendAsync(SettingsConfig command, CancellationToken ct)
+        public async Task SendAsync(SettingsConfigDTO command, CancellationToken ct)
         {
-            using var pipe = pipeFactory.CreateClient(pipeName);
-
             try
             {
-            logger.LogInformation("Connecting to {0}", pipeName);
-            await pipe.ConnectAsync(ct);
-            logger.LogInformation("Connected to {0}", pipeName);
+                logger.LogInformation(
+                   "Creating named pipe for {PipeName}",
+                   pipeName);
 
-            await serializer.SerializeAsync(pipe, command, ct);
+                using var pipe = pipeFactory.CreateNPServer(pipeName);
 
-            await pipe.FlushAsync(ct);
-            logger.LogInformation("Command: {0} sent to {1}", command, pipeName);
+                logger.LogInformation(
+                   "Waiting for sender connection on {PipeName}",
+                   pipeName);
+
+                await pipe.WaitForConnectionAsync(ct);
+
+                logger.LogInformation(
+                   "Sender connected to {PipeName}",
+                   pipeName);
+
+                await serializer.SerializeAsync(pipe, command, ct);
+
+                await pipe.FlushAsync(ct);
+                logger.LogInformation("Command: {0} sent to {1}", command, pipeName);
             }
             catch (Exception ex)
             {

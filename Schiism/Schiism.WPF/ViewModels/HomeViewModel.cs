@@ -56,9 +56,9 @@ namespace Schiism.WPF.ViewModels
 
         public ConfigState ModbusSettState { get; }
 
-        public StreamStore<ModbusData> ModbusDataState { get; }
+        public StreamStore<ModbusDataDTO> ModbusDataState { get; }
 
-        public StreamStore<ConnectionDiagnostics> ConnDiagState { get; }
+        public StreamStore<ConnDiagDTO> ConnDiagState { get; }
 
         public InitStatus InitStatus { get; }
 
@@ -75,11 +75,11 @@ namespace Schiism.WPF.ViewModels
         public HomeViewModel(
             IDialogService dialogService,
             ConfigState ModbusSettState,
-            StreamStore<ModbusData> ModbusDataState,
-            StreamStore<ConnectionDiagnostics> ConnDiagState,
+            StreamStore<ModbusDataDTO> ModbusDataState,
+            StreamStore<ConnDiagDTO> ConnDiagState,
             InitStatus InitStatus,
             ThemesControl ThemeService,
-            SelectedAddressConvention selConv,
+            SelectedAddressConvention SelConv,
             ILoggerFactory factory)
         {
             this.ModbusSettState = ModbusSettState;
@@ -87,7 +87,7 @@ namespace Schiism.WPF.ViewModels
             this.ConnDiagState = ConnDiagState;
             this.InitStatus = InitStatus;
             this.ThemeService = ThemeService;
-            this.SelConv = selConv;
+            this.SelConv = SelConv;
             this.logger = factory.CreateLogger<HomeViewModel>();
 
             title = "PVA MODBUS TCP Client";
@@ -100,12 +100,13 @@ namespace Schiism.WPF.ViewModels
             // Selected Address Convention Handling
 
             UpdateShiftColumn(); // Build the initial shift column
-            UpdateModbusTable(); // Build the initial table based on default parameters in the Model
+            UpdateModbusTable(); // Build the initial table based on default parameters
 
-            ModbusSettState.PropertyChanged += this.ModbusSettChanged;
-            ModbusDataState.PropertyChanged += this.ModbusDataChanged;
-            ConnDiagState.PropertyChanged += this.ConnDiagStateChanged;
-            InitStatus.PropertyChanged += this.InitStatusChanged;
+            this.ModbusSettState.PropertyChanged += this.ModbusSettChanged;
+            this.ModbusDataState.PropertyChanged += this.ModbusDataChanged;
+            this.ConnDiagState.PropertyChanged += this.ConnDiagStateChanged;
+            this.InitStatus.PropertyChanged += this.InitStatusChanged;
+            this.SelConv.PropertyChanged += this.AddrConvChanged;
 
             // Subscribe to the tab viewmodels too? How else will you know if the Address Convention changed?
             // Only show the Status Coil and Register tabs, since these are the only two that Vision PLCs use.
@@ -216,8 +217,6 @@ namespace Schiism.WPF.ViewModels
         public DelegateCommand AboutClick =>
             aboutClick ??= new DelegateCommand(ExecuteAboutClick);
 
-        // Remaining variables (ex. ScanRate) will need to be managed in the ConnSettings ViewModel!
-
         public void ExecuteSaveClick()
         {
             // Create a SaveData object with the current state of the ViewModel
@@ -243,7 +242,7 @@ namespace Schiism.WPF.ViewModels
 
             // Update ViewModel properties with loaded data
             // NOTE: Setting the public instances of variables runs the logic in the setters implicitly! ;)
-            SettingsConfig loadData = new SettingsConfig(
+            SettingsConfigDTO loadData = new SettingsConfigDTO(
                 null,
                 null,
                 lD.SaveStartAddress,
@@ -338,10 +337,13 @@ namespace Schiism.WPF.ViewModels
                 // Marshall this as well, if you haven't already!
                 UpdateModbusTable();
             }
+        }
 
+        private void AddrConvChanged(object? sender, PropertyChangedEventArgs e)
+        {
             // Update the shift column if the opened settings tab changes the convention, since the values in this column are based on the convention
             if (e.PropertyName is nameof(this.SelConv.Selected))
-             {
+            {
                 UpdateShiftColumn();
             }
         }

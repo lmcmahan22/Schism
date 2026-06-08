@@ -11,8 +11,8 @@ namespace Schiism.Core.IPC.PipeControl
     {
 
         // Note that NamedPipe interactions only occur on objects with "Stream" in the name. Commands are streams here, just single sending streams that close immediately after.
-        NamedPipeServerStream CreateServer(string pipeName);
+        NamedPipeServerStream CreateNPServer(string pipeName);
 
-        NamedPipeClientStream CreateClient(string pipeName);
+        NamedPipeClientStream CreateNPClient(string pipeName);
     }
 }

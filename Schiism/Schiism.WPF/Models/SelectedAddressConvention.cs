@@ -16,9 +16,10 @@ namespace Schiism.WPF.Models
         {
             get { return selected; }
 
-            set { 
+            set
+            { 
                 selected = value;
-                OnPropertyChanged(nameof(selected));
+                OnPropertyChanged(nameof(Selected));
             }
         }
 

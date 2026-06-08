@@ -51,54 +51,163 @@ namespace Schiism.Core.Configuration.StateControl
         // Notifies for subscriptions
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
         /// <inheritdoc/>
         public string IPAddress
         {
             get => iPAddress;
-            set => iPAddress = value;
+            set
+            {
+                iPAddress = value;
+                OnPropertyChanged(nameof(IPAddress));
+            }
         }
 
         /// <summary>
         /// </summary>
-        public ushort DataLength { get => dataLength; set => dataLength = value; }
+        public ushort DataLength
+        {
+            get => dataLength;
+            set
+            {
+                dataLength = value;
+                OnPropertyChanged(nameof(DataLength));
+            }
+        }
 
         /// <summary>
         /// Gets Starting Address. May alter DataLength, depending on the entered value.
         /// </summary>
-        public ushort StartAddress { get => startAddress; set => startAddress = value; }
+        public ushort StartAddress
+        {
+            get => startAddress;
+            set
+            {
+                startAddress = value;
+                OnPropertyChanged(nameof(StartAddress));
+            }
+        }
 
         /// <inheritdoc/>
-        public DataSize SelectedDataSize { get => selectedDataSize; set => selectedDataSize = value; }
+        public DataSize SelectedDataSize
+        {
+            get => selectedDataSize;
+            set
+            {
+                selectedDataSize = value;
+                OnPropertyChanged(nameof(SelectedDataSize));
+            }
+        }
 
         /// <inheritdoc/>
-        public ushort TCPPort { get => tcpPort; set => tcpPort = value; }
+        public ushort TCPPort
+        {
+            get => tcpPort;
+            set
+            {
+                tcpPort = value;
+                OnPropertyChanged(nameof(TCPPort));
+            }
+        }
 
         /// <inheritdoc/>
-        public int ScanRate { get => scanRate; set => scanRate = value; }
+        public int ScanRate
+        {
+            get => scanRate;
+            set
+            {
+                scanRate = value;
+                OnPropertyChanged(nameof(ScanRate));
+            }
+        }
 
         /// <inheritdoc/>
-        public int TCPTimeout { get => tcpTimeout; set => tcpTimeout = value; }
+        public int TCPTimeout
+        {
+            get => tcpTimeout;
+            set
+            {
+                tcpTimeout = value;
+                OnPropertyChanged(nameof(TCPTimeout));
+            }
+        }
 
         /// <inheritdoc/>
-        public byte DeviceId { get => deviceId; set => deviceId = value; }
+        public byte DeviceId
+        {
+            get => deviceId; set
+            {
+                deviceId = value;
+                OnPropertyChanged(nameof(DeviceId));
+            }
+        }
 
         /// <inheritdoc/>
-        public PollType SelectedPollType { get => selectedPollType; set => selectedPollType = value; }
+        public PollType SelectedPollType
+        {
+            get => selectedPollType;
+            set
+            {
+                selectedPollType = value;
+                OnPropertyChanged(nameof(SelectedPollType));
+            }
+        }
 
         /// <inheritdoc/>
-        public bool AsciiEnable { get => asciiEnable; set => asciiEnable = value; }
+        public bool AsciiEnable
+        {
+            get => asciiEnable;
+            set
+            {
+                asciiEnable = value;
+                OnPropertyChanged(nameof(AsciiEnable));
+            }
+        }
 
         /// <inheritdoc/>
-        public NumericBase SelectedNumericBase { get => selectedNumericBase; set => selectedNumericBase = value; }
+        public NumericBase SelectedNumericBase
+        {
+            get => selectedNumericBase;
+            set
+            {
+                selectedNumericBase = value;
+                OnPropertyChanged(nameof(SelectedNumericBase));
+            }
+        }
 
         /// <inheritdoc/>
-        public Endian SelectedEndian { get => selectedEndian; set => selectedEndian = value; }
+        public Endian SelectedEndian
+        {
+            get => selectedEndian;
+            set
+            {
+                selectedEndian = value;
+                OnPropertyChanged(nameof(SelectedEndian));
+            }
+        }
 
-        public bool AutoStart { get => autoStart; set => autoStart = value; }
+        public bool AutoStart
+        {
+            get => autoStart;
+            set
+            {
+                autoStart = value;
+                OnPropertyChanged(nameof(AutoStart));
+            }
+        }
 
-        public bool AutoRestart { get => autoRestart; set => autoRestart = value; }
+        public bool AutoRestart
+        {
+            get => autoRestart;
+            set
+            {
+                autoRestart = value;
+                OnPropertyChanged(nameof(AutoRestart));
+            }
+        }
 
-        public void Update(SettingsConfig cmd)
+        public void Update(SettingsConfigDTO cmd)
         {
             if (cmd.IPAddress != null)
             {
@@ -171,9 +280,9 @@ namespace Schiism.Core.Configuration.StateControl
             }
         }
 
-        public SettingsConfig Push()
+        public SettingsConfigDTO Push()
         {
-            return new SettingsConfig(
+            return new SettingsConfigDTO(
                 IPAddress,
                 DataLength,
                 StartAddress,

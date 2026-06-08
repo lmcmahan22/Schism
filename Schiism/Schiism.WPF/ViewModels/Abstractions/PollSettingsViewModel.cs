@@ -26,13 +26,16 @@
 
         public ThemesControl ThemeService { get; }
 
+        public SelectedAddressConvention SelConv { get; }
+
         // Constructor
-        public PollSettingsViewModel(string header, PollType polltype, ConfigState modbusSettState, SelectedAddressConvention SelConv, ThemesControl themeController)
+        public PollSettingsViewModel(string header, PollType polltype, ConfigState modbusSettState, SelectedAddressConvention selConv, ThemesControl themeController)
         {
             this.Header = header;
             this.PollTyp = polltype;
             this.ModbusSettState = modbusSettState;
             this.ThemeService = themeController;
+            this.SelConv = selConv;
         }
 
         // Public instances of the ViewModel for control in the View

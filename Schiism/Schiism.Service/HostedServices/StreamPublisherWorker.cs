@@ -47,7 +47,7 @@ namespace Schiism.Service.HostedServices
                 // The difference between Streams and Commands is who owns the pipes.
                 // The Worker needs to loop around the stream, so stream pipes are owned by the worker.
                 // Commands are one time sends, so those are owned by the Command Send and Receive classes (currently).
-                using var pipe = pipeFactory.CreateServer(pipeName);
+                using var pipe = pipeFactory.CreateNPServer(pipeName);
 
                 // Try to connect on the pipe, return to the top of the loop if it fails
                 try
@@ -64,30 +64,35 @@ namespace Schiism.Service.HostedServices
                             await Task.Delay(100, stoppingToken);
                             continue;
                         }
+                        else
+                        {
+                            logger.LogInformation($"{typeof(T).Name} Queue Count:{queue.Count}");
+                        }
 
                         T? item = await queue.DequeueAsync(stoppingToken);
 
                         try
                         {
                             logger.LogInformation($"Publishing on {pipeName}");
+
                             await publisher.PublishAsync(pipe, item, stoppingToken);
 
-                            if (item.GetType() == typeof(ModbusData))
-                            {
-                                string result = string.Empty;
-                                ModbusData? modItem = item as ModbusData;
-                                for (int i = 0; i < modItem.Data.Count; i++)
-                                {
-                                    result += modItem.Data[i].ToString();
-                                }
+                            //if (item.GetType() == typeof(ModbusDataDTO))
+                            //{
+                            //    string result = string.Empty;
+                            //    ModbusDataDTO? modItem = item as ModbusDataDTO;
+                            //    for (int i = 0; i < modItem.Data.Count; i++)
+                            //    {
+                            //        result += modItem.Data[i].ToString();
+                            //    }
 
-                                logger.LogInformation($"Publish complete on {pipeName}: {modItem}");
-                                logger.LogInformation($"Modbus Data: {result}");
-                            }
-                            else
-                            {
-                                logger.LogInformation($"Publish complete on {pipeName}: {item}");
-                            }
+                            //    logger.LogInformation($"Publish complete on {pipeName}: {modItem}");
+                            //    logger.LogInformation($"Modbus Data: {result}");
+                            //}
+                            //else
+                            //{
+                            //    logger.LogInformation($"Publish complete on {pipeName}: {item}");
+                            //}
                         }
                         catch (OperationCanceledException)
                         {
@@ -105,9 +110,6 @@ namespace Schiism.Service.HostedServices
                             logger.LogError(ex, "Non-fatal publish error. Continuing...");
                             continue; // skip item only
                         }
-
-                        // Should not have a delay here, since there is no reason to delay our dequeue action. If the queue as items, spit them out ASAP! Prevents queue buildup.
-                        // await Task.Delay(config.ScanRate, stoppingToken);
                     }
                 }
                 catch (OperationCanceledException)
@@ -128,9 +130,6 @@ namespace Schiism.Service.HostedServices
                 {
                     pipe.Dispose();
                 }
-
-                // Should not have a delay here, since there is no reason to delay our publish action. If the queue as items, spit them out ASAP! Prevents queue buildup.
-                // await Task.Delay(config.ScanRate, stoppingToken);
             }
         }
     }
