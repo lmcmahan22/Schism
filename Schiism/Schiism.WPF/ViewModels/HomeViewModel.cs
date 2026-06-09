@@ -24,12 +24,13 @@ namespace Schiism.WPF.ViewModels
     using Schiism.WPF.ViewModels.Abstractions;
     using Schiism.WPF.ViewModels.Tabs;
     using Schiism.WPF.Views;
+    using Schiism.WPF.ViewModels.Items;
 
     public class HomeViewModel : BindableBase, INotifyPropertyChanged
     {
         // Private variables
         private string title;
-        private ObservableCollection<string> addressList;
+        private ObservableCollection<ModbusColumnViewModel> modbusColumns;
 
         // ViewModel grid elements
         private ObservableCollection<string> shiftColumn;
@@ -39,10 +40,6 @@ namespace Schiism.WPF.ViewModels
 
         private readonly ILogger logger;
 
-        private double watchColumnWidth = 50;
-        private double nameColumnWidth = 100;
-        private double dataColumnWidth = 475;
-
         // ViewModel Commands
         private DelegateCommand? saveClick;
         private DelegateCommand? loadClick;
@@ -50,9 +47,6 @@ namespace Schiism.WPF.ViewModels
         private DelegateCommand? settClick;
         private DelegateCommand? themesClick;
         private DelegateCommand? aboutClick;
-        private DelegateCommand<double?> resizeWatchColumnCommand;
-        private DelegateCommand<double?> resizeNameColumnCommand;
-        private DelegateCommand<double?> resizeDataColumnCommand;
 
         public ConfigState ModbusSettState { get; }
 
@@ -94,13 +88,11 @@ namespace Schiism.WPF.ViewModels
 
             // ViewModel grid elements
             shiftColumn = new ObservableCollection<string>();
-
-            addressList = [ModbusSettState.StartAddress.ToString()];
-
-            // Selected Address Convention Handling
+            modbusColumns = new ObservableCollection<ModbusColumnViewModel>();
 
             UpdateShiftColumn(); // Build the initial shift column
             UpdateModbusTable(); // Build the initial table based on default parameters
+            UpdateAddressHeaders(); // Build the intial modbus columns
 
             this.ModbusSettState.PropertyChanged += this.ModbusSettChanged;
             this.ModbusDataState.PropertyChanged += this.ModbusDataChanged;
@@ -146,58 +138,17 @@ namespace Schiism.WPF.ViewModels
             set => SetProperty(ref title, value);
         }
 
-        public ObservableCollection<string> AddressList
+        public ObservableCollection<ModbusColumnViewModel> ModbusColumns
         {
-            get => addressList;
-            set => SetProperty(ref addressList, value);
-        }
-
-        // Jointed column widths
-        public double WatchColumnWidth
-        {
-            get => watchColumnWidth;
-            set
-            {
-                watchColumnWidth = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public double NameColumnWidth
-        {
-            get => nameColumnWidth;
-            set
-            {
-                nameColumnWidth = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public double DataColumnWidth
-        {
-            get => dataColumnWidth;
-            set
-            {
-                dataColumnWidth = value;
-                OnPropertyChanged();
-            }
+            get => modbusColumns;
+            set => SetProperty(ref modbusColumns, value);
         }
 
         // Grid collections
         public ObservableCollection<string> ShiftColumn => shiftColumn;
 
         // Get is required in order for XAML to see this
-        public ObservableCollection<ModbusRow> ModbusRows { get; } = new ObservableCollection<ModbusRow>();
-
-        // WPF Public Command properties
-        public DelegateCommand<double?> ResizeWatchColumnCommand =>
-            resizeWatchColumnCommand ??= new DelegateCommand<double?>(OnWatchResizeColumn);
-
-        public DelegateCommand<double?> ResizeNameColumnCommand =>
-            resizeNameColumnCommand ??= new DelegateCommand<double?>(OnNameResizeColumn);
-
-        public DelegateCommand<double?> ResizeDataColumnCommand =>
-            resizeDataColumnCommand ??= new DelegateCommand<double?>(OnDataResizeColumn);
+        // public ObservableCollection<ModbusRow> ModbusRows { get; } = new ObservableCollection<ModbusRow>();
 
         public DelegateCommand SaveClick =>
             saveClick ??= new DelegateCommand(ExecuteSaveClick);
@@ -320,6 +271,14 @@ namespace Schiism.WPF.ViewModels
             RaisePropertyChanged(propertyName);
         }
 
+        //private void RowPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        //{
+        //    if (e.PropertyName == nameof(ModbusRow.IsUpdating))
+        //    {
+        //        RaisePropertyChanged(nameof(ColIsUpdating));
+        //    }
+        //}
+
         // React to MODBUSService updates, depending on what updated
         private void ModbusSettChanged(object? sender, PropertyChangedEventArgs e)
         {
@@ -400,49 +359,64 @@ namespace Schiism.WPF.ViewModels
 
             app.Dispatcher.Invoke(() =>
             {
-                for (int i = 0; i < ModbusRows.Count; i++)
+                // Loop through each column, and within, each row
+                for (int i = 0; i < ModbusColumns.Count; i++)
                 {
-                    // Only save this name for the new display if we know that we'll see it in the new length.
-                    // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
-                    if (i < ModbusSettState.DataLength)
+                    for (int j = 0; j < ModbusColumns[i].Rows.Count; j++)
                     {
-                        string? temp = ModbusRows[i].Name;
-                        bool? tempUpdating = ModbusRows[i].IsUpdating;
+                        // Only save this name for the new display if we know that we'll see it in the new length.
+                        // Otherwise, we'll risk exceeding the size of the length cache with a name we won't even need.
+                        int rowIndex = (i * 20) + j;
+                        if (rowIndex < ModbusSettState.DataLength)
+                        {
+                            string? temp = ModbusColumns[i].Rows[j].Name;
+                            bool? tempUpdating = ModbusColumns[i].Rows[j].IsUpdating;
 
-                        if (temp == null)
-                        {
-                            namesCache[i] = string.Empty;
-                        }
-                        else
-                        {
-                            namesCache[i] = temp;
-                        }
+                            if (temp == null)
+                            {
+                                namesCache[j] = string.Empty;
+                            }
+                            else
+                            {
+                                namesCache[j] = temp;
+                            }
 
-                        if (!tempUpdating.HasValue)
-                        {
-                            updatingCache[i] = false;
-                        }
-                        else
-                        {
-                            updatingCache[i] = tempUpdating.Value;
+                            if (!tempUpdating.HasValue)
+                            {
+                                updatingCache[j] = false;
+                            }
+                            else
+                            {
+                                updatingCache[j] = tempUpdating.Value;
+                            }
                         }
                     }
 
-                    ModbusRows.Clear();
+                    ModbusColumns[i].Rows.Clear();
                 }
-            });
 
-            app.Dispatcher.Invoke(() =>
-            {
-                // Add new MODBUS rows for the configured length with the names cache
+                // Add new MODBUS rows for the configured length with the names and visibility cache
                 for (int i = 0; i < ModbusSettState.DataLength; i++)
                 {
-                    ModbusRows.Add(new ModbusRow(namesCache[i], string.Empty, updatingCache[i])); // Populate the name, data remains empty for now
+                    int rowsLeft = ModbusSettState.DataLength - (i * 20);
+                    List<ModbusRow> newRows = new List<ModbusRow>();
+                    for (int j = 0; j < rowsLeft; j++)
+                    {
+                        newRows.Add(new ModbusRow(namesCache[i], string.Empty, updatingCache[i]));
+                        // Populate the name, data remains empty for now
+                        // logger.LogInformation($"At Table Update: ModbusRow[{i}] = {namesCache[i]}, {string.Empty}");
+                    }
 
-                    // logger.LogInformation($"At Table Update: ModbusRow[{i}] = {namesCache[i]}, {string.Empty}");
+                    ModbusColumns.Add(new ModbusColumnViewModel(newRows));
                 }
 
-                OnPropertyChanged(nameof(ModbusRows));
+                // Subscribe to row changes so we can handle IsWatching in two directions with the column header checkbox
+                //foreach (var row in ModbusRows)
+                //{
+                //    row.PropertyChanged += RowPropertyChanged;
+                //}
+
+                OnPropertyChanged(nameof(ModbusColumns));
             });
         }
 
@@ -459,22 +433,17 @@ namespace Schiism.WPF.ViewModels
 
             app.Dispatcher.Invoke(() =>
             {
-                addressList.Clear();
                 int numCols = (Math.Max(0, this.ModbusSettState.DataLength - 1) / 20) + 1;
 
                 for (int i = 0; i < numCols; i++)
                 {
                     int startAdd = Convert.ToUInt16(ModbusSettState.StartAddress);
                     int addr = startAdd + (i * 20);
-                    addressList.Add(addr.ToString());
+                    modbusColumns[i].Address = addr.ToString();
                 }
 
-                OnPropertyChanged(nameof(AddressList));
+                OnPropertyChanged(nameof(ModbusColumns));
             });
-
-            // Update MODBUS table, since the shape of the names and data may have changed here
-            // UpdateModbusTable(); (You shouldn't need this here. Address is changed in View --> Address is updated in Service --> Length is updated in Service in response to the change in Address --> Change in Length gets pushed up to here and runs the above table update call)
-
         }
 
         // Update only the data in the table
@@ -490,46 +459,43 @@ namespace Schiism.WPF.ViewModels
 
             app.Dispatcher.Invoke(() =>
             {
-                // Loop through all 6 column pairs of MODBUS names and data
-                if (ModbusRows == null)
+                for (int i = 0; i < ModbusColumns.Count; i++)
                 {
-                    return;
-                }
-
-                for (int i = 0; i < ModbusRows.Count; i++)
-                {
-
-                    // Don't update if this row isn't checked for updating
-                    if (!ModbusRows[i].IsUpdating)
-                    {
-                        continue; // Skip updating this row's data if it's currently being updated by the user in the UI
-                    }
-
-                    // Only try to take the MODBUS data if we have a connection and if the index is within the bounds of the current length.
-                    // i.e. the user can change the desired data length prior to connecting, so we don't necessarily want to try reading data here (it may not exist yet)
-                    string data = string.Empty;
-
-                    // Null check helps prevent a data race, since I managed to get here before ConnDiageState properly initialized.
-                    // I want to review the project for data races in the code cleanup phase
-                    // The design approach with this here is to take snapshots of the desired parameters, then act only when they're permissable.
-
-                    var contents = ConnDiagState.Contents;
-
-                    if (contents != null &&
-                        contents.IsConnected &&
-                        i < ModbusDataState.Contents.Data.Count)
+                    for (int j = 0; j < ModbusColumns[i].Rows.Count; j++)
                     {
 
-                        // Retrieve existing item if present; otherwise create one instance
-                        data = ModbusDataState.Contents.Data[i]?.ToString() ?? string.Empty;
+                        // Don't update if this row isn't checked for updating
+                        if (!ModbusColumns[i].Rows[j].IsUpdating)
+                        {
+                            continue; // Skip updating this row's data if it's currently being updated by the user in the UI
+                        }
+
+                        // Only try to take the MODBUS data if we have a connection and if the index is within the bounds of the current length.
+                        // i.e. the user can change the desired data length prior to connecting, so we don't necessarily want to try reading data here (it may not exist yet)
+                        string data = string.Empty;
+
+                        // Null check helps prevent a data race, since I managed to get here before ConnDiageState properly initialized.
+                        // I want to review the project for data races in the code cleanup phase
+                        // The design approach with this here is to take snapshots of the desired parameters, then act only when they're permissable.
+
+                        var contents = ConnDiagState.Contents;
+
+                        if (contents != null &&
+                            contents.IsConnected &&
+                            i < ModbusDataState.Contents.Data.Count)
+                        {
+
+                            // Retrieve existing item if present; otherwise create one instance
+                            data = ModbusDataState.Contents.Data[i]?.ToString() ?? string.Empty;
+                        }
+
+                        ModbusColumns[i].Rows[j].Data = data;
+
+                        // logger.LogInformation($"At Data Update: ModbusRow[{i}][{j}] = {ModbusRows[i].Name}, {data}");
                     }
-
-                    ModbusRows[i].Data = data;
-
-                    // logger.LogInformation($"At Data Update: ModbusRow[{i}][{j}] = {ModbusRows[i].Name}, {data}");
                 }
 
-                OnPropertyChanged(nameof(ModbusRows));
+                OnPropertyChanged(nameof(ModbusColumns));
             });
         }
 
@@ -661,42 +627,6 @@ namespace Schiism.WPF.ViewModels
                 // return empty data (i.e. nothing is loaded for the user)
                 return new ConfigSaveData();
             }
-        }
-
-        private void OnWatchResizeColumn(double? delta)
-        {
-            if (!delta.HasValue)
-            {
-                return;
-            }
-
-            WatchColumnWidth = Math.Max(
-                50,
-                WatchColumnWidth + delta.Value);
-        }
-
-        private void OnNameResizeColumn(double? delta)
-        {
-            if (!delta.HasValue)
-            {
-                return;
-            }
-
-            NameColumnWidth = Math.Max(
-                50,
-                NameColumnWidth + delta.Value);
-        }
-
-        private void OnDataResizeColumn(double? delta)
-        {
-            if (!delta.HasValue)
-            {
-                return;
-            }
-
-            DataColumnWidth = Math.Max(
-                50,
-                DataColumnWidth + delta.Value);
         }
     }
 }

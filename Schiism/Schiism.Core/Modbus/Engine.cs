@@ -131,31 +131,31 @@ namespace Schiism.Core.Modbus
             catch (OperationCanceledException ex)
             {
                 logger.LogWarning("Connection cancelled on Client Engine.");
-                return new List<string>();
+                throw;
             }
             catch (SocketException ex)
             {
                 await OnError(ex, ct);
                 logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to Socket Error. Attempting to reconnect...", config.IPAddress, config.TCPPort);
-                return new List<string>();
+                throw;
             }
             catch (IOException ex)
             {
                 await OnError(ex, ct);
                 logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to IO Error. Attempting to reconnect...", config.IPAddress, config.TCPPort);
-                return new List<string>();
+                throw;
             }
             catch (ArgumentException ex)
             {
                 await OnError(ex, ct);
                 logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to Argument Error. Check configuration. Attempting to reconnect...", config.IPAddress, config.TCPPort);
-                return new List<string>();
+                throw;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 await OnError(ex, ct);
                 logger.LogError(ex, "Unknown error from Modbus Server at {IP}:{Port} --> {ex}", config.IPAddress, config.TCPPort, ex);
-                return new List<string>();
+                throw;
             }
         }
 
@@ -209,11 +209,15 @@ namespace Schiism.Core.Modbus
             errorMessage = MapError(ex);
 
             // Only queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
-            if (initStatus.IsInitialized)
+            int diff = (int)(DateTime.UtcNow - this.lastDiagTS).TotalMilliseconds;
+            logger.LogInformation("Time since last Response ConnDiag send: {x}", diff);
+
+            if (initStatus.IsInitialized && (diff > 500))
             {
                 ConnDiagDTO diag = new(numRequests, numResponses, numOKs, numErrors, errorMessage, IsConnected, DateTime.UtcNow);
 
                 // logger.LogError($"Client is sending server Connection Status: {this.IsConnected}");
+                logger.LogWarning("Enqueuing Response ConnDiags: {x}", diag);
                 await connSQ.EnqueueAsync(diag, ct);
             }
         }

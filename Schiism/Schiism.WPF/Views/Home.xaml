@@ -226,140 +226,147 @@
 
                     <!-- Scrollable MODBUS area -->
                     <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" Grid.ColumnSpan="2">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <ItemsControl Grid.Row="0" ItemsSource="{Binding AddressList}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="Horizontal"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
+                        <ItemsControl ItemsSource="{Binding ModbusColumns}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="20"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid Grid.Row="0">
                                             <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                    BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                                <Grid Height="20" Width = "{Binding DataContext.WatchColumnWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                      MinWidth="50" MaxWidth="475">
+                                                             BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                                <Grid Height="20" Width = "{Binding WatchWidth}" MinWidth="50" MaxWidth="475">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="20" />
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="5" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <CheckBox Grid.Column="0" IsThreeState="True" IsChecked="{Binding ColIsUpdating, Mode=TwoWay}" Height="20"/>
+                                                    <TextBlock Grid.Column="1"
+                                                                Text="Watch"
+                                                                VerticalAlignment="Center"/>
+                                                    <Thumb Grid.Column="2" Cursor="SizeWE" HorizontalAlignment="Stretch">
+                                                        <i:Interaction.Behaviors>
+                                                            <behaviors:ThumbDragBehavior
+                                                                        Command="{Binding ResizeWatchColumnCommand}" />
+                                                        </i:Interaction.Behaviors>
+                                                    </Thumb>
+                                                </Grid>
+                                            </Border>
+                                            <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                            BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                                <Grid Height="20" Width = "{Binding NameWidth}"
+                                                            MinWidth="50" MaxWidth="475">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="*" />
                                                         <ColumnDefinition Width="5" />
                                                     </Grid.ColumnDefinitions>
                                                     <TextBlock Grid.Column="0"
-                                                           Text="Watch"
-                                                           VerticalAlignment="Center"
-                                                           HorizontalAlignment="Center"/>
+                                                            Text="Name"
+                                                            VerticalAlignment="Center"
+                                                            HorizontalAlignment="Center"/>
                                                     <Thumb Grid.Column="1" Cursor="SizeWE" HorizontalAlignment="Stretch">
                                                         <i:Interaction.Behaviors>
                                                             <behaviors:ThumbDragBehavior
-                                                            Command="{Binding DataContext.ResizeWatchColumnCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+                                                                Command="{Binding ResizeNameColumnCommand}" />
                                                         </i:Interaction.Behaviors>
                                                     </Thumb>
                                                 </Grid>
                                             </Border>
-                                            <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                     BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                                <Grid Height="20" Width = "{Binding DataContext.NameColumnWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                      MinWidth="50" MaxWidth="475">
+                                            <Border Grid.Row="0" BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                            BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                                <Grid Height="20" Width = "{Binding DataWidth}"
+                                                              MinWidth="50" MaxWidth="475">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="*" />
                                                         <ColumnDefinition Width="5" />
                                                     </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="0"
-                                                       Text="Name"
-                                                       VerticalAlignment="Center"
-                                                       HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding Address}" />
                                                     <Thumb Grid.Column="1" Cursor="SizeWE" HorizontalAlignment="Stretch">
                                                         <i:Interaction.Behaviors>
                                                             <behaviors:ThumbDragBehavior
-                                                            Command="{Binding DataContext.ResizeNameColumnCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+                                                                    Command="{Binding ResizeDataColumnCommand}" />
                                                         </i:Interaction.Behaviors>
                                                     </Thumb>
                                                 </Grid>
                                             </Border>
-                                            <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                    BorderThickness="1" Background="{Binding DataContext.ThemeService.Accent4, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                                <Grid Height="20" Width = "{Binding DataContext.DataColumnWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                      MinWidth="50" MaxWidth="475">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="5" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Text="{Binding}" />
-                                                    <Thumb Grid.Column="1" Cursor="SizeWE" HorizontalAlignment="Stretch">
-                                                        <i:Interaction.Behaviors>
-                                                            <behaviors:ThumbDragBehavior
-                                                            Command="{Binding DataContext.ResizeDataColumnCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
-                                                        </i:Interaction.Behaviors>
-                                                    </Thumb>
-                                                </Grid>
-                                            </Border>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                            <ItemsControl Grid.Row="1" Height="450" ItemsSource="{Binding ModbusRows}" AlternationCount="2">
-                                <!-- Wrap behavior -->
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="Vertical"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <!-- Individual item template -->
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation = "Horizontal">
-                                            <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
-                                                <Border.Style>
-                                                    <Style TargetType="Border">
-                                                        <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter},Path=(ItemsControl.AlternationIndex)}" Value="1">
-                                                                <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Border.Style>
-                                                <CheckBox IsChecked="{Binding IsUpdating}" Height="20" MinWidth="50" MaxWidth="475" HorizontalAlignment="Center"
-                                                          Width = "{Binding DataContext.WatchColumnWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
-                                            </Border>
-                                            <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
-                                                <Border.Style>
-                                                    <Style TargetType="Border">
-                                                        <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter},Path=(ItemsControl.AlternationIndex)}" Value="1">
-                                                                <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Border.Style>
-                                                <TextBox Text="{Binding Name}" Height="20" MinWidth="50" MaxWidth="475" Background="Transparent" BorderBrush="Transparent"
-                                                         Width = "{Binding DataContext.NameColumnWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
-                                            </Border>
-                                            <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
-                                                <Border.Style>
-                                                    <Style TargetType="Border">
-                                                        <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter},Path=(ItemsControl.AlternationIndex)}" Value="1">
-                                                                <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Border.Style>
-                                                <TextBlock Text="{Binding Data}" Height="20" MinWidth="50" MaxWidth="475"
-                                                           Width = "{Binding DataContext.DataColumnWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
-                                            </Border>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Grid>
+                                        </Grid>
+                                        <Grid Grid.Row="1">
+                                            <ItemsControl ItemsSource="{Binding Rows}" Tag="{Binding}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Vertical"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width = "{Binding Tag.WatchWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                                <ColumnDefinition Width = "{Binding Tag.NameWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                                <ColumnDefinition Width = "{Binding Tag.DataWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Grid Grid.Column="0">
+                                                                <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
+                                                                    <Border.Style>
+                                                                        <Style TargetType="Border">
+                                                                            <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter},Path=(ItemsControl.AlternationIndex)}" Value="1">
+                                                                                    <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Border.Style>
+                                                                    <CheckBox IsChecked="{Binding IsUpdating}" Height="20" MinWidth="50" MaxWidth="475" HorizontalAlignment="Center"/>
+                                                                </Border>
+                                                            </Grid>
+                                                            <Grid Grid.Column="1">
+                                                                <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
+                                                                    <Border.Style>
+                                                                        <Style TargetType="Border">
+                                                                            <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter},Path=(ItemsControl.AlternationIndex)}" Value="1">
+                                                                                    <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Border.Style>
+                                                                    <TextBox Text="{Binding Name}" Height="20" MinWidth="50" MaxWidth="475" Background="Transparent" BorderBrush="Transparent"/>
+                                                                </Border>
+                                                            </Grid>
+                                                            <Grid Grid.Column="2">
+                                                                <Border BorderBrush="{Binding DataContext.ThemeService.Main, RelativeSource={RelativeSource AncestorType=ItemsControl}}" BorderThickness="1">
+                                                                    <Border.Style>
+                                                                        <Style TargetType="Border">
+                                                                            <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent3, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter},Path=(ItemsControl.AlternationIndex)}" Value="1">
+                                                                                    <Setter Property="Background" Value="{Binding DataContext.ThemeService.Accent2, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Border.Style>
+                                                                    <TextBlock Text="{Binding Data}" Height="20" MinWidth="50" MaxWidth="475"/>
+                                                                </Border>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Grid>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </ScrollViewer>
                 </Grid>
             </Border>

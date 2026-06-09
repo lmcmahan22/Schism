@@ -29,13 +29,13 @@ namespace Schiism.Core.IPC.Commands
                 using var pipe = pipeFactory.CreateNPServer(pipeName);
 
                 logger.LogInformation(
-                   "Waiting for sender connection on {PipeName}",
+                   "Waiting for receiver connection on {PipeName}",
                    pipeName);
 
                 await pipe.WaitForConnectionAsync(ct);
 
                 logger.LogInformation(
-                   "Sender connected to {PipeName}",
+                   "Receiver connected to {PipeName}",
                    pipeName);
 
                 await serializer.SerializeAsync(pipe, command, ct);
