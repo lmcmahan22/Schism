@@ -1,5 +1,6 @@
 ﻿using Schiism.WPF.Models;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace Schiism.WPF.ViewModels.Items
 {
@@ -42,7 +43,25 @@ namespace Schiism.WPF.ViewModels.Items
         public bool? ColIsUpdating
         {
             get => colIsUpdating;
-            set => SetProperty(ref colIsUpdating, value);
+            set
+            {
+                if (!SetProperty(ref colIsUpdating, value))
+                {
+                    return;
+                }
+
+                // Ignore indeterminate state when user clicks header
+                if (!value.HasValue)
+                {
+                    return;
+                }
+
+                // Set all rows according to this checkbox
+                foreach (var row in Rows)
+                {
+                    row.IsUpdating = value.Value;
+                }
+            }
         }
 
         // Collection of rows in each column
@@ -57,22 +76,17 @@ namespace Schiism.WPF.ViewModels.Items
         public DelegateCommand<double?> ResizeDataColumnCommand { get; }
 
         // Constructor
-        public ModbusColumnViewModel()
-        {
-            Address = "0";
-
-            Rows = new ObservableCollection<ModbusRow>();
-
-            ResizeWatchColumnCommand = new DelegateCommand<double?>(OnWatchResize);
-            ResizeNameColumnCommand = new DelegateCommand<double?>(OnNameResize);
-            ResizeDataColumnCommand = new DelegateCommand<double?>(OnDataResize);
-        }
-
         public ModbusColumnViewModel(List<ModbusRow> rows)
         {
             Address = "0";
 
             Rows = [.. rows];
+
+            ColIsUpdating = false;
+
+            WatchWidth = 100;
+            NameWidth = 100;
+            DataWidth = 300;
 
             ResizeWatchColumnCommand = new DelegateCommand<double?>(OnWatchResize);
             ResizeNameColumnCommand = new DelegateCommand<double?>(OnNameResize);
@@ -87,7 +101,7 @@ namespace Schiism.WPF.ViewModels.Items
             }
 
             WatchWidth = Math.Max(
-                50,
+                100,
                 WatchWidth + delta.Value);
         }
 
@@ -113,6 +127,41 @@ namespace Schiism.WPF.ViewModels.Items
             DataWidth = Math.Max(
                 50,
                 DataWidth + delta.Value);
+        }
+
+        public void RowPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ModbusRow.IsUpdating))
+            {
+                UpdateColumnState();
+            }
+        }
+
+        private void UpdateColumnState()
+        {
+            if (Rows.Count == 0)
+            {
+                ColIsUpdating = false;
+                return;
+            }
+
+            bool allTrue = Rows.All(r => r.IsUpdating == true);
+            bool allFalse = Rows.All(r => r.IsUpdating == false);
+
+            if (allTrue)
+            {
+                colIsUpdating = true;
+            }
+            else if (allFalse)
+            {
+                colIsUpdating = false;
+            }
+            else
+            {
+                colIsUpdating = null;
+            }
+
+            RaisePropertyChanged(nameof(ColIsUpdating));
         }
     }
 }

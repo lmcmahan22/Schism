@@ -271,14 +271,6 @@ namespace Schiism.WPF.ViewModels
             RaisePropertyChanged(propertyName);
         }
 
-        //private void RowPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        //{
-        //    if (e.PropertyName == nameof(ModbusRow.IsUpdating))
-        //    {
-        //        RaisePropertyChanged(nameof(ColIsUpdating));
-        //    }
-        //}
-
         // React to MODBUSService updates, depending on what updated
         private void ModbusSettChanged(object? sender, PropertyChangedEventArgs e)
         {
@@ -395,12 +387,15 @@ namespace Schiism.WPF.ViewModels
                     ModbusColumns[i].Rows.Clear();
                 }
 
+                ModbusColumns.Clear();
+
                 // Add new MODBUS rows for the configured length with the names and visibility cache
-                for (int i = 0; i < ModbusSettState.DataLength; i++)
+                for (int i = 0; i < (ModbusSettState.DataLength / 20); i++)
                 {
                     int rowsLeft = ModbusSettState.DataLength - (i * 20);
+                    int colSize = Math.Min(20, rowsLeft);
                     List<ModbusRow> newRows = new List<ModbusRow>();
-                    for (int j = 0; j < rowsLeft; j++)
+                    for (int j = 0; j < colSize; j++)
                     {
                         newRows.Add(new ModbusRow(namesCache[i], string.Empty, updatingCache[i]));
                         // Populate the name, data remains empty for now
@@ -411,10 +406,13 @@ namespace Schiism.WPF.ViewModels
                 }
 
                 // Subscribe to row changes so we can handle IsWatching in two directions with the column header checkbox
-                //foreach (var row in ModbusRows)
-                //{
-                //    row.PropertyChanged += RowPropertyChanged;
-                //}
+                foreach (var col in ModbusColumns)
+                {
+                    foreach (var row in col.Rows)
+                    {
+                        row.PropertyChanged += col.RowPropertyChanged;
+                    }
+                }
 
                 OnPropertyChanged(nameof(ModbusColumns));
             });
