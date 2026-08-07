@@ -32,11 +32,15 @@ namespace Schiism.Core.Configuration.StateControl
         /// <inheritdoc/>
         public ConfigState()
         {
-            iPAddress = "127.0.0.1"; // "192.168.100.20" for two device config. Otherwise, just use 127 for a single device localhost double duty build!
+            // "192.168.100.20" for two device config. Otherwise, just use 127 for a single device localhost double duty build!
+            // NOTE: This application will use octal interpretation when leading 0's are placed in the IP address. The PLC does not do this, despite using ".020" as the last octet.
+            // iPAddress = "127.0.0.1";
+            iPAddress = "192.168.100.20";
             dataLength = 100;
-            startAddress = 0;
+            startAddress = 2100; // PLC HERMES. Set back to 0 for standard use.
             selectedDataSize = DataSize.Bit16;
-            tcpPort = 1502;
+            // tcpPort = 1502;
+            tcpPort = 502;
             scanRate = 1000;
             tcpTimeout = 4000;
             deviceId = 1;

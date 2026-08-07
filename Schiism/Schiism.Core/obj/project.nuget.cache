@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "txIt4C8g9H8=",
+  "dgSpecHash": "s3u9fg0LPNE=",
   "success": true,
   "projectFilePath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Schiism.Core.csproj",
   "expectedPackageFiles": [
@@ -37,10 +37,7 @@
     "C:\\Users\\lmcmahan\\.nuget\\packages\\system.diagnostics.eventlog\\10.0.8\\system.diagnostics.eventlog.10.0.8.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\system.io.pipelines\\10.0.8\\system.io.pipelines.10.0.8.nupkg.sha512",
     "C:\\Users\\lmcmahan\\.nuget\\packages\\system.text.encodings.web\\10.0.8\\system.text.encodings.web.10.0.8.nupkg.sha512",
-    "C:\\Users\\lmcmahan\\.nuget\\packages\\system.text.json\\10.0.8\\system.text.json.10.0.8.nupkg.sha512",
-    "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.28\\microsoft.netcore.app.ref.8.0.28.nupkg.sha512",
-    "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.28\\microsoft.windowsdesktop.app.ref.8.0.28.nupkg.sha512",
-    "C:\\Users\\lmcmahan\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.28\\microsoft.aspnetcore.app.ref.8.0.28.nupkg.sha512"
+    "C:\\Users\\lmcmahan\\.nuget\\packages\\system.text.json\\10.0.8\\system.text.json.10.0.8.nupkg.sha512"
   ],
   "logs": []
 }

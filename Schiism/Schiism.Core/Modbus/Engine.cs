@@ -227,8 +227,8 @@ namespace Schiism.Core.Modbus
             return ex switch
             {
                 SlaveException se => $"MODBUS error {se.SlaveExceptionCode}",
-                IOException => "Connection failure",
-                SocketException => "Connection failure",
+                IOException ie => $"IO Connection failure {ie.Message}",
+                SocketException soe => $"Socket Connection failure {soe.Message}",
                 TimeoutException => "Timeout failure",
                 _ => $"Unknown error: {ex.Message}",
             };
