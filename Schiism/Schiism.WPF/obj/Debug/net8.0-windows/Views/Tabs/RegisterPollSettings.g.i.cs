@@ -86,13 +86,13 @@ namespace Schiism.WPF.Views.Tabs {
         /// InitializeComponent
         /// </summary>
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "10.0.10.0")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "10.0.11.0")]
         public void InitializeComponent() {
             if (_contentLoaded) {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Schiism.WPF;component/views/tabs/registerpollsettings.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Schiism.WPF;V1.0.0.0;component/views/tabs/registerpollsettings.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\..\Views\Tabs\RegisterPollSettings.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
@@ -102,7 +102,7 @@ namespace Schiism.WPF.Views.Tabs {
         }
         
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "10.0.10.0")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "10.0.11.0")]
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes")]
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
