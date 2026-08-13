@@ -487,6 +487,7 @@ namespace Schiism.WPF.ViewModels
                             data = ModbusDataState.Contents.Data[i]?.ToString() ?? string.Empty;
                         }
 
+                        // Liam: This is creating all 0s in the WPF app even though I see the 1s in the Data array just above this...?
                         ModbusColumns[i].Rows[j].Data = data;
 
                         // logger.LogInformation($"At Data Update: ModbusRow[{i}][{j}] = {ModbusRows[i].Name}, {data}");
