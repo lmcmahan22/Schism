@@ -2,6 +2,8 @@
 // Copyright (c) Precision Valve &amp; Automation (PVA). All rights reserved.
 // </copyright>
 
+using System.Diagnostics;
+
 namespace Schiism.WPF.Models
 {
 
@@ -26,7 +28,12 @@ namespace Schiism.WPF.Models
         public bool IsUpdating
         {
             get => isUpdating;
-            set => SetProperty(ref isUpdating, value);
+            set
+            {
+                Debug.WriteLine($"CHANGED: {GetHashCode()}");
+
+                SetProperty(ref isUpdating, value);
+            }
         }
 
         public ModbusRow(string name, string data, bool isUpdating)

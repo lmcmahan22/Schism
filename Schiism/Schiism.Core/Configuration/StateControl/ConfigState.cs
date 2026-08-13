@@ -36,7 +36,7 @@ namespace Schiism.Core.Configuration.StateControl
             // NOTE: This application will use octal interpretation when leading 0's are placed in the IP address. The PLC does not do this, despite using ".020" as the last octet.
             // iPAddress = "127.0.0.1";
             iPAddress = "192.168.100.20";
-            dataLength = 100;
+            dataLength = 400;
             startAddress = 2100; // PLC HERMES. Set back to 0 for standard use.
             selectedDataSize = DataSize.Bit16;
             // tcpPort = 1502;

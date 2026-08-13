@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\modbus\\modbusclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\modbus\\modbusclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.wpf\\ipc\\commandsworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F9FEC47-6B9D-816C-CEBB-28D9ED586D03}|Schiism.WPF\\Schiism.WPF.csproj|solutionrelative:schiism.wpf\\ipc\\commandsworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|c:\\users\\lmcmahan\\github\\schism\\schiism\\schiism.core\\configuration\\statecontrol\\configstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D9AE2C6-8145-4BAB-A856-F74AC096E250}|Schiism.Core\\Schiism.Core.csproj|solutionrelative:schiism.core\\configuration\\statecontrol\\configstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,15 +22,7 @@
           "Children": [
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
-            },
-            {
-              "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
               "$type": "Bookmark",
@@ -39,6 +35,14 @@
             {
               "$type": "Bookmark",
               "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
             },
             {
               "$type": "Bookmark",
@@ -59,14 +63,27 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "ModbusClient.cs",
-              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Modbus\\ModbusClient.cs",
-              "RelativeDocumentMoniker": "Schiism.Core\\Modbus\\ModbusClient.cs",
-              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Modbus\\ModbusClient.cs",
-              "RelativeToolTip": "Schiism.Core\\Modbus\\ModbusClient.cs",
-              "ViewState": "AgIAAJ0AAAAAAAAAAAApwK4AAABJAAAAAAAAAA==",
+              "Title": "CommandsWorker.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\IPC\\CommandsWorker.cs",
+              "RelativeDocumentMoniker": "Schiism.WPF\\IPC\\CommandsWorker.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.WPF\\IPC\\CommandsWorker.cs",
+              "RelativeToolTip": "Schiism.WPF\\IPC\\CommandsWorker.cs",
+              "ViewState": "AgIAAEMAAAAAAAAAAAAwwFQAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-07T16:00:55.576Z",
+              "WhenOpened": "2026-08-13T20:16:15.285Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ConfigState.cs",
+              "DocumentMoniker": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Configuration\\StateControl\\ConfigState.cs",
+              "RelativeDocumentMoniker": "Schiism.Core\\Configuration\\StateControl\\ConfigState.cs",
+              "ToolTip": "C:\\Users\\lmcmahan\\Github\\Schism\\Schiism\\Schiism.Core\\Configuration\\StateControl\\ConfigState.cs",
+              "RelativeToolTip": "Schiism.Core\\Configuration\\StateControl\\ConfigState.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAwwCYAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-13T20:15:08.3Z",
               "EditorCaption": ""
             }
           ]

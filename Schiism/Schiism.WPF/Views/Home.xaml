@@ -330,7 +330,7 @@
                                                                         </Style.Triggers>
                                                                     </Style>
                                                                 </Border.Style>
-                                                                <CheckBox IsChecked="{Binding IsUpdating}" Height="20" MinWidth="100" MaxWidth="475"
+                                                                <CheckBox IsChecked="{Binding IsUpdating, Mode=TwoWay}" Height="20" MinWidth="100" MaxWidth="475"
                                                                           Width="{Binding Tag.WatchWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                                           HorizontalAlignment="Center"
                                                                           VerticalAlignment="Center"/>
@@ -361,8 +361,9 @@
                                                                         </Style.Triggers>
                                                                     </Style>
                                                                 </Border.Style>
-                                                                <TextBlock Text="{Binding Data}" Height="20" MinWidth="50" MaxWidth="475"
-                                                                           Width="{Binding Tag.DataWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                                <TextBox Text="{Binding Data}" Height="20" MinWidth="50" MaxWidth="475"
+                                                                          Width="{Binding Tag.DataWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                          Background="Transparent" BorderBrush="Transparent"/>
                                                             </Border>
                                                         </Grid>
                                                     </DataTemplate>

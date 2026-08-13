@@ -25,6 +25,7 @@ namespace Schiism.WPF.ViewModels
     using Schiism.WPF.ViewModels.Tabs;
     using Schiism.WPF.Views;
     using Schiism.WPF.ViewModels.Items;
+    using System.Diagnostics;
 
     public class HomeViewModel : BindableBase, INotifyPropertyChanged
     {
@@ -309,6 +310,16 @@ namespace Schiism.WPF.ViewModels
             }
         }
 
+        private void ModbusChecksChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is nameof(ModbusRow.IsUpdating) or nameof(ModbusColumnViewModel.ColIsUpdating))
+            {
+                // Update MODBUS Data in the UI
+                // I want to populate a "0" if we're watching but don't have a connection.
+                this.UpdateModbusData();
+            }
+        }
+
         private void ConnDiagStateChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName is nameof(this.ConnDiagState.Contents))
@@ -406,11 +417,14 @@ namespace Schiism.WPF.ViewModels
                 }
 
                 // Subscribe to row changes so we can handle IsWatching in two directions with the column header checkbox
-                foreach (var col in ModbusColumns)
+                Debug.WriteLine($"Columns: {ModbusColumns.Count}");
+                foreach (var column in ModbusColumns)
                 {
-                    foreach (var row in col.Rows)
+                    Debug.WriteLine($"Rows: {column.Rows.Count}");
+                    foreach (var row in column.Rows)
                     {
-                        row.PropertyChanged += col.RowPropertyChanged;
+                        Debug.WriteLine($"Subscribing to row {row.GetHashCode()}");
+                        row.PropertyChanged += this.ModbusChecksChanged;
                     }
                 }
 
@@ -461,11 +475,10 @@ namespace Schiism.WPF.ViewModels
                 {
                     for (int j = 0; j < ModbusColumns[i].Rows.Count; j++)
                     {
-
                         // Don't update if this row isn't checked for updating
                         if (!ModbusColumns[i].Rows[j].IsUpdating)
                         {
-                            continue; // Skip updating this row's data if it's currently being updated by the user in the UI
+                            continue; // Skip updating this row's data if it's not currently being watched by the user in the UI
                         }
 
                         // Only try to take the MODBUS data if we have a connection and if the index is within the bounds of the current length.
@@ -479,12 +492,15 @@ namespace Schiism.WPF.ViewModels
                         var contents = ConnDiagState.Contents;
 
                         if (contents != null &&
-                            contents.IsConnected &&
-                            i < ModbusDataState.Contents.Data.Count)
+                            contents.IsConnected)
                         {
-
                             // Retrieve existing item if present; otherwise create one instance
-                            data = ModbusDataState.Contents.Data[i]?.ToString() ?? string.Empty;
+                            data = this.ModbusDataState.Contents.Data[(i * 20) + j];
+                        }
+                        else
+                        {
+                            // Populate a 0 if we don't have data to poll
+                            data = "0";
                         }
 
                         // Liam: This is creating all 0s in the WPF app even though I see the 1s in the Data array just above this...?
