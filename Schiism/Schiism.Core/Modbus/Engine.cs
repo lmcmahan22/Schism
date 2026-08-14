@@ -20,7 +20,7 @@ namespace Schiism.Core.Modbus
     /// Implemnting class for the IEngine interface.
     /// No looping or scheduling done in this class, only singular connect, disconnect, and polling attempts.
     /// </summary>
-    public class Engine(ILogger<Engine> logger, ConfigState config, ModbusClient client, InitStatus initStatus, ModbusInterpreter interpreter, StreamQueue<ModbusDataDTO> modbusSQ, StreamQueue<ConnDiagDTO> connSQ)
+    public class Engine(ILogger<Engine> logger, ConfigState config, ModbusClient client, InitStatus initStatus, ModbusInterpreter interpreter, StreamQueue<ModbusDataCollectionDTO> modbusSQ, StreamQueue<ConnDiagDTO> connSQ)
     {
         private int numRequests = 0;
         private int numResponses = 0;
@@ -67,15 +67,15 @@ namespace Schiism.Core.Modbus
         /// <inheritdoc/>
         public async Task<List<string>> PollOnceAsync(CancellationToken ct, List<string> prevData)
         {
-            ModbusDataDTO? modbusDTO = null;
+            ModbusDataCollectionDTO? modbusDTO = null;
 
             try
             {
                 await OnRequest(ct);
 
                 // Poll both types of data for logging, only queue and publish selected for frontend.
-                List<ushort> rawCoilData = client.ReadCoilData(config);
-                List<ushort> rawRegisterData = client.ReadRegisterData(config);
+                List<ushort> rawCoilData = await client.ReadCoilDataAsync(config);
+                List<ushort> rawRegisterData = await client.ReadRegisterDataAsync(config);
 
                 if (rawCoilData is null || rawCoilData.Count != config.DataLength)
                 {
@@ -157,6 +157,12 @@ namespace Schiism.Core.Modbus
                 logger.LogError(ex, "Unknown error from Modbus Server at {IP}:{Port} --> {ex}", config.IPAddress, config.TCPPort, ex);
                 throw;
             }
+        }
+
+        // Develop!
+        public async Task WriteValueAsync(ModbusWriteDTO write, ConfigState config)
+        {
+            await client.WriteValueAsync(write, config);
         }
 
         private async Task OnRequest(CancellationToken ct)

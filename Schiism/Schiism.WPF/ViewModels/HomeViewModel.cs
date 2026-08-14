@@ -51,7 +51,9 @@ namespace Schiism.WPF.ViewModels
 
         public ConfigState ModbusSettState { get; }
 
-        public StreamStore<ModbusDataDTO> ModbusDataState { get; }
+        public ModbusWriteState ModbusWriteState { get; }
+
+        public StreamStore<ModbusDataCollectionDTO> ModbusDataState { get; }
 
         public StreamStore<ConnDiagDTO> ConnDiagState { get; }
 
@@ -70,7 +72,8 @@ namespace Schiism.WPF.ViewModels
         public HomeViewModel(
             IDialogService dialogService,
             ConfigState ModbusSettState,
-            StreamStore<ModbusDataDTO> ModbusDataState,
+            ModbusWriteState ModbusWriteState,
+            StreamStore<ModbusDataCollectionDTO> ModbusDataState,
             StreamStore<ConnDiagDTO> ConnDiagState,
             InitStatus InitStatus,
             ThemesControl ThemeService,
@@ -78,6 +81,7 @@ namespace Schiism.WPF.ViewModels
             ILoggerFactory factory)
         {
             this.ModbusSettState = ModbusSettState;
+            this.ModbusWriteState = ModbusWriteState;
             this.ModbusDataState = ModbusDataState;
             this.ConnDiagState = ConnDiagState;
             this.InitStatus = InitStatus;
@@ -96,7 +100,7 @@ namespace Schiism.WPF.ViewModels
             UpdateAddressHeaders(); // Build the intial modbus columns
 
             this.ModbusSettState.PropertyChanged += this.ModbusSettChanged;
-            this.ModbusDataState.PropertyChanged += this.ModbusDataChanged;
+            this.ModbusDataState.PropertyChanged += this.ModbusStreamChanged;
             this.ConnDiagState.PropertyChanged += this.ConnDiagStateChanged;
             this.InitStatus.PropertyChanged += this.InitStatusChanged;
             this.SelConv.PropertyChanged += this.AddrConvChanged;
@@ -300,7 +304,7 @@ namespace Schiism.WPF.ViewModels
             }
         }
 
-        private void ModbusDataChanged(object? sender, PropertyChangedEventArgs e)
+        private void ModbusStreamChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName is nameof(ModbusDataState.Contents))
             {
@@ -310,13 +314,22 @@ namespace Schiism.WPF.ViewModels
             }
         }
 
-        private void ModbusChecksChanged(object? sender, PropertyChangedEventArgs e)
+        private void ModbusCheckChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName is nameof(ModbusRow.IsUpdating) or nameof(ModbusColumnViewModel.ColIsUpdating))
             {
                 // Update MODBUS Data in the UI
                 // I want to populate a "0" if we're watching but don't have a connection.
                 this.UpdateModbusData();
+            }
+        }
+
+        // Only do this if we see a difference in the value! If we read data then we don't need to write it! We only need to do this if the user modifies the value by hand.
+        private void ModbusValueWrite(object? sender, EventArgs e)
+        {
+            if (sender is ModbusRow row)
+            {
+                ModbusWriteState.SetWrite(row.Address, row.Data);
             }
         }
 
@@ -408,7 +421,7 @@ namespace Schiism.WPF.ViewModels
                     List<ModbusRow> newRows = new List<ModbusRow>();
                     for (int j = 0; j < colSize; j++)
                     {
-                        newRows.Add(new ModbusRow(namesCache[i], string.Empty, updatingCache[i]));
+                        newRows.Add(new ModbusRow((ushort)((i * 20) + j), namesCache[i], string.Empty, updatingCache[i]));
                         // Populate the name, data remains empty for now
                         // logger.LogInformation($"At Table Update: ModbusRow[{i}] = {namesCache[i]}, {string.Empty}");
                     }
@@ -424,7 +437,10 @@ namespace Schiism.WPF.ViewModels
                     foreach (var row in column.Rows)
                     {
                         Debug.WriteLine($"Subscribing to row {row.GetHashCode()}");
-                        row.PropertyChanged += this.ModbusChecksChanged;
+
+                        // Row change subscriptions
+                        row.PropertyChanged += this.ModbusCheckChanged;
+                        row.UserValueChanged += this.ModbusValueWrite;
                     }
                 }
 
@@ -504,7 +520,7 @@ namespace Schiism.WPF.ViewModels
                         }
 
                         // Liam: This is creating all 0s in the WPF app even though I see the 1s in the Data array just above this...?
-                        ModbusColumns[i].Rows[j].Data = data;
+                        ModbusColumns[i].Rows[j].SetFromModbus(data);
 
                         // logger.LogInformation($"At Data Update: ModbusRow[{i}][{j}] = {ModbusRows[i].Name}, {data}");
                     }

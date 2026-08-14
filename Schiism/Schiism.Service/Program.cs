@@ -77,34 +77,34 @@ namespace Schiism.Service
             builder.Services.AddSingleton<InitStatus>();
 
             // Stream Publishers
-            builder.Services.AddSingleton<StreamPublisher<ModbusDataDTO>, StreamPublisher<ModbusDataDTO>>(
-                sp => new StreamPublisher<ModbusDataDTO>(
+            builder.Services.AddSingleton<StreamPublisher<ModbusDataCollectionDTO>, StreamPublisher<ModbusDataCollectionDTO>>(
+                sp => new StreamPublisher<ModbusDataCollectionDTO>(
                 sp.GetRequiredService<PipeSerializer>(),
-                sp.GetRequiredService<ILogger<StreamPublisher<ModbusDataDTO>>>()));
+                sp.GetRequiredService<ILogger<StreamPublisher<ModbusDataCollectionDTO>>>()));
             builder.Services.AddSingleton<StreamPublisher<ConnDiagDTO>, StreamPublisher<ConnDiagDTO>>(
                 sp => new StreamPublisher<ConnDiagDTO>(
                 sp.GetRequiredService<PipeSerializer>(),
                 sp.GetRequiredService<ILogger<StreamPublisher<ConnDiagDTO>>>()));
 
             // Stream Queues
-            builder.Services.AddSingleton<StreamQueue<ModbusDataDTO>, StreamQueue<ModbusDataDTO>>();
+            builder.Services.AddSingleton<StreamQueue<ModbusDataCollectionDTO>, StreamQueue<ModbusDataCollectionDTO>>();
             builder.Services.AddSingleton<StreamQueue<ConnDiagDTO>, StreamQueue<ConnDiagDTO>>();
 
             // Commmand Server
-            builder.Services.AddSingleton<CommandReceiver>(
-                sp => new CommandReceiver(
+            builder.Services.AddSingleton<CommandReceiver<SettingsConfigDTO>>(
+                sp => new CommandReceiver<SettingsConfigDTO>(
                 NamingConstants.SettingsCommandName,
                 sp.GetRequiredService<INamedPipeFactory>(),
                 sp.GetRequiredService<PipeSerializer>(),
-                sp.GetRequiredService<ILogger<CommandReceiver>>()));
+                sp.GetRequiredService<ILogger<CommandReceiver<SettingsConfigDTO>>>()));
 
             // Command Client (for first config population)
-            builder.Services.AddSingleton<CommandSender>(
-                sp => new CommandSender(
+            builder.Services.AddSingleton<CommandSender<SettingsConfigDTO>>(
+                sp => new CommandSender<SettingsConfigDTO>(
                 NamingConstants.InitSettingsCommandName,
                 sp.GetRequiredService<INamedPipeFactory>(),
                 sp.GetRequiredService<PipeSerializer>(),
-                sp.GetRequiredService<ILogger<CommandSender>>()));
+                sp.GetRequiredService<ILogger<CommandSender<SettingsConfigDTO>>>()));
 
             // Add an instance of the Worker classes as the hosted services (1 engine, 2 stream workers, 1 stream queue worker, 1 command worker)
             builder.Services.AddHostedService<ModbusEngineWorker>(
@@ -114,15 +114,15 @@ namespace Schiism.Service
                     ew.GetRequiredService<PollControl>(),
                     ew.GetRequiredService<ILogger<ModbusEngineWorker>>(),
                     ew.GetRequiredService<IHostApplicationLifetime>()));
-            builder.Services.AddHostedService<StreamPublisherWorker<ModbusDataDTO>>(
-                spm => new StreamPublisherWorker<ModbusDataDTO>(
+            builder.Services.AddHostedService<StreamPublisherWorker<ModbusDataCollectionDTO>>(
+                spm => new StreamPublisherWorker<ModbusDataCollectionDTO>(
                     NamingConstants.ModbusDataStreamName,
                     spm.GetRequiredService<INamedPipeFactory>(),
                     spm.GetRequiredService<ConfigState>(),
                     spm.GetRequiredService<InitStatus>(),
-                    spm.GetRequiredService<StreamQueue<ModbusDataDTO>>(),
-                    spm.GetRequiredService<StreamPublisher<ModbusDataDTO>>(),
-                    spm.GetRequiredService<ILogger<StreamPublisherWorker<ModbusDataDTO>>>(),
+                    spm.GetRequiredService<StreamQueue<ModbusDataCollectionDTO>>(),
+                    spm.GetRequiredService<StreamPublisher<ModbusDataCollectionDTO>>(),
+                    spm.GetRequiredService<ILogger<StreamPublisherWorker<ModbusDataCollectionDTO>>>(),
                     spm.GetRequiredService<IHostApplicationLifetime>()));
             builder.Services.AddHostedService<StreamPublisherWorker<ConnDiagDTO>>(
                 spc => new StreamPublisherWorker<ConnDiagDTO>(
@@ -137,8 +137,10 @@ namespace Schiism.Service
             builder.Services.AddHostedService<CommandsWorker>(
                 cw => new CommandsWorker(
                     cw.GetRequiredService<ConfigState>(),
-                    cw.GetRequiredService<CommandSender>(),
-                    cw.GetRequiredService<CommandReceiver>(),
+                    cw.GetRequiredService<Engine>(),
+                    cw.GetRequiredService<CommandSender<SettingsConfigDTO>>(),
+                    cw.GetRequiredService<CommandReceiver<SettingsConfigDTO>>(),
+                    cw.GetRequiredService<CommandReceiver<ModbusWriteDTO>>(),
                     cw.GetRequiredService<PollControl>(),
                     cw.GetRequiredService<InitStatus>(),
                     cw.GetRequiredService<ILogger<CommandsWorker>>(),

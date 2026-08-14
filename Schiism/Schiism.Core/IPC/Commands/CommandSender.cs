@@ -8,17 +8,16 @@ namespace Schiism.Core.IPC.Commands
     using Schiism.Core.IPC.DTOs;
     using Schiism.Core.IPC.PipeControl;
     using Schiism.Core.IPC.Serialization;
-    using System.IO.Pipes;
 
     /// <summary>
     /// Backend Command Sender implementation.
     /// </summary>
     /// <param name="pipeName">Name of the pipe that the command will be received from.</param>
     /// <param name="logger">Logger object for logging data to text file.</param>
-    public class CommandSender(string pipeName, INamedPipeFactory pipeFactory, PipeSerializer serializer, ILogger<CommandSender> logger)
+    public class CommandSender<T>(string pipeName, INamedPipeFactory pipeFactory, PipeSerializer serializer, ILogger<CommandSender<T>> logger)
     {
         /// <inheritdoc/>
-        public async Task SendAsync(SettingsConfigDTO command, CancellationToken ct)
+        public async Task SendAsync(T command, CancellationToken ct)
         {
             try
             {

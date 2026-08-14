@@ -12,6 +12,7 @@ namespace Schiism.Core.Modbus
     using NModbus;
     using Schiism.Core.Configuration.Enums;
     using Schiism.Core.Configuration.StateControl;
+    using Schiism.Core.IPC.DTOs;
 
     /// <summary>
     /// Implementation class for the IModbusClient interface.
@@ -19,6 +20,7 @@ namespace Schiism.Core.Modbus
     public class ModbusClient
     {
         private readonly SemaphoreSlim connectionLock = new(1, 1);
+        private readonly SemaphoreSlim modbusLock = new(1, 1);
         private readonly ILogger<ModbusClient> logger;
         private TcpClient? client;
         private IModbusMaster? master;
@@ -81,47 +83,111 @@ namespace Schiism.Core.Modbus
         }
 
         /// <inheritdoc/>
-        public List<ushort> ReadData(ConfigState config)
+        //public async Task<List<ushort>> ReadData(ConfigState config)
+        //{
+        //    await modbusLock.WaitAsync();
+
+        //    try
+        //    {
+        //        if (master == null)
+        //        {
+        //            throw new InvalidOperationException("Modbus client not connected.");
+        //        }
+
+        //        return config.SelectedPollType switch
+        //        {
+        //            PollType.InputStatus =>
+        //                ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, true),
+
+        //            PollType.HoldingRegisters =>
+        //                ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, false),
+
+        //            PollType.InputRegisters =>
+        //                ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, true),
+
+        //            _ =>
+        //                ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, false),
+        //        };
+        //    }
+        //    finally
+        //    {
+        //        modbusLock.Release();
+        //    }
+        //}
+
+        public async Task<List<ushort>> ReadCoilDataAsync(ConfigState config)
         {
-            if (master == null)
+            await modbusLock.WaitAsync();
+
+            try
             {
-                throw new InvalidOperationException("Modbus client not connected.");
+                if (master == null)
+                {
+                    throw new InvalidOperationException("Modbus client not connected for Coil poll.");
+                }
+
+                return ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, false);
             }
-
-            return config.SelectedPollType switch
+            finally
             {
-                PollType.InputStatus =>
-                    ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, true),
-
-                PollType.HoldingRegisters =>
-                    ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, false),
-
-                PollType.InputRegisters =>
-                    ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, true),
-
-                _ =>
-                    ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, false),
-            };
+                modbusLock.Release();
+            }
         }
 
-        public List<ushort> ReadCoilData(ConfigState config)
+        public async Task<List<ushort>> ReadRegisterDataAsync(ConfigState config)
         {
-            if (master == null)
-            {
-                throw new InvalidOperationException("Modbus client not connected for Coil poll.");
-            }
+            await modbusLock.WaitAsync();
 
-            return ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, false);
+            try
+            {
+                if (master == null)
+                {
+                    throw new InvalidOperationException("Modbus client not connected for Register poll.");
+                }
+
+                return ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, false);
+            }
+            finally
+            {
+                modbusLock.Release();
+            }
         }
 
-        public List<ushort> ReadRegisterData(ConfigState config)
+        public async Task WriteValueAsync(ModbusWriteDTO write, ConfigState config)
         {
-            if (master == null)
-            {
-                throw new InvalidOperationException("Modbus client not connected for Register poll.");
-            }
+            await modbusLock.WaitAsync();
 
-            return ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, false);
+            try
+            {
+                if (master == null)
+                {
+                    throw new InvalidOperationException("Modbus client not connected.");
+                }
+
+                switch (write.Type)
+                {
+                    case PollType.CoilStatus:
+                        await master.WriteSingleCoilAsync(
+                            config.DeviceId,
+                            write.Address,
+                            write.Value != "0");
+                        break;
+
+                    case PollType.HoldingRegisters:
+                        await master.WriteSingleRegisterAsync(
+                            config.DeviceId,
+                            write.Address,
+                            ushort.Parse(write.Value));
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            finally
+            {
+                modbusLock.Release();
+            }
         }
 
         private List<ushort> ReadDigitals(

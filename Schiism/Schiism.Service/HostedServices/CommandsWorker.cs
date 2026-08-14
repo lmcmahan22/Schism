@@ -12,6 +12,7 @@ namespace Schiism.Service.HostedServices
     using Schiism.Core.IPC.Commands;
     using Schiism.Core.IPC.DTOs;
     using Schiism.Core.IPC.StateWrappers;
+    using Schiism.Core.Modbus;
     using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
@@ -27,8 +28,10 @@ namespace Schiism.Service.HostedServices
     /// <param name="logger">Logger object used to write data to a text file.</param>
     public class CommandsWorker(
         ConfigState config,
-        CommandSender initSender,
-        CommandReceiver receiver,
+        Engine engine,
+        CommandSender<SettingsConfigDTO> initConfigSender,
+        CommandReceiver<SettingsConfigDTO> configReceiver,
+        CommandReceiver<ModbusWriteDTO> modbusReceiver,
         PollControl pollControl,
         InitStatus initStatus,
         ILogger<CommandsWorker> logger,
@@ -48,9 +51,10 @@ namespace Schiism.Service.HostedServices
             logger.LogInformation($"Service Commands Worker for {NamingConstants.SettingsCommandName} and {NamingConstants.InitSettingsCommandName} has started");
 
             Task? sendTask = RunInitSenderLoopAsync(stoppingToken);
-            Task? receiveTask = RunReceiverLoopAsync(stoppingToken);
+            Task? settingsReceiveTask = RunSettingsReceiverLoopAsync(stoppingToken);
+            Task? modbusReceiveTask = RunModbusReceiverLoopAsync(stoppingToken);
 
-            await Task.WhenAll(receiveTask, sendTask);
+            await Task.WhenAll(settingsReceiveTask, modbusReceiveTask, sendTask);
         }
 
         private async Task RunInitSenderLoopAsync(CancellationToken stoppingToken)
@@ -63,7 +67,7 @@ namespace Schiism.Service.HostedServices
                     {
 
                         logger.LogInformation("Sending initialization command");
-                        await initSender.SendAsync(config.Push(), stoppingToken);
+                        await initConfigSender.SendAsync(config.Push(), stoppingToken);
 
                         initStatus.IsInitialized = true; // Ensure the state is set to true after successful send
                         logger.LogInformation("Frontend Initialization State set to True!");
@@ -83,14 +87,14 @@ namespace Schiism.Service.HostedServices
             }
         }
 
-        private async Task RunReceiverLoopAsync(CancellationToken stoppingToken)
+        private async Task RunSettingsReceiverLoopAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
                     logger.LogInformation("Command receive starting");
-                    await receiver.ReceiveAsync(this.ReceiveHandler, stoppingToken);
+                    await configReceiver.ReceiveAsync(this.SettingsReceiveHandler, stoppingToken);
                 }
                 catch (Exception ex)
                 {
@@ -101,7 +105,25 @@ namespace Schiism.Service.HostedServices
             }
         }
 
-        private Task ReceiveHandler(SettingsConfigDTO cmd)
+        private async Task RunModbusReceiverLoopAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    logger.LogInformation("Modbus Write receive starting");
+                    await modbusReceiver.ReceiveAsync(this.ModbusReceiveHandler, stoppingToken);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Modbus Write receive crashed");
+                }
+
+                await Task.Delay(100, stoppingToken); // IMPORTANT or you'll spin CPU. This should be short though, since there's no reason for the UI to wait for updated data if it has already arrived.
+            }
+        }
+
+        private Task SettingsReceiveHandler(SettingsConfigDTO cmd)
         {
             config.Update(cmd);
 
@@ -116,45 +138,13 @@ namespace Schiism.Service.HostedServices
             return Task.CompletedTask;
         }
 
-        // private void ConfigureStartup(bool enableAutoStart)
-        // {
-        //    {
-        //        // "delayed-auto" also works in place of "auto" here, but took about 90 seconds longer on my desktop PC to start up. Keeping this as "auto" until I see reason to change it.
-        //        string startType = enableAutoStart ? "auto" : "demand";
-        //        RunSc($"config {NamingConstants.ServiceName} start= {startType}");
-        //    }
-        // }
+        private Task ModbusReceiveHandler(ModbusWriteDTO write)
+        {
+            // Implement the logic to handle Modbus write to the Server device. Should just be a method with the DTO as the parameter.
+            engine.WriteValueAsync(write, config);
 
-        // private void ConfigureRestart(bool enableRestart)
-        // {
-        //    {
-        //        if (enableRestart)
-        //        {
-        //            // Configure auto restart, if the app crashes
-        //            RunSc($"failureflag {NamingConstants.ServiceName} 1");
-        //            RunSc($"failure {NamingConstants.ServiceName} reset= 0 actions= restart/5000/restart/5000/restart/5000");
-        //        }
-        //        else
-        //        {
-        //            // Disable all failure actions (no restart)
-        //            RunSc($"failureflag {NamingConstants.ServiceName} 0");
-        //            RunSc($"failure {NamingConstants.ServiceName} reset= 0 actions= \"\"");
-        //        }
-        //    }
-        //}
-
-        // private static void RunSc(string arguments)
-        // {
-        //    {
-        //        Process.Start(new ProcessStartInfo
-        //        {
-        //            FileName = "sc.exe",
-        //            Arguments = arguments,
-        //            Verb = "runas", // requires admin
-        //            CreateNoWindow = true,
-        //            UseShellExecute = true,
-        //        });
-        //    }
-        // }
+            logger.LogInformation("Implemented Modbus Value: " + write.Value + " at " + write.Address + " successfully.");
+            return Task.CompletedTask;
+        }
     }
 }

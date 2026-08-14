@@ -22,6 +22,7 @@ namespace Schiism
     using Schiism.WPF.Views;
     using System.Runtime.Intrinsics.X86;
     using System.Windows;
+    using Schiism.WPF.Models;
 
     public partial class App
     {
@@ -57,51 +58,53 @@ namespace Schiism
             containerRegistry.RegisterSingleton<InitStatus>();
             containerRegistry.RegisterSingleton<INamedPipeFactory, BasePipeFactory>();
             containerRegistry.RegisterSingleton<PipeSerializer>();
-            containerRegistry.RegisterSingleton<StreamStore<ModbusDataDTO>>();
+            containerRegistry.RegisterSingleton<StreamStore<ModbusDataCollectionDTO>>();
             containerRegistry.RegisterSingleton<StreamStore<ConnDiagDTO>>();
 
             // Theme Controller Singleton
             containerRegistry.RegisterSingleton<ThemesControl>();
 
             // IPC Singletons (Subscribers, Command Receiver, and Command Sender)
-            containerRegistry.RegisterSingleton<CommandReceiver>(
-                cr => new CommandReceiver(
+            containerRegistry.RegisterSingleton<CommandReceiver<SettingsConfigDTO>>(
+                cr => new CommandReceiver<SettingsConfigDTO>(
                     NamingConstants.InitSettingsCommandName,
                     cr.Resolve<INamedPipeFactory>(),
                     cr.Resolve<PipeSerializer>(),
-                    cr.Resolve<ILoggerFactory>().CreateLogger<CommandReceiver>()));
-            containerRegistry.RegisterSingleton<CommandSender>(
-                cs => new CommandSender(
+                    cr.Resolve<ILoggerFactory>().CreateLogger<CommandReceiver<SettingsConfigDTO>>()));
+            containerRegistry.RegisterSingleton<CommandSender<SettingsConfigDTO>>(
+                cs => new CommandSender<SettingsConfigDTO>(
                     NamingConstants.SettingsCommandName,
                     cs.Resolve<INamedPipeFactory>(),
                     cs.Resolve<PipeSerializer>(),
-                    cs.Resolve<ILoggerFactory>().CreateLogger<CommandSender>()));
+                    cs.Resolve<ILoggerFactory>().CreateLogger<CommandSender<SettingsConfigDTO>>()));
             containerRegistry.RegisterSingleton<StreamSubscriber<ConnDiagDTO>>(
                 ssc => new StreamSubscriber<ConnDiagDTO>(
                     ssc.Resolve<PipeSerializer>(),
                     ssc.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriber<ConnDiagDTO>>()));
-            containerRegistry.RegisterSingleton<StreamSubscriber<ModbusDataDTO>>(
-                ssm => new StreamSubscriber<ModbusDataDTO>(
+            containerRegistry.RegisterSingleton<StreamSubscriber<ModbusDataCollectionDTO>>(
+                ssm => new StreamSubscriber<ModbusDataCollectionDTO>(
                     ssm.Resolve<PipeSerializer>(),
-                    ssm.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriber<ModbusDataDTO>>()));
+                    ssm.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriber<ModbusDataCollectionDTO>>()));
 
             // Workers (to run the subscription and command loops/calls)
             containerRegistry.Register<CommandsWorker>(
             cw => new CommandsWorker(
-                cw.Resolve<CommandReceiver>(),
+                cw.Resolve<CommandReceiver<SettingsConfigDTO>>(),
                 cw.Resolve<INamedPipeFactory>(),
-                cw.Resolve<CommandSender>(),
+                cw.Resolve<CommandSender<SettingsConfigDTO>>(),
+                cw.Resolve<CommandSender<ModbusWriteDTO>>(),
                 cw.Resolve<ConfigState>(),
+                cw.Resolve<ModbusWriteState>(),
                 cw.Resolve<InitStatus>(),
                 cw.Resolve<ILoggerFactory>().CreateLogger<CommandsWorker>()));
-            containerRegistry.Register<StreamSubscriberWorker<ModbusDataDTO>>(
-            swm => new StreamSubscriberWorker<ModbusDataDTO>(
+            containerRegistry.Register<StreamSubscriberWorker<ModbusDataCollectionDTO>>(
+            swm => new StreamSubscriberWorker<ModbusDataCollectionDTO>(
                 NamingConstants.ModbusDataStreamName,
                 swm.Resolve<INamedPipeFactory>(),
-                swm.Resolve<StreamSubscriber<ModbusDataDTO>>(),
-                swm.Resolve<StreamStore<ModbusDataDTO>>(),
+                swm.Resolve<StreamSubscriber<ModbusDataCollectionDTO>>(),
+                swm.Resolve<StreamStore<ModbusDataCollectionDTO>>(),
                 swm.Resolve<InitStatus>(),
-                swm.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriberWorker<ModbusDataDTO>>()));
+                swm.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriberWorker<ModbusDataCollectionDTO>>()));
             containerRegistry.Register<StreamSubscriberWorker<ConnDiagDTO>>(
                 swc => new StreamSubscriberWorker<ConnDiagDTO>(
                 NamingConstants.ConnDiagStreamName,
@@ -126,7 +129,7 @@ namespace Schiism
 
             // This resolves the workers 
             hostedServices.Add(Container.Resolve<CommandsWorker>());
-            hostedServices.Add(Container.Resolve<StreamSubscriberWorker<ModbusDataDTO>>());
+            hostedServices.Add(Container.Resolve<StreamSubscriberWorker<ModbusDataCollectionDTO>>());
             hostedServices.Add(Container.Resolve<StreamSubscriberWorker<ConnDiagDTO>>());
 
             foreach (var service in hostedServices)

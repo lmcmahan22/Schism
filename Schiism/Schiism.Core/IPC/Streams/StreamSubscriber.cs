@@ -24,7 +24,7 @@ namespace Schiism.Core.IPC.Streams
 
             if (typeof(T).Name == "ModbusData")
             {
-                ModbusDataDTO? modData = data as ModbusDataDTO;
+                ModbusDataCollectionDTO? modData = data as ModbusDataCollectionDTO;
 
                 logger.LogInformation($"Received data on {typeof(T).Name} pipe: {data}.");
 

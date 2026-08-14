@@ -1,0 +1,26 @@
+﻿namespace Schiism.WPF.Models
+{
+    public class ModbusWriteState : BindableBase
+    {
+        private ushort address;
+        private string value;
+
+        public ushort Address
+        {
+            get => address;
+            set => SetProperty(ref address, value);
+        }
+
+        public string Value
+        {
+            get => value;
+            set => SetProperty(ref this.value, value);
+        }
+
+        public void SetWrite(ushort address, string value)
+        {
+            this.address = address;
+            this.value = value;
+        }
+    }
+}

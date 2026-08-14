@@ -361,7 +361,9 @@
                                                                         </Style.Triggers>
                                                                     </Style>
                                                                 </Border.Style>
-                                                                <TextBox Text="{Binding Data}" Height="20" MinWidth="50" MaxWidth="475"
+                                                                <TextBox Text="{Binding EditData, UpdateSourceTrigger=LostFocus}" 
+                                                                         behaviors:LostFocusBehavior.Command="{Binding CommitEditCommand}"
+                                                                         Height="20" MinWidth="50" MaxWidth="475"
                                                                           Width="{Binding Tag.DataWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                                           Background="Transparent" BorderBrush="Transparent"/>
                                                             </Border>

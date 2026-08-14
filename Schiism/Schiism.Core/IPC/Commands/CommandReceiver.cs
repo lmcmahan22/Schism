@@ -17,31 +17,13 @@ namespace Schiism.Core.IPC.Commands
     /// </summary>
     /// <param name="pipeName">Name of the pipe that the command will be received from.</param>
     /// <param name="logger">Logger object for logging data to text file.</param>
-    public class CommandReceiver(string pipeName, INamedPipeFactory pipeFactory, PipeSerializer serializer, ILogger<CommandReceiver> logger)
+    public class CommandReceiver<T>(string pipeName, INamedPipeFactory pipeFactory, PipeSerializer serializer, ILogger<CommandReceiver<T>> logger)
     {
         /// <inheritdoc/>
-        public async Task ReceiveAsync(Func<SettingsConfigDTO, Task> handler, CancellationToken ct)
+        public async Task ReceiveAsync(Func<T, Task> handler, CancellationToken ct)
         {
-            //while (!ct.IsCancellationRequested)
-            //{
                 try
                 {
-                    // logger.LogInformation(
-                    //    "Creating named pipe for {PipeName}",
-                    //    pipeName);
-
-                    // using var pipe = pipeFactory.CreateServer(pipeName);
-
-                    // logger.LogInformation(
-                    //    "Waiting for sender connection on {PipeName}",
-                    //    pipeName);
-
-                    // await pipe.WaitForConnectionAsync(ct);
-
-                    // logger.LogInformation(
-                    //    "Sender connected to {PipeName}",
-                    //    pipeName);
-
                     logger.LogInformation(
                         "Connecting to {PipeName}",
                         pipeName);
@@ -56,7 +38,7 @@ namespace Schiism.Core.IPC.Commands
 
                     while (pipe.IsConnected && !ct.IsCancellationRequested)
                     {
-                        SettingsConfigDTO? cmd = await serializer.DeserializeAsync<SettingsConfigDTO>(pipe, ct);
+                        T? cmd = await serializer.DeserializeAsync<T>(pipe, ct);
 
                         if (cmd is null)
                         {
@@ -81,7 +63,6 @@ namespace Schiism.Core.IPC.Commands
                 {
                     logger.LogError(ex, $"Command server error {ex}");
                 }
-            // }
         }
     }
 }

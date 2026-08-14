@@ -10,16 +10,16 @@ namespace Schiism.Core.IPC.DTOs
     /// ModbusData Record (immutable) to represent the data received from the Modbus device, along with the device ID and timestamp.
     /// This is the data structure that will be sent through the Modbus data stream queue for consumption by the FE or any other subscribers.
     /// </summary>
-    public record ModbusDataDTO
+    public record ModbusDataCollectionDTO
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModbusDataDTO"/> class. Note that the parameters must match the record properties for JSON deserialization to work correctly (case-insenstitive).
+        /// Initializes a new instance of the <see cref="ModbusDataCollectionDTO"/> class. Note that the parameters must match the record properties for JSON deserialization to work correctly (case-insenstitive).
         /// </summary>
         /// <param name="deviceId">The ID of the Modbus device.</param>
         /// <param name="data">The data from the Modbus device.</param>
         /// <param name="timestamp">The timestamp of the data.</param>
         [JsonConstructor]
-        public ModbusDataDTO(byte deviceId, List<string> data, DateTime timestamp)
+        public ModbusDataCollectionDTO(byte deviceId, List<string> data, DateTime timestamp)
         {
             DeviceId = deviceId;
             Data = data;
