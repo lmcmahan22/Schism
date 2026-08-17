@@ -13,7 +13,6 @@
 *.bin
 *.dtbcache.v2
 *.futdcache.v2
-*.json
 *.baml
 *.lref
 *.g.cs
