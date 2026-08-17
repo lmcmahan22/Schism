@@ -19,8 +19,8 @@
 
         public void SetWrite(ushort address, string value)
         {
-            this.address = address;
-            this.value = value;
+            this.Address = address;
+            this.Value = value;
         }
     }
 }

@@ -8,6 +8,7 @@
     using Schiism.Core.IPC.PipeControl;
     using Schiism.Core.IPC.StateWrappers;
     using Schiism.WPF.Models;
+    using Schiism.Core.Configuration.Enums;
     using System.ComponentModel;
 
     /// <summary>
@@ -125,19 +126,53 @@
 
         private async void ValueChanged(object? modbusSenderObject, PropertyChangedEventArgs e)
         {
-            if (!initStatus.IsInitialized)
+            if (e.PropertyName != nameof(ModbusWriteState.Value))
             {
                 return;
             }
 
             try
             {
-                // Y is the value to write from the UI. Call value change with respect to cell X.
+                // Value handling with different string value formats
+                string cleanedVal = string.Empty;
+
+                switch (configState.SelectedNumericBase)
+                {
+                    case NumericBase.Integer:
+                        cleanedVal = Convert.ToInt16(this.writeState.Value, 16).ToString();
+                        break;
+
+                    case NumericBase.Binary:
+                        cleanedVal = Convert.ToInt16(this.writeState.Value, 2).ToString();
+                        break;
+
+                    case NumericBase.Hexadecimal:
+                        string tempVal = this.writeState.Value;
+                        if (this.configState.AsciiEnable)
+                        {
+                            // Remove first 5 characters (ASCII content)
+                            tempVal = tempVal.Substring(5);
+                        }
+
+                        // Remove first 2 characters ("0x")
+                        cleanedVal = Convert.ToInt16(tempVal.Substring(2), 16).ToString();
+                        break;
+
+                    // Not implemented for the time being...
+                    // case NumericBase.Float:
+                    //    // Convert
+                    //    break;
+
+                    default:
+                        // Convert?
+                        break;
+                }
+
                 ModbusWriteDTO modbusWriteDTO = new ModbusWriteDTO(
                     configState.SelectedPollType,
                     configState.DeviceId,
                     writeState.Address,
-                    writeState.Value);
+                    cleanedVal);
 
                 logger.LogInformation("Sending new value " + writeState.Value + " to address: " + writeState.Address);
 

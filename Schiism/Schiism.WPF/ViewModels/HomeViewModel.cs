@@ -421,7 +421,8 @@ namespace Schiism.WPF.ViewModels
                     List<ModbusRow> newRows = new List<ModbusRow>();
                     for (int j = 0; j < colSize; j++)
                     {
-                        newRows.Add(new ModbusRow((ushort)((i * 20) + j), namesCache[i], string.Empty, updatingCache[i]));
+                        ushort rowAddr = (ushort)((i * 20) + j + this.ModbusSettState.StartAddress);
+                        newRows.Add(new ModbusRow(rowAddr, namesCache[i], string.Empty, updatingCache[i]));
                         // Populate the name, data remains empty for now
                         // logger.LogInformation($"At Table Update: ModbusRow[{i}] = {namesCache[i]}, {string.Empty}");
                     }
@@ -436,7 +437,7 @@ namespace Schiism.WPF.ViewModels
                     Debug.WriteLine($"Rows: {column.Rows.Count}");
                     foreach (var row in column.Rows)
                     {
-                        Debug.WriteLine($"Subscribing to row {row.GetHashCode()}");
+                        Debug.WriteLine($"Subscribing to row {row.GetHashCode()} with address {row.Address} and value {row.Data}");
 
                         // Row change subscriptions
                         row.PropertyChanged += this.ModbusCheckChanged;

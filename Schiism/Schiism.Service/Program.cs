@@ -98,6 +98,13 @@ namespace Schiism.Service
                 sp.GetRequiredService<PipeSerializer>(),
                 sp.GetRequiredService<ILogger<CommandReceiver<SettingsConfigDTO>>>()));
 
+            builder.Services.AddSingleton<CommandReceiver<ModbusWriteDTO>>(
+                sp => new CommandReceiver<ModbusWriteDTO>(
+                    NamingConstants.ModbusWriteCommandName,
+                    sp.GetRequiredService<INamedPipeFactory>(),
+                    sp.GetRequiredService<PipeSerializer>(),
+                    sp.GetRequiredService<ILogger<CommandReceiver<ModbusWriteDTO>>>()));
+
             // Command Client (for first config population)
             builder.Services.AddSingleton<CommandSender<SettingsConfigDTO>>(
                 sp => new CommandSender<SettingsConfigDTO>(

@@ -48,7 +48,7 @@ namespace Schiism.Service.HostedServices
             await Task.Run(
                 () => lifetime.ApplicationStarted.WaitHandle.WaitOne(), stoppingToken);
 
-            logger.LogInformation($"Service Commands Worker for {NamingConstants.SettingsCommandName} and {NamingConstants.InitSettingsCommandName} has started");
+            logger.LogInformation($"Service Commands Worker for {NamingConstants.SettingsCommandName}, {NamingConstants.InitSettingsCommandName}, and {NamingConstants.ModbusWriteCommandName} has started");
 
             Task? sendTask = RunInitSenderLoopAsync(stoppingToken);
             Task? settingsReceiveTask = RunSettingsReceiverLoopAsync(stoppingToken);

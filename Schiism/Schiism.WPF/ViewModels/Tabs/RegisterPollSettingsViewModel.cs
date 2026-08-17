@@ -23,8 +23,8 @@ namespace Schiism.WPF.ViewModels.Tabs
         public ObservableCollection<EnumOption<DataSize>> DataSizes { get; } =
         [
             new() { Value = DataSize.Bit16,             Display = "16 Bit",            IsEnabled = true },
-            new() { Value = DataSize.Bit32,             Display = "32 Bit",            IsEnabled = true },
-            new() { Value = DataSize.Bit64,             Display = "64 Bit",            IsEnabled = true },
+            // new() { Value = DataSize.Bit32,             Display = "32 Bit",            IsEnabled = true },
+            // new() { Value = DataSize.Bit64,             Display = "64 Bit",            IsEnabled = true },
         ];
 
         public ObservableCollection<EnumOption<Endian>> Endians { get; } =
@@ -41,7 +41,7 @@ namespace Schiism.WPF.ViewModels.Tabs
             new () {Value = NumericBase.Integer,        Display = "Integer",            IsEnabled = true},
             new () {Value = NumericBase.Hexadecimal,    Display = "Hexadecimal",        IsEnabled = true},
             new () {Value = NumericBase.Binary,         Display = "Binary",             IsEnabled = true},
-            new () {Value = NumericBase.Float,          Display = "Float",              IsEnabled = true},
+            // new () {Value = NumericBase.Float,          Display = "Float",              IsEnabled = true},
         ];
 
         public bool EndianEnable =>
@@ -166,20 +166,20 @@ namespace Schiism.WPF.ViewModels.Tabs
                     }
 
                     // disable float option
-                    var floatChoice = NumericBases.First(x => x.Value == NumericBase.Float);
-                    if (floatChoice.IsEnabled)
-                    {
-                        floatChoice.IsEnabled = false;
-                    }
+                    //var floatChoice = NumericBases.First(x => x.Value == NumericBase.Float);
+                    //if (floatChoice.IsEnabled)
+                    //{
+                    //    floatChoice.IsEnabled = false;
+                    //}
                 }
                 else
                 {
                     // enable float option
-                    var floatChoice = NumericBases.First(x => x.Value == NumericBase.Float);
-                    if (!floatChoice.IsEnabled)
-                    {
-                        floatChoice.IsEnabled = true;
-                    }
+                    //var floatChoice = NumericBases.First(x => x.Value == NumericBase.Float);
+                    //if (!floatChoice.IsEnabled)
+                    //{
+                    //    floatChoice.IsEnabled = true;
+                    //}
                 }
 
                 OnPropertyChanged(nameof(NumericBases));

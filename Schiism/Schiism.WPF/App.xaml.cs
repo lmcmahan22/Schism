@@ -55,6 +55,7 @@ namespace Schiism
             // containerRegistry.RegisterSingleton<StreamDataState<ModbusData>, StreamStore<ModbusData>>();
             // containerRegistry.RegisterSingleton<StreamDataState<ConnectionDiagnostics>, StreamStore<ConnectionDiagnostics>>();
             containerRegistry.RegisterSingleton<ConfigState>();
+            containerRegistry.RegisterSingleton<ModbusWriteState>();
             containerRegistry.RegisterSingleton<InitStatus>();
             containerRegistry.RegisterSingleton<INamedPipeFactory, BasePipeFactory>();
             containerRegistry.RegisterSingleton<PipeSerializer>();
@@ -71,16 +72,26 @@ namespace Schiism
                     cr.Resolve<INamedPipeFactory>(),
                     cr.Resolve<PipeSerializer>(),
                     cr.Resolve<ILoggerFactory>().CreateLogger<CommandReceiver<SettingsConfigDTO>>()));
+
             containerRegistry.RegisterSingleton<CommandSender<SettingsConfigDTO>>(
                 cs => new CommandSender<SettingsConfigDTO>(
                     NamingConstants.SettingsCommandName,
                     cs.Resolve<INamedPipeFactory>(),
                     cs.Resolve<PipeSerializer>(),
                     cs.Resolve<ILoggerFactory>().CreateLogger<CommandSender<SettingsConfigDTO>>()));
+
+            containerRegistry.RegisterSingleton<CommandSender<ModbusWriteDTO>>(
+                cs => new CommandSender<ModbusWriteDTO>(
+                    NamingConstants.ModbusWriteCommandName,
+                    cs.Resolve<INamedPipeFactory>(),
+                    cs.Resolve<PipeSerializer>(),
+                    cs.Resolve<ILoggerFactory>().CreateLogger<CommandSender<ModbusWriteDTO>>()));
+
             containerRegistry.RegisterSingleton<StreamSubscriber<ConnDiagDTO>>(
                 ssc => new StreamSubscriber<ConnDiagDTO>(
                     ssc.Resolve<PipeSerializer>(),
                     ssc.Resolve<ILoggerFactory>().CreateLogger<StreamSubscriber<ConnDiagDTO>>()));
+
             containerRegistry.RegisterSingleton<StreamSubscriber<ModbusDataCollectionDTO>>(
                 ssm => new StreamSubscriber<ModbusDataCollectionDTO>(
                     ssm.Resolve<PipeSerializer>(),
@@ -127,7 +138,7 @@ namespace Schiism
         {
             base.OnInitialized();
 
-            // This resolves the workers 
+            // This resolves the workers
             hostedServices.Add(Container.Resolve<CommandsWorker>());
             hostedServices.Add(Container.Resolve<StreamSubscriberWorker<ModbusDataCollectionDTO>>());
             hostedServices.Add(Container.Resolve<StreamSubscriberWorker<ConnDiagDTO>>());

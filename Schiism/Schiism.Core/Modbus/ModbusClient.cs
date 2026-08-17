@@ -171,6 +171,7 @@ namespace Schiism.Core.Modbus
                             config.DeviceId,
                             write.Address,
                             write.Value != "0");
+                        logger.LogInformation("Engine writing coil!");
                         break;
 
                     case PollType.HoldingRegisters:
@@ -178,6 +179,7 @@ namespace Schiism.Core.Modbus
                             config.DeviceId,
                             write.Address,
                             ushort.Parse(write.Value));
+                        logger.LogInformation("Engine writing register!");
                         break;
 
                     default:

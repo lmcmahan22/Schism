@@ -25,6 +25,11 @@ namespace Schiism.Core
         public const string SettingsCommandName = "schiism.settings.cmd.v1";
 
         /// <summary>
+        /// Represents the name of the Modbus Write command (Console --> Service).
+        /// </summary>
+        public const string ModbusWriteCommandName = "schiism.modbusWrite.cmd.v1";
+
+        /// <summary>
         /// Represents the name of the Initializing Settings Configuration command (Service --> Console).
         /// </summary>
         public const string InitSettingsCommandName = "schiism.initSettings.cmd.v1";
