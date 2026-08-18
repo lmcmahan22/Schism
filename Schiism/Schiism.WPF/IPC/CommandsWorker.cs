@@ -21,8 +21,11 @@
         private readonly CommandReceiver<SettingsConfigDTO> initConfigReceiver;
         private readonly CommandSender<SettingsConfigDTO> configSender;
         private readonly CommandSender<ModbusWriteDTO> modbusSender;
+        private readonly CommandSender<BoardAvailableDTO> boardAvailableSender;
         private readonly ConfigState configState;
         private readonly ModbusWriteState writeState;
+
+        private readonly BoardAvailableState bAState;
         private readonly InitStatus initStatus;
 
         // Track if the config actually needs to be sent or not.
@@ -33,8 +36,10 @@
             INamedPipeFactory pipeFactory,
             CommandSender<SettingsConfigDTO> configSender,
             CommandSender<ModbusWriteDTO> modbusSender,
+            CommandSender<BoardAvailableDTO> boardAvailableSender,
             ConfigState configState,
             ModbusWriteState writeState,
+            BoardAvailableState bAState,
             InitStatus initStatus,
             ILogger<CommandsWorker> logger)
         {
@@ -42,13 +47,16 @@
             this.initConfigReceiver = initConfigReceiver;
             this.configSender = configSender;
             this.modbusSender = modbusSender;
+            this.boardAvailableSender = boardAvailableSender;
             this.configState = configState;
             this.writeState = writeState;
+            this.bAState = bAState;
             this.initStatus = initStatus;
 
             // Sender subscriptions (complete this by binding to the WPF element with the data!)
             this.configState.PropertyChanged += ConfigChanged;
             this.writeState.PropertyChanged += ValueChanged;
+            this.bAState.PropertyChanged += BAStateChanged;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -124,6 +132,29 @@
             }
         }
 
+        private async void BAStateChanged(object? bAStateSenderObject, PropertyChangedEventArgs e)
+        {
+            try
+            {
+                BoardAvailableDTO boardAvailableDTO = new BoardAvailableDTO(
+                    bAState.BoardID,
+                    bAState.Width,
+                    bAState.FailedBoard,
+                    bAState.FlippedBoard,
+                    bAState.TopBarcode,
+                    bAState.BottomBarcode,
+                    bAState.PartName);
+
+                await this.boardAvailableSender.SendAsync(boardAvailableDTO, CancellationToken.None);
+
+                logger.LogInformation("BoardAvailable sent sucessfully!");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to send BoardAvailable message.");
+            }
+        }
+
         private async void ValueChanged(object? modbusSenderObject, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != nameof(ModbusWriteState.Value))
@@ -164,7 +195,7 @@
                     //    break;
 
                     default:
-                        // Convert?
+                        cleanedVal = this.writeState.Value;
                         break;
                 }
 

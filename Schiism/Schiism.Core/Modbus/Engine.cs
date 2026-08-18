@@ -159,10 +159,19 @@ namespace Schiism.Core.Modbus
             }
         }
 
-        // Develop!
+        public async Task PLCHeartbeatAsync(ConfigState config)
+        {
+            await client.Heartbeat(config);
+        }
+
         public async Task WriteValueAsync(ModbusWriteDTO write, ConfigState config)
         {
             await client.WriteValueAsync(write, config);
+        }
+
+        public async Task WriteBoardAvailableAsync(BoardAvailableDTO baDTO, ConfigState config)
+        {
+            await client.WriteBoardAvailableAsync(baDTO, config);
         }
 
         private async Task OnRequest(CancellationToken ct)

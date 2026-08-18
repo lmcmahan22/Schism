@@ -13,6 +13,9 @@ namespace Schiism.Core.Configuration.StateControl
     // Invokes INotifyPropertyChanged for frontend and backend use, since both apps subscribe to changes on this object, just not always for UI updates.
     public class ConfigState : INotifyPropertyChanged
     {
+        // Heartbeat option. Not shared with WPF app at this time.
+        private bool pLCHeartbeatEnable = true;
+
         // Private wariables (that which can be manipulated by more than one setter from this class, or non-nullable)
         private string iPAddress;
         private ushort tcpPort;
@@ -56,6 +59,12 @@ namespace Schiism.Core.Configuration.StateControl
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        public bool PLCHeartbeatEnable
+        {
+            get => pLCHeartbeatEnable;
+            set => pLCHeartbeatEnable = value;
+        }
 
         /// <inheritdoc/>
         public string IPAddress

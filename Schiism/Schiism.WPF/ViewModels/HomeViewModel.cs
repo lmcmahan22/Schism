@@ -48,6 +48,7 @@ namespace Schiism.WPF.ViewModels
         private DelegateCommand? settClick;
         private DelegateCommand? themesClick;
         private DelegateCommand? aboutClick;
+        private DelegateCommand? boardAvailableClick;
 
         public ConfigState ModbusSettState { get; }
 
@@ -173,6 +174,9 @@ namespace Schiism.WPF.ViewModels
         public DelegateCommand AboutClick =>
             aboutClick ??= new DelegateCommand(ExecuteAboutClick);
 
+        public DelegateCommand BoardAvailableClick =>
+            boardAvailableClick ??= new DelegateCommand(ExecuteBoardAvailableClick);
+
         public void ExecuteSaveClick()
         {
             // Create a SaveData object with the current state of the ViewModel
@@ -242,6 +246,19 @@ namespace Schiism.WPF.ViewModels
                 Topmost = true,
             };
             connSettings.ShowDialog();
+        }
+
+        public void ExecuteBoardAvailableClick()
+        {
+            // Create the Connection Settings window
+            Window boardAvailable = new Window
+            {
+                // Open the window
+                Content = new BoardAvailable(),
+                SizeToContent = SizeToContent.WidthAndHeight,
+                Topmost = true,
+            };
+            boardAvailable.ShowDialog();
         }
 
         public void ExecuteThemesClick()

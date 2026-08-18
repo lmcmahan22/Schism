@@ -4,15 +4,16 @@
 
 namespace Schiism.Core.Modbus
 {
-    using System.Linq;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using NModbus;
     using Schiism.Core.Configuration.Enums;
     using Schiism.Core.Configuration.StateControl;
     using Schiism.Core.IPC.DTOs;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Sockets;
+    using System.Text;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Implementation class for the IModbusClient interface.
@@ -82,39 +83,6 @@ namespace Schiism.Core.Modbus
             }
         }
 
-        /// <inheritdoc/>
-        //public async Task<List<ushort>> ReadData(ConfigState config)
-        //{
-        //    await modbusLock.WaitAsync();
-
-        //    try
-        //    {
-        //        if (master == null)
-        //        {
-        //            throw new InvalidOperationException("Modbus client not connected.");
-        //        }
-
-        //        return config.SelectedPollType switch
-        //        {
-        //            PollType.InputStatus =>
-        //                ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, true),
-
-        //            PollType.HoldingRegisters =>
-        //                ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, false),
-
-        //            PollType.InputRegisters =>
-        //                ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, true),
-
-        //            _ =>
-        //                ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, false),
-        //        };
-        //    }
-        //    finally
-        //    {
-        //        modbusLock.Release();
-        //    }
-        //}
-
         public async Task<List<ushort>> ReadCoilDataAsync(ConfigState config)
         {
             await modbusLock.WaitAsync();
@@ -123,7 +91,7 @@ namespace Schiism.Core.Modbus
             {
                 if (master == null)
                 {
-                    throw new InvalidOperationException("Modbus client not connected for Coil poll.");
+                    throw new InvalidOperationException("Modbus client not connected to server for Coil poll.");
                 }
 
                 return ReadDigitals(master, config.DeviceId, config.StartAddress, config.DataLength, false);
@@ -142,10 +110,41 @@ namespace Schiism.Core.Modbus
             {
                 if (master == null)
                 {
-                    throw new InvalidOperationException("Modbus client not connected for Register poll.");
+                    throw new InvalidOperationException("Modbus client not connected to server for Register poll.");
                 }
 
                 return ReadRegisters(master, config.DeviceId, config.StartAddress, config.DataLength, false);
+            }
+            finally
+            {
+                modbusLock.Release();
+            }
+        }
+
+        public async Task Heartbeat(ConfigState config)
+        {
+            await modbusLock.WaitAsync();
+
+            try
+            {
+                if (master == null)
+                {
+                    throw new InvalidOperationException("Modbus client not connected to server.");
+                }
+
+                // Read the heartbeat value from a length 1 coil read
+                List<ushort> hbRawResult = ReadDigitals(this.master, config.DeviceId, 2100, 1, false);
+                bool hbPulled = hbRawResult[0] == 1;
+
+                // If PLC set this value to 1, set it back to 0
+                if (hbPulled)
+                {
+                    logger.LogInformation("Engine dropping heartbeat coil!");
+                    await master.WriteSingleCoilAsync(
+                            config.DeviceId,
+                            2100,
+                            false);
+                }
             }
             finally
             {
@@ -161,25 +160,25 @@ namespace Schiism.Core.Modbus
             {
                 if (master == null)
                 {
-                    throw new InvalidOperationException("Modbus client not connected.");
+                    throw new InvalidOperationException("Modbus client not connected to server.");
                 }
 
                 switch (write.Type)
                 {
                     case PollType.CoilStatus:
-                        await master.WriteSingleCoilAsync(
+                        logger.LogInformation("Engine writing coil!");
+                        await this.master.WriteSingleCoilAsync(
                             config.DeviceId,
                             write.Address,
                             write.Value != "0");
-                        logger.LogInformation("Engine writing coil!");
                         break;
 
                     case PollType.HoldingRegisters:
+                        logger.LogInformation("Engine writing register!");
                         await master.WriteSingleRegisterAsync(
                             config.DeviceId,
                             write.Address,
                             ushort.Parse(write.Value));
-                        logger.LogInformation("Engine writing register!");
                         break;
 
                     default:
@@ -190,6 +189,75 @@ namespace Schiism.Core.Modbus
             {
                 modbusLock.Release();
             }
+        }
+
+        // Liam the WriteMultipleRegisters action is failing before the raw data print after it!
+        public async Task WriteBoardAvailableAsync(BoardAvailableDTO baDTO, ConfigState config)
+        {
+            await modbusLock.WaitAsync();
+
+            try
+            {
+                if (master == null)
+                {
+                    throw new InvalidOperationException("Modbus client not connected to server.");
+                }
+
+                var registers = new List<ushort>();
+
+                // Add register data to the list in the correct order, so we can write it all at once.
+                registers.AddRange(this.StringToRegisters(baDTO.BoardId, 18));
+                registers.Add(Convert.ToUInt16(baDTO.Width));
+                registers.Add(Convert.ToUInt16(baDTO.FailedBoard));
+                registers.Add(Convert.ToUInt16(baDTO.FlippedBoard));
+                registers.AddRange(this.StringToRegisters(baDTO.TopBarcode, 10));
+                registers.AddRange(this.StringToRegisters(baDTO.BottomBarcode, 10));
+                registers.AddRange(this.StringToRegisters(baDTO.PartName, 11));
+
+                logger.LogInformation("BoardAvailable register write attempt: {0}", string.Join(", ", registers));
+
+                // Develop (write all data at the correct register addresses)
+                await master.WriteMultipleRegistersAsync(
+                    config.DeviceId,
+                    2000,
+                    registers.ToArray());
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(
+                    ex,
+                    "Failed to implement BoardAvailable with PartName: {PartName}.",
+                    baDTO.PartName);
+
+                throw;
+            }
+            finally
+            {
+                modbusLock.Release();
+            }
+        }
+
+        private ushort[] StringToRegisters(string value, int registerCount)
+        {
+            var bytes = Encoding.ASCII.GetBytes(value);
+            var registers = new ushort[registerCount];
+
+            for (int i = 0; i < registerCount; i++)
+            {
+                int byteIndex = i * 2;
+
+                byte high = byteIndex < bytes.Length
+                    ? bytes[byteIndex]
+                    : (byte)0;
+
+                byte low = byteIndex + 1 < bytes.Length
+                    ? bytes[byteIndex + 1]
+                    : (byte)0;
+
+                registers[i] = (ushort)((high << 8) | low);
+            }
+
+            return registers;
         }
 
         private List<ushort> ReadDigitals(

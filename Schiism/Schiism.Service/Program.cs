@@ -105,6 +105,13 @@ namespace Schiism.Service
                     sp.GetRequiredService<PipeSerializer>(),
                     sp.GetRequiredService<ILogger<CommandReceiver<ModbusWriteDTO>>>()));
 
+            builder.Services.AddSingleton<CommandReceiver<BoardAvailableDTO>>(
+                sp => new CommandReceiver<BoardAvailableDTO>(
+                    NamingConstants.BoardAvailableCommandName,
+                    sp.GetRequiredService<INamedPipeFactory>(),
+                    sp.GetRequiredService<PipeSerializer>(),
+                    sp.GetRequiredService<ILogger<CommandReceiver<BoardAvailableDTO>>>()));
+
             // Command Client (for first config population)
             builder.Services.AddSingleton<CommandSender<SettingsConfigDTO>>(
                 sp => new CommandSender<SettingsConfigDTO>(
@@ -148,6 +155,7 @@ namespace Schiism.Service
                     cw.GetRequiredService<CommandSender<SettingsConfigDTO>>(),
                     cw.GetRequiredService<CommandReceiver<SettingsConfigDTO>>(),
                     cw.GetRequiredService<CommandReceiver<ModbusWriteDTO>>(),
+                    cw.GetRequiredService<CommandReceiver<BoardAvailableDTO>>(),
                     cw.GetRequiredService<PollControl>(),
                     cw.GetRequiredService<InitStatus>(),
                     cw.GetRequiredService<ILogger<CommandsWorker>>(),

@@ -34,6 +34,11 @@ namespace Schiism.Core
         /// </summary>
         public const string InitSettingsCommandName = "schiism.initSettings.cmd.v1";
 
+        /// <summary>
+        /// Represents the name of the Board Available command (Service --> Console).
+        /// </summary>
+        public const string BoardAvailableCommandName = "schiism.boardAvailable.cmd.v1";
+
         public const string ServiceName = "PVAModbusClient";
     }
 }

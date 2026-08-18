@@ -31,7 +31,8 @@ namespace Schiism.Service.HostedServices
         Engine engine,
         CommandSender<SettingsConfigDTO> initConfigSender,
         CommandReceiver<SettingsConfigDTO> configReceiver,
-        CommandReceiver<ModbusWriteDTO> modbusReceiver,
+        CommandReceiver<ModbusWriteDTO> modbusWriteReceiver,
+        CommandReceiver<BoardAvailableDTO> boardAvailableReceiver,
         PollControl pollControl,
         InitStatus initStatus,
         ILogger<CommandsWorker> logger,
@@ -48,13 +49,22 @@ namespace Schiism.Service.HostedServices
             await Task.Run(
                 () => lifetime.ApplicationStarted.WaitHandle.WaitOne(), stoppingToken);
 
-            logger.LogInformation($"Service Commands Worker for {NamingConstants.SettingsCommandName}, {NamingConstants.InitSettingsCommandName}, and {NamingConstants.ModbusWriteCommandName} has started");
+            logger.LogInformation($"Service Commands Worker for {NamingConstants.SettingsCommandName}, {NamingConstants.InitSettingsCommandName}, {NamingConstants.ModbusWriteCommandName}, and {NamingConstants.BoardAvailableCommandName} has started");
 
             Task? sendTask = RunInitSenderLoopAsync(stoppingToken);
             Task? settingsReceiveTask = RunSettingsReceiverLoopAsync(stoppingToken);
-            Task? modbusReceiveTask = RunModbusReceiverLoopAsync(stoppingToken);
+            Task? modbusWriteReceiveTask = RunModbusWriteReceiverLoopAsync(stoppingToken);
+            Task? boardAvailableReceiveTask = RunBoardAvailableReceiverLoopAsync(stoppingToken);
 
-            await Task.WhenAll(settingsReceiveTask, modbusReceiveTask, sendTask);
+            if (config.PLCHeartbeatEnable)
+            {
+                Task? heartbeatTask = PLCHeartbeatLoopAsync(stoppingToken);
+                await Task.WhenAll(settingsReceiveTask, modbusWriteReceiveTask, heartbeatTask, boardAvailableReceiveTask, sendTask);
+            }
+            else
+            {
+                await Task.WhenAll(settingsReceiveTask, modbusWriteReceiveTask, boardAvailableReceiveTask, sendTask);
+            }
         }
 
         private async Task RunInitSenderLoopAsync(CancellationToken stoppingToken)
@@ -105,14 +115,14 @@ namespace Schiism.Service.HostedServices
             }
         }
 
-        private async Task RunModbusReceiverLoopAsync(CancellationToken stoppingToken)
+        private async Task RunModbusWriteReceiverLoopAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
                     logger.LogInformation("Modbus Write receive starting");
-                    await modbusReceiver.ReceiveAsync(this.ModbusReceiveHandler, stoppingToken);
+                    await modbusWriteReceiver.ReceiveAsync(this.ModbusWriteReceiveHandler, stoppingToken);
                 }
                 catch (Exception ex)
                 {
@@ -120,6 +130,43 @@ namespace Schiism.Service.HostedServices
                 }
 
                 await Task.Delay(100, stoppingToken); // IMPORTANT or you'll spin CPU. This should be short though, since there's no reason for the UI to wait for updated data if it has already arrived.
+            }
+        }
+
+        private async Task RunBoardAvailableReceiverLoopAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    logger.LogInformation("BoardAvailable receive starting");
+                    await boardAvailableReceiver.ReceiveAsync(this.BoardAvailableReceiveHandler, stoppingToken);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "BoardAvailable receive crashed");
+                }
+
+                await Task.Delay(100, stoppingToken); // IMPORTANT or you'll spin CPU. This should be short though, since there's no reason for the UI to wait for updated data if it has already arrived.
+            }
+        }
+
+        private async Task PLCHeartbeatLoopAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    await engine.PLCHeartbeatAsync(config);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Modbus Heartbeat crashed");
+                }
+                finally
+                {
+                    await Task.Delay(3000, stoppingToken);
+                }
             }
         }
 
@@ -138,12 +185,21 @@ namespace Schiism.Service.HostedServices
             return Task.CompletedTask;
         }
 
-        private Task ModbusReceiveHandler(ModbusWriteDTO write)
+        private Task ModbusWriteReceiveHandler(ModbusWriteDTO write)
         {
             // Implement the logic to handle Modbus write to the Server device. Should just be a method with the DTO as the parameter.
             engine.WriteValueAsync(write, config);
 
             logger.LogInformation("Implemented Modbus Value: " + write.Value + " at " + write.Address + " successfully.");
+            return Task.CompletedTask;
+        }
+
+        private Task BoardAvailableReceiveHandler(BoardAvailableDTO baDTO)
+        {
+            // Implement the logic to handle Modbus write to the Server device. Should just be a method with the DTO as the parameter.
+            engine.WriteBoardAvailableAsync(baDTO, config);
+
+            logger.LogInformation("Implemented BoardAvailable with PartName: " + baDTO.PartName + " successfully.");
             return Task.CompletedTask;
         }
     }

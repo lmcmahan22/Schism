@@ -20,7 +20,6 @@ namespace Schiism
     using Schiism.WPF.Tabs;
     using Schiism.WPF.IPC;
     using Schiism.WPF.Views;
-    using System.Runtime.Intrinsics.X86;
     using System.Windows;
     using Schiism.WPF.Models;
 
@@ -56,6 +55,7 @@ namespace Schiism
             // containerRegistry.RegisterSingleton<StreamDataState<ConnectionDiagnostics>, StreamStore<ConnectionDiagnostics>>();
             containerRegistry.RegisterSingleton<ConfigState>();
             containerRegistry.RegisterSingleton<ModbusWriteState>();
+            containerRegistry.RegisterSingleton<BoardAvailableState>();
             containerRegistry.RegisterSingleton<InitStatus>();
             containerRegistry.RegisterSingleton<INamedPipeFactory, BasePipeFactory>();
             containerRegistry.RegisterSingleton<PipeSerializer>();
@@ -87,6 +87,13 @@ namespace Schiism
                     cs.Resolve<PipeSerializer>(),
                     cs.Resolve<ILoggerFactory>().CreateLogger<CommandSender<ModbusWriteDTO>>()));
 
+            containerRegistry.RegisterSingleton<CommandSender<BoardAvailableDTO>>(
+                cr => new CommandSender<BoardAvailableDTO>(
+                    NamingConstants.BoardAvailableCommandName,
+                    cr.Resolve<INamedPipeFactory>(),
+                    cr.Resolve<PipeSerializer>(),
+                    cr.Resolve<ILoggerFactory>().CreateLogger<CommandSender<BoardAvailableDTO>>()));
+
             containerRegistry.RegisterSingleton<StreamSubscriber<ConnDiagDTO>>(
                 ssc => new StreamSubscriber<ConnDiagDTO>(
                     ssc.Resolve<PipeSerializer>(),
@@ -104,8 +111,10 @@ namespace Schiism
                 cw.Resolve<INamedPipeFactory>(),
                 cw.Resolve<CommandSender<SettingsConfigDTO>>(),
                 cw.Resolve<CommandSender<ModbusWriteDTO>>(),
+                cw.Resolve<CommandSender<BoardAvailableDTO>>(),
                 cw.Resolve<ConfigState>(),
                 cw.Resolve<ModbusWriteState>(),
+                cw.Resolve<BoardAvailableState>(),
                 cw.Resolve<InitStatus>(),
                 cw.Resolve<ILoggerFactory>().CreateLogger<CommandsWorker>()));
             containerRegistry.Register<StreamSubscriberWorker<ModbusDataCollectionDTO>>(
