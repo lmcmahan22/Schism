@@ -208,7 +208,7 @@ namespace Schiism.Core.Modbus
 
                 // Add register data to the list in the correct order, so we can write it all at once.
                 hermesRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.BoardId, 18));
-                hermesRegisters.Add(Convert.ToUInt16(baDTO.Width));
+                hermesRegisters.Add(this.StringToWidth(baDTO.Width));
                 hermesRegisters.Add(this.BoolToRegister(baDTO.FailedBoard));
                 hermesRegisters.Add(this.BoolToRegister(baDTO.FlippedBoard));
                 hermesRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.TopBarcode, 10));
@@ -218,7 +218,7 @@ namespace Schiism.Core.Modbus
 
                 await this.master.WriteMultipleRegistersAsync(
                     config.DeviceId,
-                    2100,
+                    2101,
                     hermesRegisters.ToArray());
 
                 var vendorRegisters = new List<ushort>();
@@ -276,12 +276,22 @@ namespace Schiism.Core.Modbus
                     : (byte)0;
 
                 // Low and High are byte swapped! If you don't want this, swap their positions here
-                registers[i] = (ushort)(low | (high << 8));
+                registers[i] = (ushort)((low << 8) | high);
 
                 logger.LogInformation("Building Registers Array: {1}", string.Join(", ", registers));
             }
 
             return registers;
+        }
+
+        private ushort StringToWidth(string value)
+        {
+            if (value == null)
+            {
+                return 0;
+            }
+
+            return Convert.ToUInt16(value);
         }
 
         private ushort BoolToRegister(bool value)
