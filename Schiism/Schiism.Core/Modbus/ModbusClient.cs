@@ -5,6 +5,7 @@
 namespace Schiism.Core.Modbus
 {
     using Microsoft.Extensions.Logging;
+    using Microsoft.Win32;
     using NModbus;
     using Schiism.Core.Configuration.Enums;
     using Schiism.Core.Configuration.StateControl;
@@ -191,7 +192,7 @@ namespace Schiism.Core.Modbus
             }
         }
 
-        // Liam the WriteMultipleRegisters action is failing before the raw data print after it!
+        // Liam do these in Big Endian Byte-Swapped!!!
         public async Task WriteBoardAvailableAsync(BoardAvailableDTO baDTO, ConfigState config)
         {
             await modbusLock.WaitAsync();
@@ -203,31 +204,46 @@ namespace Schiism.Core.Modbus
                     throw new InvalidOperationException("Modbus client not connected to server.");
                 }
 
-                var registers = new List<ushort>();
+                var hermesRegisters = new List<ushort>();
 
                 // Add register data to the list in the correct order, so we can write it all at once.
-                registers.AddRange(this.StringToRegisters(baDTO.BoardId, 18));
-                registers.Add(Convert.ToUInt16(baDTO.Width));
-                registers.Add(Convert.ToUInt16(baDTO.FailedBoard));
-                registers.Add(Convert.ToUInt16(baDTO.FlippedBoard));
-                registers.AddRange(this.StringToRegisters(baDTO.TopBarcode, 10));
-                registers.AddRange(this.StringToRegisters(baDTO.BottomBarcode, 10));
-                registers.AddRange(this.StringToRegisters(baDTO.PartName, 11));
+                hermesRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.BoardId, 18));
+                hermesRegisters.Add(Convert.ToUInt16(baDTO.Width));
+                hermesRegisters.Add(this.BoolToRegister(baDTO.FailedBoard));
+                hermesRegisters.Add(this.BoolToRegister(baDTO.FlippedBoard));
+                hermesRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.TopBarcode, 10));
+                hermesRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.BottomBarcode, 10));
 
-                logger.LogInformation("BoardAvailable register write attempt: {0}", string.Join(", ", registers));
+                logger.LogInformation("BoardAvailable Hermes register write attempt: {0}", string.Join(", ", hermesRegisters));
 
-                // Develop (write all data at the correct register addresses)
-                await master.WriteMultipleRegistersAsync(
+                await this.master.WriteMultipleRegistersAsync(
                     config.DeviceId,
-                    2000,
-                    registers.ToArray());
+                    2100,
+                    hermesRegisters.ToArray());
+
+                var vendorRegisters = new List<ushort>();
+                vendorRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.PartName, 11));
+
+                logger.LogInformation("BoardAvailable Hermes register write attempt: {0}", string.Join(", ", vendorRegisters));
+
+                await this.master.WriteMultipleRegistersAsync(
+                    config.DeviceId,
+                    2300,
+                    vendorRegisters.ToArray());
+
+                // Send upstream board available SMEMA
+                logger.LogInformation("Engine writing UPBA coil!");
+                await this.master.WriteSingleCoilAsync(
+                    config.DeviceId,
+                    2121,
+                    true);
             }
             catch (Exception ex)
             {
                 logger.LogError(
                     ex,
-                    "Failed to implement BoardAvailable with PartName: {PartName}.",
-                    baDTO.PartName);
+                    "Failed to implement BoardAvailable for PartName {PartName}. Error message {ex}",
+                    baDTO.PartName, ex);
 
                 throw;
             }
@@ -237,8 +253,13 @@ namespace Schiism.Core.Modbus
             }
         }
 
-        private ushort[] StringToRegisters(string value, int registerCount)
+        private ushort[] StringToRegistersByteSwap(string value, int registerCount)
         {
+            if (value == null)
+            {
+                value = string.Empty;
+            }
+
             var bytes = Encoding.ASCII.GetBytes(value);
             var registers = new ushort[registerCount];
 
@@ -254,10 +275,18 @@ namespace Schiism.Core.Modbus
                     ? bytes[byteIndex + 1]
                     : (byte)0;
 
-                registers[i] = (ushort)((high << 8) | low);
+                // Low and High are byte swapped! If you don't want this, swap their positions here
+                registers[i] = (ushort)(low | (high << 8));
+
+                logger.LogInformation("Building Registers Array: {1}", string.Join(", ", registers));
             }
 
             return registers;
+        }
+
+        private ushort BoolToRegister(bool value)
+        {
+            return value ? (ushort)1 : (ushort)0;
         }
 
         private List<ushort> ReadDigitals(
