@@ -526,7 +526,8 @@ namespace Schiism.WPF.ViewModels
                         var contents = ConnDiagState.Contents;
 
                         if (contents != null &&
-                            contents.IsConnected)
+                            contents.IsConnected &&
+                            this.ModbusDataState.Contents.Data[(i * 20) + j] != null)
                         {
                             // Retrieve existing item if present; otherwise create one instance
                             data = this.ModbusDataState.Contents.Data[(i * 20) + j];

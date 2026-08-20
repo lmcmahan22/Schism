@@ -56,7 +56,7 @@
             // Sender subscriptions (complete this by binding to the WPF element with the data!)
             this.configState.PropertyChanged += ConfigChanged;
             this.writeState.PropertyChanged += ValueChanged;
-            this.bAState.PropertyChanged += BAStateChanged;
+            this.bAState.BASendTrigger += BASendTrigger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -132,7 +132,7 @@
             }
         }
 
-        private async void BAStateChanged(object? bAStateSenderObject, PropertyChangedEventArgs e)
+        private async void BASendTrigger(object? bAStateSenderObject, EventArgs e)
         {
             try
             {

@@ -26,8 +26,8 @@
             <TextBlock Text= "BoardAvailable Message" Margin="0,10" FontSize="16" FontWeight="Bold" TextAlignment="Center"/>
         </Grid>
         <Grid Grid.Row="1">
-            <TextBlock Text="BoardID (GUID):" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-            <TextBox Text="{Binding BoardID, UpdateSourceTrigger=PropertyChanged}" Margin="125,5,0,5" Width="150" Height="25" MaxLength="15" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+            <TextBlock Text="BoardID (Required):" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+            <TextBox x:Name="BoardIDText" Text="{Binding BoardID, UpdateSourceTrigger=PropertyChanged}" Margin="125,5,0,5" Width="150" Height="25" MaxLength="15" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
         </Grid>
         <Grid Grid.Row="2">
             <TextBlock Text="Width:" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
@@ -82,7 +82,18 @@
             <TextBox Text="{Binding PartName, UpdateSourceTrigger=PropertyChanged}" Margin="125,5,0,5" Width="150" Height="25" MaxLength="15" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
         </Grid>
         <Grid Grid.Row="8">
-            <Button Content="SEND" Command="{Binding SendClick}" Margin="0,5" Width="100" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button Content="SEND" Command="{Binding SendClick}" Margin="0,5" Width="100" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="IsEnabled" Value="True"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=BoardIDText, Path=Text.Length}" Value="0">
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
         </Grid>
     </Grid>
 </UserControl>

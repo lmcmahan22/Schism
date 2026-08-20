@@ -14,8 +14,6 @@ namespace Schiism.WPF.ViewModels
         // Private variable
         private string title;
 
-        private DelegateCommand? sendClick;
-
         private string boardID;
         private string width;
         private bool failedBoard;
@@ -23,6 +21,11 @@ namespace Schiism.WPF.ViewModels
         private string topBarcode;
         private string bottomBarcode;
         private string partName;
+
+        private DelegateCommand? sendClick;
+
+        public DelegateCommand SendClick =>
+    sendClick ??= new DelegateCommand(ExecuteSendClick);
 
         public string BoardID
         {
@@ -88,9 +91,6 @@ namespace Schiism.WPF.ViewModels
             set => SetProperty(ref title, value);
         }
 
-        public DelegateCommand SendClick =>
-            sendClick ??= new DelegateCommand(ExecuteSendClick);
-
         // INotifyPropertyChanged interface for ViewModels
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
@@ -99,7 +99,8 @@ namespace Schiism.WPF.ViewModels
 
         private void ExecuteSendClick()
         {
-            BAState.SetBA(this.BoardID, this.Width, this.FailedBoard, this.FlippedBoard, this.TopBarcode, this.BottomBarcode, this.PartName);
+            this.BAState.SetBA(this.BoardID, this.Width, this.FailedBoard, this.FlippedBoard, this.TopBarcode, this.BottomBarcode, this.PartName);
+            this.BAState.TriggerSend();
         }
     }
 }

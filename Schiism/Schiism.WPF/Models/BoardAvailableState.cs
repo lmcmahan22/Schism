@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Schiism.WPF.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,8 @@ namespace Schiism.WPF.Models
         private string topBarcode;
         private string bottomBarcode;
         private string partName;
+
+        public event EventHandler? BASendTrigger;
 
         public string BoardID
         {
@@ -73,6 +76,11 @@ namespace Schiism.WPF.Models
             TopBarcode = topBarcode;
             BottomBarcode = bottomBarcode;
             PartName = partName;
+        }
+
+        public void TriggerSend()
+        {
+            BASendTrigger?.Invoke(this, EventArgs.Empty);
         }
     }
 }
