@@ -54,7 +54,7 @@
             this.initStatus = initStatus;
 
             // Sender subscriptions (complete this by binding to the WPF element with the data!)
-            this.configState.PropertyChanged += ConfigChanged;
+            this.configState.MSSendTrigger += MSSendTrigger;
             this.writeState.PropertyChanged += ValueChanged;
             this.bAState.BASendTrigger += BASendTrigger;
         }
@@ -73,13 +73,13 @@
                 {
                     if (!initStatus.IsInitialized)
                     {
-                        logger.LogInformation("Initializing command receive starting");
-                        await initConfigReceiver.ReceiveAsync(ReceiveHandler, stoppingToken);
+                        logger.LogInformation("[WPF] Initialization command receive starting");
+                        await initConfigReceiver.ReceiveAsync(InitSettHandler, stoppingToken);
                     }
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError("Initialization command receive crashed. Trying again...");
+                    logger.LogError("[WPF] Initialization command receive crashed. Trying again...");
                     throw;
                 }
 
@@ -87,7 +87,7 @@
             }
         }
 
-        private async void ConfigChanged(object? configSendObject, PropertyChangedEventArgs e)
+        private async void MSSendTrigger(object? configSendObject, EventArgs e)
         {
             if (!initStatus.IsInitialized)
             {
@@ -118,17 +118,17 @@
                     return;
                 }
 
-                logger.LogInformation("Settings changed, sending update");
+                logger.LogInformation("[WPF] Settings changed, sending update on {0}", nameof(this.configSender));
 
                 await this.configSender.SendAsync(currentConfig, CancellationToken.None);
 
                 lastSentConfig = currentConfig;
 
-                logger.LogInformation("Updated settings sent!");
+                logger.LogInformation("[WPF] Updated settings sent on {0}!", nameof(this.configSender));
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to send config update");
+                logger.LogError(ex, "[WPF] Failed to send config update on {0}", nameof(this.configSender));
             }
         }
 
@@ -147,11 +147,11 @@
 
                 await this.boardAvailableSender.SendAsync(boardAvailableDTO, CancellationToken.None);
 
-                logger.LogInformation("BoardAvailable sent sucessfully!");
+                logger.LogInformation("[WPF] BoardAvailable sent sucessfully on {0}!", nameof(this.boardAvailableSender));
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to send BoardAvailable message.");
+                logger.LogError(ex, "[WPF] Failed to send BoardAvailable message on {0}.", nameof(this.boardAvailableSender));
             }
         }
 
@@ -205,27 +205,27 @@
                     writeState.Address,
                     cleanedVal);
 
-                logger.LogInformation("Sending new value " + writeState.Value + " to address: " + writeState.Address);
+                logger.LogInformation("[WPF] Sending new value " + writeState.Value + " to address: " + writeState.Address + " on {0}", nameof(this.modbusSender));
 
                 await this.modbusSender.SendAsync(modbusWriteDTO, CancellationToken.None);
 
-                logger.LogInformation("Value sent successfully!");
+                logger.LogInformation("[WPF] Value sent successfully on {0}", nameof(this.modbusSender));
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to send value!");
+                logger.LogError(ex, "[WPF] Failed to send value on {0}", nameof(this.modbusSender));
             }
         }
 
-        private Task ReceiveHandler(SettingsConfigDTO cmd)
+        private Task InitSettHandler(SettingsConfigDTO cmd)
         {
             // Trigger a PropertyChanged event to notify the view model for a UI update
             configState.Update(cmd);
+            logger.LogInformation("[WPF] Implemented initializing configuration command successfully");
 
             initStatus.IsInitialized = true;
-            logger.LogInformation("Initialization State set to True!");
+            logger.LogInformation("[WPF] Initialization State set to True!");
 
-            logger.LogInformation("Implemented initializing configuration command successfully");
             return Task.CompletedTask;
         }
     }

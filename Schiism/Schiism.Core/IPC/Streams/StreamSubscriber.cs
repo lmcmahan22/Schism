@@ -19,34 +19,30 @@ namespace Schiism.Core.IPC.Streams
         /// <inheritdoc/>
         public async Task<T?> SubscribeAsync(PipeStream pipe, CancellationToken ct)
         {
-            logger.LogInformation($"Deserializing on {pipe}");
+            logger.LogInformation($"[CORE] [STREAM] Received {typeof(T).Name} data");
             T? data = await serializer.DeserializeAsync<T>(pipe, ct);
 
-            if (typeof(T).Name == "ModbusData")
-            {
-                ModbusDataCollectionDTO? modData = data as ModbusDataCollectionDTO;
+            // Removed for now. Bring back in if you need to see the raw data on IPC!
+            //if (typeof(T).Name == "ModbusData")
+            //{
+            //    ModbusDataCollectionDTO? modData = data as ModbusDataCollectionDTO;
 
-                logger.LogInformation($"Received data on {typeof(T).Name} pipe: {data}.");
+            //    logger.LogInformation($"[CORE] Received Modbus data on {pipe}.");
 
-                string output = string.Empty;
-                for (int i = 0; i < modData.Data.Count; i++)
-                {
-                    output += modData.Data[i].ToString() + ", ";
-                }
+            //    string output = string.Empty;
+            //    for (int i = 0; i < modData.Data.Count; i++)
+            //    {
+            //        output += modData.Data[i].ToString() + ", ";
+            //    }
 
-                logger.LogInformation($"Modbus Data: {output}");
-            }
-            else
-            {
-                logger.LogInformation($"Received data on {typeof(T).Name} pipe: {data}.");
-            }
+            //    logger.LogInformation($"[CORE] Modbus Data: {output}");
+            //}
+            //else
+            //{
+            //    logger.LogInformation($"[CORE] Received data on {typeof(T).Name} pipe: {data}.");
+            //}
 
             return data;
-        }
-
-        public void Update()
-        {
-
         }
     }
 }

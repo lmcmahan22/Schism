@@ -37,7 +37,7 @@ namespace Schiism.WPF.IPC
         protected override async Task ExecuteAsync(CancellationToken cts)
         {
             // "Starting stream subscriber worker for Modbus Data"
-            logger.LogInformation("Starting stream subscriber worker for T Data");
+            logger.LogInformation("[WPF] [STREAM] Starting stream subscriber worker for {0} Data on {1}", typeof(T).Name, pipeName);
 
             while (!cts.IsCancellationRequested)
             {
@@ -45,15 +45,15 @@ namespace Schiism.WPF.IPC
 
                 try
                 {
-                    logger.LogInformation($"Beginning connection on {pipeName}");
+                    logger.LogInformation("[WPF] [STREAM] Beginning subscriber connection on {0}", pipeName);
                     await pipe.ConnectAsync(cts);
-                    logger.LogInformation($"Pipe connected on {pipeName}");
+                    logger.LogInformation("[WPF] [STREAM] Pipe connected on {0} for subscription", pipeName);
 
                     while (!cts.IsCancellationRequested && pipe.IsConnected)
                     {
-                        logger.LogInformation($"Polling data on {pipeName}");
+                        // logger.LogInformation($"Polling data on {pipeName}");
                         T? data = await subscriber.SubscribeAsync(pipe, cts);
-                        logger.LogInformation($"Poll complete on {pipeName}");
+                        // logger.LogInformation($"Poll complete on {pipeName}");
 
                         if (data != null)
                         {
@@ -61,15 +61,15 @@ namespace Schiism.WPF.IPC
                         }
                         else
                         {
-                            logger.LogInformation("Null data...");
+                            logger.LogInformation("[WPF] [STREAM] Null data on {0}...", pipeName);
                         }
 
                         await Task.Delay(100, cts); // IMPORTANT or you'll spin CPU. This should be short though, since there's no reason for the UI to wait for updated data if it has already arrived.
                     }
                 }
-                catch (IOException)
+                catch (IOException ex)
                 {
-                    logger.LogWarning($"Connection lost on {pipe}");
+                    logger.LogWarning(ex, $"[WPF] [STREAM] Connection lost on {pipeName}. Error details: {ex.Message}");
                 }
                 finally
                 {
@@ -79,7 +79,7 @@ namespace Schiism.WPF.IPC
                     if (initStatus.IsInitialized)
                     {
                         initStatus.IsInitialized = false;
-                        logger.LogInformation("Initialization State set to False!");
+                        logger.LogInformation("[WPF] [STREAM] Initialization State set to False!");
                     }
                 }
 

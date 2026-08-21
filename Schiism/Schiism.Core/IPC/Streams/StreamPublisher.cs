@@ -27,12 +27,11 @@ namespace Schiism.Core.IPC.Streams
             {
                 await serializer.SerializeAsync(pipe, data, ct);
                 await pipe.FlushAsync(ct);
+                logger.LogInformation("[CORE] [STREAM] Published {0} data.", typeof(T).Name);
             }
             catch (Exception ex)
             {
-                logger.LogInformation(
-                    ex,
-                    $"Publish attempt failed on pipe.");
+                logger.LogError(ex, "[CORE] [STREAM] {0} data publish failure. Error details: {1}", typeof(T).Name, ex.Message);
                 throw;
             }
         }

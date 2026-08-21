@@ -22,29 +22,30 @@ namespace Schiism.Core.IPC.Commands
             try
             {
                 logger.LogInformation(
-                   "Creating named pipe for {PipeName}",
+                   "[CORE] Creating named pipe for {PipeName}",
                    pipeName);
 
                 using var pipe = pipeFactory.CreateNPServer(pipeName);
 
                 logger.LogInformation(
-                   "Waiting for receiver connection on {PipeName}",
+                   "[CORE] Waiting for receiver connection on {PipeName}",
                    pipeName);
 
                 await pipe.WaitForConnectionAsync(ct);
 
                 logger.LogInformation(
-                   "Receiver connected to {PipeName}",
+                   "[CORE] Receiver connected to {PipeName}",
                    pipeName);
 
                 await serializer.SerializeAsync(pipe, command, ct);
 
                 await pipe.FlushAsync(ct);
-                logger.LogInformation("Command: {0} sent to {1}", command, pipeName);
+                // logger.LogInformation("[CORE] Command: {0} sent on {1}", command, pipeName);
+                logger.LogInformation("[CORE] {0} command sent on {1}", typeof(T).Name, pipeName);
             }
             catch (Exception ex)
             {
-                logger.LogError($"Failed to send command {ex}");
+                logger.LogError(ex, "[CORE] Failed to send {0} command on {PipeName}", typeof(T).Name, pipeName);
                 throw;
             }
         }

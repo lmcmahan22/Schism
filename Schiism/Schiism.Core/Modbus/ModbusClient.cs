@@ -140,7 +140,7 @@ namespace Schiism.Core.Modbus
                 // If PLC set this value to 1, set it back to 0
                 if (hbPulled)
                 {
-                    logger.LogInformation("Engine dropping heartbeat coil!");
+                    // logger.LogInformation("[CORE] Engine dropping heartbeat coil!");
                     await master.WriteSingleCoilAsync(
                             config.DeviceId,
                             2100,
@@ -167,7 +167,7 @@ namespace Schiism.Core.Modbus
                 switch (write.Type)
                 {
                     case PollType.CoilStatus:
-                        logger.LogInformation("Engine writing coil!");
+                        logger.LogInformation("[CORE] Engine writing {0} on coil {1}", write.Value, write.Address);
                         await this.master.WriteSingleCoilAsync(
                             config.DeviceId,
                             write.Address,
@@ -175,7 +175,7 @@ namespace Schiism.Core.Modbus
                         break;
 
                     case PollType.HoldingRegisters:
-                        logger.LogInformation("Engine writing register!");
+                        logger.LogInformation("[CORE] Engine writing {0} to register {1}", write.Value, write.Address);
                         await master.WriteSingleRegisterAsync(
                             config.DeviceId,
                             write.Address,
@@ -214,7 +214,7 @@ namespace Schiism.Core.Modbus
                 hermesRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.TopBarcode, 10));
                 hermesRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.BottomBarcode, 10));
 
-                logger.LogInformation("BoardAvailable Hermes register write attempt: {0}", string.Join(", ", hermesRegisters));
+                logger.LogInformation("[CORE] BoardAvailable Hermes register write attempt for BoardID: {0}", baDTO.BoardId);
 
                 await this.master.WriteMultipleRegistersAsync(
                     config.DeviceId,
@@ -224,7 +224,7 @@ namespace Schiism.Core.Modbus
                 var vendorRegisters = new List<ushort>();
                 vendorRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.PartName, 11));
 
-                logger.LogInformation("BoardAvailable Hermes register write attempt: {0}", string.Join(", ", vendorRegisters));
+                logger.LogInformation("[CORE] BoardAvailable Vendor register write attempt for BoardID: {0}", baDTO.BoardId);
 
                 await this.master.WriteMultipleRegistersAsync(
                     config.DeviceId,
@@ -232,7 +232,7 @@ namespace Schiism.Core.Modbus
                     vendorRegisters.ToArray());
 
                 // Send upstream board available SMEMA
-                logger.LogInformation("Engine writing UPBA coil!");
+                logger.LogInformation("[CORE] Engine engaging UPBA coil!");
                 await this.master.WriteSingleCoilAsync(
                     config.DeviceId,
                     2121,
@@ -242,7 +242,7 @@ namespace Schiism.Core.Modbus
             {
                 logger.LogError(
                     ex,
-                    "Failed to implement BoardAvailable for PartName {PartName}. Error message {ex}",
+                    "Failed to implement BoardAvailable contents for PartName {PartName}. Error message: {ex}",
                     baDTO.PartName, ex);
 
                 throw;
@@ -278,7 +278,7 @@ namespace Schiism.Core.Modbus
                 // Low and High are byte swapped! If you don't want this, swap their positions here
                 registers[i] = (ushort)((low << 8) | high);
 
-                logger.LogInformation("Building Registers Array: {1}", string.Join(", ", registers));
+                // logger.LogInformation("[CORE] Building Registers Array: {1}", string.Join(", ", registers));
             }
 
             return registers;
@@ -318,7 +318,8 @@ namespace Schiism.Core.Modbus
 
             // Convert to ushorts, so bools can be displayed as 1s and 0s.
             // This also makes it so we can handle this data in a similar manner as register data, which returns as ushorts natively.
-            // logger.LogInformation("Raw digital data read from Modbus device: {Data}", string.Join(", ", rawData.Select(x => x ? "1" : "0")));
+            // logger.LogInformation("[CORE] Raw digital data read from Modbus device: {Data}", string.Join(", ", rawData.Select(x => x ? "1" : "0")));
+            // logger.LogInformation("[CORE] Received MODBUS Coil Data from Server.");
             return [.. rawData.Select(x => Convert.ToUInt16(x))];
         }
 
@@ -339,7 +340,8 @@ namespace Schiism.Core.Modbus
                 rawData.AddRange(chunkData);
             }
 
-            // logger.LogInformation("Raw register data read from Modbus device: {Data}", string.Join(", ", rawData));
+            // logger.LogInformation("[CORE] Raw register data read from Modbus device: {Data}", string.Join(", ", rawData));
+            // logger.LogInformation("[CORE] Received MODBUS Register Data from Server.");
             return rawData;
         }
 

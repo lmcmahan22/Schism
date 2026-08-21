@@ -49,7 +49,7 @@ namespace Schiism.Service.HostedServices
             await Task.Run(
                 () => lifetime.ApplicationStarted.WaitHandle.WaitOne(), stoppingToken);
 
-            logger.LogInformation($"Service Commands Worker for {NamingConstants.SettingsCommandName}, {NamingConstants.InitSettingsCommandName}, {NamingConstants.ModbusWriteCommandName}, and {NamingConstants.BoardAvailableCommandName} has started");
+            logger.LogInformation($"[SERVICE] Service Commands Worker for {NamingConstants.SettingsCommandName}, {NamingConstants.InitSettingsCommandName}, {NamingConstants.ModbusWriteCommandName}, and {NamingConstants.BoardAvailableCommandName} has started");
 
             Task? sendTask = RunInitSenderLoopAsync(stoppingToken);
             Task? settingsReceiveTask = RunSettingsReceiverLoopAsync(stoppingToken);
@@ -76,21 +76,20 @@ namespace Schiism.Service.HostedServices
                     if (!initStatus.IsInitialized)
                     {
 
-                        logger.LogInformation("Sending initialization command");
+                        logger.LogInformation("[SERVICE] Sending config initialization command");
                         await initConfigSender.SendAsync(config.Push(), stoppingToken);
 
                         initStatus.IsInitialized = true; // Ensure the state is set to true after successful send
-                        logger.LogInformation("Frontend Initialization State set to True!");
                     }
                 }
                 catch (OperationCanceledException)
                 {
-                    logger.LogInformation("Init command send canceled.");
+                    logger.LogInformation("[SERVICE] Initialization command send canceled.");
                     break;
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Failed to send init command. Trying again...");
+                    logger.LogError(ex, "[SERVICE] Failed to send initialization command. Trying again...");
                 }
 
                 await Task.Delay(1000, stoppingToken); // Wait a second before sending the init command again.
@@ -103,12 +102,11 @@ namespace Schiism.Service.HostedServices
             {
                 try
                 {
-                    logger.LogInformation("Command receive starting");
                     await configReceiver.ReceiveAsync(this.SettingsReceiveHandler, stoppingToken);
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Command receive crashed");
+                    logger.LogError(ex, "[SERVICE] Config command receive crashed");
                 }
 
                 await Task.Delay(100, stoppingToken); // IMPORTANT or you'll spin CPU. This should be short though, since there's no reason for the UI to wait for updated data if it has already arrived.
@@ -121,12 +119,11 @@ namespace Schiism.Service.HostedServices
             {
                 try
                 {
-                    logger.LogInformation("Modbus Write receive starting");
                     await modbusWriteReceiver.ReceiveAsync(this.ModbusWriteReceiveHandler, stoppingToken);
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Modbus Write receive crashed");
+                    logger.LogError(ex, "[SERVICE] Modbus Write command receive crashed");
                 }
 
                 await Task.Delay(100, stoppingToken); // IMPORTANT or you'll spin CPU. This should be short though, since there's no reason for the UI to wait for updated data if it has already arrived.
@@ -139,12 +136,11 @@ namespace Schiism.Service.HostedServices
             {
                 try
                 {
-                    logger.LogInformation("BoardAvailable receive starting");
                     await boardAvailableReceiver.ReceiveAsync(this.BoardAvailableReceiveHandler, stoppingToken);
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "BoardAvailable receive crashed");
+                    logger.LogError(ex, "[SERVICE] BoardAvailable command receive crashed");
                 }
 
                 await Task.Delay(100, stoppingToken); // IMPORTANT or you'll spin CPU. This should be short though, since there's no reason for the UI to wait for updated data if it has already arrived.
@@ -161,7 +157,7 @@ namespace Schiism.Service.HostedServices
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Modbus Heartbeat crashed");
+                    logger.LogError(ex, "[SERVICE] Modbus Heartbeat crashed on PC side. Error Details: {0}", ex.Message);
                 }
                 finally
                 {
@@ -181,7 +177,7 @@ namespace Schiism.Service.HostedServices
             // Efficiency improvement, only run this if a setting other than the poll type was modified. We always poll both Status Coils and Holding Registers, so we no longer need to restart for that!
             pollControl.RestartRequested = true;
 
-            logger.LogInformation("Implemented configuration command successfully.");
+            // logger.LogInformation("[SERVICE] Implemented configuration command successfully.");
             return Task.CompletedTask;
         }
 
@@ -190,7 +186,7 @@ namespace Schiism.Service.HostedServices
             // Implement the logic to handle Modbus write to the Server device. Should just be a method with the DTO as the parameter.
             engine.WriteValueAsync(write, config);
 
-            logger.LogInformation("Implemented Modbus Value: " + write.Value + " at " + write.Address + " successfully.");
+            // logger.LogInformation("[SERVICE] Implemented Modbus Value: " + write.Value + " at " + write.Address + " successfully.");
             return Task.CompletedTask;
         }
 
@@ -199,7 +195,7 @@ namespace Schiism.Service.HostedServices
             // Implement the logic to handle Modbus write to the Server device. Should just be a method with the DTO as the parameter.
             engine.WriteBoardAvailableAsync(baDTO, config);
 
-            logger.LogInformation("Implemented BoardAvailable with PartName: " + baDTO.PartName + " successfully.");
+            // logger.LogInformation("[SERVICE] Implemented BoardAvailable with PartName: " + baDTO.PartName + " successfully.");
             return Task.CompletedTask;
         }
     }

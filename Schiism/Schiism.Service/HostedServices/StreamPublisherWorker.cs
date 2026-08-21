@@ -33,7 +33,7 @@ namespace Schiism.Service.HostedServices
             await Task.Run(
                 () => lifetime.ApplicationStarted.WaitHandle.WaitOne(), stoppingToken);
 
-            logger.LogInformation($"Service Stream Publisher Worker for {pipeName} has started");
+            logger.LogInformation($"[SERVICE] Windows Service Stream Publisher Worker for {pipeName} has started");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -52,10 +52,10 @@ namespace Schiism.Service.HostedServices
                 // Try to connect on the pipe, return to the top of the loop if it fails
                 try
                 {
-                    logger.LogInformation($"Waiting for client on {pipeName}");
+                    logger.LogInformation($"[SERVICE] Waiting for subscriber on {pipeName}");
                     await pipe.WaitForConnectionAsync(stoppingToken);
 
-                    logger.LogInformation($"Client connected on {pipeName}");
+                    logger.LogInformation($"[SERVICE] Subscriber connected on {pipeName}");
 
                     while (!stoppingToken.IsCancellationRequested && pipe.IsConnected)
                     {
@@ -66,14 +66,17 @@ namespace Schiism.Service.HostedServices
                         }
                         else
                         {
-                            logger.LogInformation($"{typeof(T).Name} Queue Count:{queue.Count}");
+                            if (queue.Count > 1)
+                            {
+                                logger.LogInformation($"[SERVICE] [STREAM] {typeof(T).Name} Content Queue Count:{queue.Count}");
+                            }
                         }
 
                         T? item = await queue.DequeueAsync(stoppingToken);
 
                         try
                         {
-                            logger.LogInformation($"Publishing on {pipeName}");
+                            logger.LogInformation($"[SERVICE] [STREAM] Publishing data on {pipeName}");
 
                             await publisher.PublishAsync(pipe, item, stoppingToken);
 
@@ -86,12 +89,12 @@ namespace Schiism.Service.HostedServices
                             //        result += modItem.Data[i].ToString();
                             //    }
 
-                            //    logger.LogInformation($"Publish complete on {pipeName}: {modItem}");
-                            //    logger.LogInformation($"Modbus Data: {result}");
+                            //    logger.LogInformation($"[SERVICE] Publish complete on {pipeName}: {modItem}");
+                            //    logger.LogInformation($"[SERVICE] Modbus Data: {result}");
                             //}
                             //else
                             //{
-                            //    logger.LogInformation($"Publish complete on {pipeName}: {item}");
+                            //    logger.LogInformation($"[SERVICE] Publish complete on {pipeName}: {item}");
                             //}
                         }
                         catch (OperationCanceledException)
@@ -100,14 +103,14 @@ namespace Schiism.Service.HostedServices
                         }
                         catch (IOException ioEx)
                         {
-                            logger.LogWarning(ioEx, "Pipe broke during publish");
+                            logger.LogWarning(ioEx, "[SERVICE] Pipe {0} broke during publish", pipeName);
                             initStatus.IsInitialized = false;
-                            logger.LogWarning("Frontend Initialization State set to False!");
+                            logger.LogWarning("[SERVICE] Frontend Initialization State set to False!");
                             break; // reconnect
                         }
                         catch (Exception ex)
                         {
-                            logger.LogError(ex, "Non-fatal publish error. Continuing...");
+                            logger.LogError(ex, "[SERVICE] Non-fatal publish error on pipe {0}. Continuing...", pipeName);
                             continue; // skip item only
                         }
                     }
@@ -118,12 +121,12 @@ namespace Schiism.Service.HostedServices
                 }
                 catch (IOException ioEx)
                 {
-                    logger.LogWarning(ioEx, "Pipe IO failure - retrying connection");
+                    logger.LogWarning(ioEx, "[SERVICE] Pipe {0} IO failure - retrying connection", pipeName);
                     continue;
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Unexpected connection failure");
+                    logger.LogError(ex, "[SERVICE] Unexpected connection failure on pipe {0}", pipeName);
                     await Task.Delay(1000, stoppingToken);
                 }
                 finally

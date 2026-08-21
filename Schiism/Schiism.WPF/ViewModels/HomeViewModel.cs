@@ -441,7 +441,7 @@ namespace Schiism.WPF.ViewModels
                         ushort rowAddr = (ushort)((i * 20) + j + this.ModbusSettState.StartAddress);
                         newRows.Add(new ModbusRow(rowAddr, namesCache[i], string.Empty, updatingCache[i]));
                         // Populate the name, data remains empty for now
-                        // logger.LogInformation($"At Table Update: ModbusRow[{i}] = {namesCache[i]}, {string.Empty}");
+                        // logger.LogInformation("[WPF] At Table Update: ModbusRow[{0}] = {1}, {2}", i, namesCache[i], string.Empty);
                     }
 
                     ModbusColumns.Add(new ModbusColumnViewModel(newRows));
@@ -541,7 +541,7 @@ namespace Schiism.WPF.ViewModels
                         // Liam: This is creating all 0s in the WPF app even though I see the 1s in the Data array just above this...?
                         ModbusColumns[i].Rows[j].SetFromModbus(data);
 
-                        // logger.LogInformation($"At Data Update: ModbusRow[{i}][{j}] = {ModbusRows[i].Name}, {data}");
+                        // logger.LogInformation("[WPF] At Data Update: ModbusRow[{0}][{1}] = {2}, {3}", i, j, ModbusRows[i].Name, data);
                     }
                 }
 

@@ -39,17 +39,17 @@ namespace Schiism.Core.Modbus
             {
                 try
                 {
-                    logger.LogInformation("Attempting to connect to Modbus Server at {IP}:{Port} with timeout {Timeout}ms", config.IPAddress, config.TCPPort, config.TCPTimeout);
+                    logger.LogInformation("[CORE] Service Client attempting to connect to Modbus Server at {IP}:{Port} with timeout {Timeout}ms", config.IPAddress, config.TCPPort, config.TCPTimeout);
                     await OnRequest(ct);
                     await client.InitializeAsync(config);
 
                     await OnSuccess(ct);
-                    logger.LogInformation("Successfully connected to Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
+                    logger.LogInformation("[CORE] Service Client successfully connected to Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
                 }
                 catch (Exception e)
                 {
                     await OnError(e, ct);
-                    logger.LogError(e, "Failed to connect to Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
+                    logger.LogError(e, "[CORE] Service Client Failed to connect to Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
                 }
 
                 await Task.Delay(1000, ct); // Wait one second before retrying connection if it failed. This prevents spamming connection attempts in case of persistent failure.
@@ -61,7 +61,7 @@ namespace Schiism.Core.Modbus
         {
             IsConnected = false; // Not reported, but set the flag to false to prevent any false reporting of connection status while disconnecting
             await client.DisconnectAsync();
-            logger.LogInformation("Disconnected from Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
+            logger.LogInformation("[CORE] Disconnected from Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
         }
 
         /// <inheritdoc/>
@@ -73,19 +73,22 @@ namespace Schiism.Core.Modbus
             {
                 await OnRequest(ct);
 
-                // Poll both types of data for logging, only queue and publish selected for frontend.
+                // Poll both types of data, since the PC may need to know information from the PLC that the user isn't observing at this moment (ex. User is observing Part Name string while SMEMA gets updated).
                 List<ushort> rawCoilData = await client.ReadCoilDataAsync(config);
-                List<ushort> rawRegisterData = await client.ReadRegisterDataAsync(config);
 
                 if (rawCoilData is null || rawCoilData.Count != config.DataLength)
                 {
                     throw new Exception("Invalid Modbus Coil response");
                 }
 
+                List<ushort> rawRegisterData = await client.ReadRegisterDataAsync(config);
+
                 if (rawRegisterData is null || rawRegisterData.Count != config.DataLength)
                 {
                     throw new Exception("Invalid Modbus Register response");
                 }
+
+                logger.LogInformation("[CORE] [STREAM] Received MODBUS Data from Server.");
 
                 List<string>? interp;
 
@@ -109,14 +112,17 @@ namespace Schiism.Core.Modbus
                     if (!Enumerable.SequenceEqual(interp, prevData))
                     {
                         modbusDTO = new(config.DeviceId, interp, DateTime.UtcNow);
-                        logger.LogWarning("Enqueuing ModbusData: {x}", string.Join(", ", modbusDTO.Data));
+
+                        // Put this back in if you need to see the data leaving the Service app
+                        // logger.LogWarning("[CORE] Enqueuing ModbusData: {x}", string.Join(", ", modbusDTO.Data));
+
                         await modbusSQ.EnqueueAsync(modbusDTO, ct);
                     }
                 }
 
                 // Regardless of whether we queued up the last stream contents or not, this was still a successful poll, so we update the diagnostics and connection status accordingly.
                 await OnSuccess(ct);
-                logger.LogInformation("Successfully polled Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
+                // logger.LogInformation("[CORE] Successfully polled Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
 
                 // Pass up the enqueued data. The DTO will be null if nothing was sent, which is okay.
                 if (modbusDTO is null)
@@ -130,31 +136,31 @@ namespace Schiism.Core.Modbus
             }
             catch (OperationCanceledException ex)
             {
-                logger.LogWarning("Connection cancelled on Client Engine.");
+                logger.LogWarning("[CORE] Operation cancelled from Client Engine: {ex}", ex.Message);
                 throw;
             }
             catch (SocketException ex)
             {
                 await OnError(ex, ct);
-                logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to Socket Error. Attempting to reconnect...", config.IPAddress, config.TCPPort);
+                logger.LogError(ex, "[CORE] Failed to poll Modbus Server at {IP}:{Port} due to Socket Error. Attempting to reconnect... Error details: {ex}", config.IPAddress, config.TCPPort, ex);
                 throw;
             }
             catch (IOException ex)
             {
                 await OnError(ex, ct);
-                logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to IO Error. Attempting to reconnect...", config.IPAddress, config.TCPPort);
+                logger.LogError(ex, "[CORE] Failed to poll Modbus Server at {IP}:{Port} due to IO Error. Attempting to reconnect... Error details: {ex}", config.IPAddress, config.TCPPort, ex);
                 throw;
             }
             catch (ArgumentException ex)
             {
                 await OnError(ex, ct);
-                logger.LogError(ex, "Failed to poll Modbus Server at {IP}:{Port} due to Argument Error. Check configuration. Attempting to reconnect...", config.IPAddress, config.TCPPort);
+                logger.LogError(ex, "[CORE] Failed to poll Modbus Server at {IP}:{Port} due to Argument Error. Check configuration. Attempting to reconnect... Error details: {ex}", config.IPAddress, config.TCPPort, ex);
                 throw;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 await OnError(ex, ct);
-                logger.LogError(ex, "Unknown error from Modbus Server at {IP}:{Port} --> {ex}", config.IPAddress, config.TCPPort, ex);
+                logger.LogError(ex, "[CORE] Unknown error from Modbus Server at {IP}:{Port}... Error details: {ex}", config.IPAddress, config.TCPPort, ex);
                 throw;
             }
         }
@@ -180,7 +186,9 @@ namespace Schiism.Core.Modbus
 
             // Only queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
             int diff = (int)(DateTime.UtcNow - this.lastDiagTS).TotalMilliseconds;
-            logger.LogInformation("Time since last Request ConnDiag send: {x}", diff);
+
+            // Not needed for now
+            //logger.LogInformation("[CORE] Time since last Request ConnDiag send: {x}", diff);
 
             if (initStatus.IsInitialized && (diff > 500))
             {
@@ -188,7 +196,7 @@ namespace Schiism.Core.Modbus
                 lastDiagTS = diag.Timestamp;
 
                 // Enqueue the ConnectionDiagnostics
-                logger.LogWarning("Enqueuing Request ConnDiags: {x}", diag);
+                // logger.LogWarning("[CORE] Enqueuing Request ConnDiags: {x}", diag);
                 await connSQ.EnqueueAsync(diag, ct);
             }
         }
@@ -202,7 +210,7 @@ namespace Schiism.Core.Modbus
 
             // Only queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
             int diff = (int)(DateTime.UtcNow - this.lastDiagTS).TotalMilliseconds;
-            logger.LogInformation("Time since last Response ConnDiag send: {x}", diff);
+            // logger.LogInformation("[CORE] Time since last Response ConnDiag send: {x}", diff);
 
             if (initStatus.IsInitialized && (diff > 500))
             {
@@ -211,7 +219,7 @@ namespace Schiism.Core.Modbus
 
                 // Enqueue the ConnectionDiagnostics
                 // logger.LogError($"Client is sending server Connection Status: {this.IsConnected}");
-                logger.LogWarning("Enqueuing Response ConnDiags: {x}", diag);
+                // logger.LogWarning("[CORE] Enqueuing Response ConnDiags: {x}", diag);
                 await connSQ.EnqueueAsync(diag, ct);
             }
         }
@@ -225,14 +233,14 @@ namespace Schiism.Core.Modbus
 
             // Only queue up the stream contents if the frontend has initialized. Otherwise, we would clog the stream until it starts up.
             int diff = (int)(DateTime.UtcNow - this.lastDiagTS).TotalMilliseconds;
-            logger.LogInformation("Time since last Response ConnDiag send: {x}", diff);
+            // logger.LogInformation("[CORE] Time since last Response ConnDiag send: {x}", diff);
 
             if (initStatus.IsInitialized && (diff > 500))
             {
                 ConnDiagDTO diag = new(numRequests, numResponses, numOKs, numErrors, errorMessage, IsConnected, DateTime.UtcNow);
 
                 // logger.LogError($"Client is sending server Connection Status: {this.IsConnected}");
-                logger.LogWarning("Enqueuing Response ConnDiags: {x}", diag);
+                // logger.LogWarning("[CORE] Enqueuing Response ConnDiags: {x}", diag);
                 await connSQ.EnqueueAsync(diag, ct);
             }
         }

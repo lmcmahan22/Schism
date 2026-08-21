@@ -28,7 +28,7 @@ namespace Schiism.Service.HostedServices
             await Task.Run(
                 () => lifetime.ApplicationStarted.WaitHandle.WaitOne(), ct);
 
-            logger.LogInformation("Service Engine Worker started");
+            logger.LogInformation("[SERVICE] Windows Service Engine Worker started");
 
             while (!ct.IsCancellationRequested)
             {
@@ -36,30 +36,29 @@ namespace Schiism.Service.HostedServices
 
                 try
                 {
-                    logger.LogInformation("Connecting to Modbus engine...");
                     await engine.ConnectAsync(sessionCts.Token);
 
                     if (!engine.IsConnected)
                     {
-                        throw new InvalidOperationException("Engine reported not connected after ConnectAsync");
+                        new InvalidOperationException("[SERVICE] Client Engine not connected to Modbus Server after connect attempt...");
                     }
 
-                    logger.LogInformation("Connected. Starting polling loop.");
+                    logger.LogInformation("[SERVICE] Client Engine connected to MODBUS Server. Starting polling loop.");
                     await RunPollingLoop(sessionCts.Token);
                 }
                 catch (OperationCanceledException) when (ct.IsCancellationRequested)
                 {
-                    logger.LogInformation("Modbus Engine session lost/restarted. Attempting Reconnect...");
+                    logger.LogInformation("[SERVICE] Client Engine session lost/restarted. Attempting Reconnect...");
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Modbus Engine failure");
+                    logger.LogError(ex, "[SERVICE] Client Engine failure. Error details: {0}", ex.Message);
                     await engine.DisconnectAsync();
                 }
                 finally
                 {
                     if (!engine.IsConnected) {
-                        logger.LogError("Disconnecting from MODBUS server (if connected prior)...");
+                        logger.LogError("[SERVICE] Client Engine disconnecting from MODBUS server (if connected prior)...");
                         await engine.DisconnectAsync();
                     }
                 }
@@ -70,16 +69,27 @@ namespace Schiism.Service.HostedServices
         {
             while (!ct.IsCancellationRequested)
             {
-                latestData = await engine.PollOnceAsync(ct, latestData);
-
-                if (pollControl.RestartRequested)
+                try
                 {
-                    pollControl.RestartRequested = false;
-                    throw new OperationCanceledException("Restart requested");
+                    latestData = await engine.PollOnceAsync(ct, latestData);
                 }
-
-                // The only scanRate delay that we should need in this application.
-                await Task.Delay(config.ScanRate, ct);
+                catch (Exception ex)
+                {
+                    if (pollControl.RestartRequested)
+                    {
+                        pollControl.RestartRequested = false;
+                        throw new OperationCanceledException("[SERVICE] MODBUS Client restart requested");
+                    }
+                    else
+                    {
+                        throw new Exception($"[SERVICE] Unknown Error at MODBUS Client connection loss. Error details: {ex.Message}");
+                    }
+                }
+                finally
+                {
+                    // The only scanRate delay that we should need in this application.
+                    await Task.Delay(config.ScanRate, ct);
+                }
             }
         }
     }

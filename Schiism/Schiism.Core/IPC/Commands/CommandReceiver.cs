@@ -22,47 +22,47 @@ namespace Schiism.Core.IPC.Commands
         /// <inheritdoc/>
         public async Task ReceiveAsync(Func<T, Task> handler, CancellationToken ct)
         {
-                try
+            try
+            {
+                logger.LogInformation(
+                    "[CORE] Command receiver connecting to {PipeName}",
+                    pipeName);
+
+                using var pipe = pipeFactory.CreateNPClient(pipeName);
+
+                await pipe.ConnectAsync(ct);
+
+                logger.LogInformation(
+                    "[CORE] Command receiver connected to {PipeName}",
+                    pipeName);
+
+                while (pipe.IsConnected && !ct.IsCancellationRequested)
                 {
-                    logger.LogInformation(
-                        "Connecting to {PipeName}",
-                        pipeName);
+                    T? cmd = await serializer.DeserializeAsync<T>(pipe, ct);
 
-                    using var pipe = pipeFactory.CreateNPClient(pipeName);
-
-                    await pipe.ConnectAsync(ct);
-
-                    logger.LogInformation(
-                        "Connected to {PipeName}",
-                        pipeName);
-
-                    while (pipe.IsConnected && !ct.IsCancellationRequested)
+                    if (cmd is null)
                     {
-                        T? cmd = await serializer.DeserializeAsync<T>(pipe, ct);
-
-                        if (cmd is null)
-                        {
-                            logger.LogWarning("Received null command, ignoring");
-                            continue;
-                        }
-
-                        logger.LogInformation("Received command: {Command}", cmd);
-                        await handler(cmd);
-                        return; // Single reciept complete! Get out of here!
+                        logger.LogWarning("[CORE] {PipeName} received null command, ignoring", pipeName);
+                        continue;
                     }
+
+                    logger.LogInformation("[CORE] {PipeName} received command.", pipeName);
+                    await handler(cmd);
+                    return; // Single reciept complete! Get out of here!
                 }
-                catch (EndOfStreamException)
-                {
-                    logger.LogInformation("Sender disconnected from {PipeName}", pipeName);
-                }
-                catch (OperationCanceledException)
-                {
-                    logger.LogInformation("Command server shutting down");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, $"Command server error {ex}");
-                }
+            }
+            catch (EndOfStreamException)
+            {
+                logger.LogInformation("[CORE] Sender disconnected from {PipeName}", pipeName);
+            }
+            catch (OperationCanceledException)
+            {
+                logger.LogInformation("[CORE] {PipeName} receiver shutting down", pipeName);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "[CORE] {PipeName} receiver error: {Error}", pipeName, ex.Message);
+            }
         }
     }
 }

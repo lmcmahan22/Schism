@@ -1,12 +1,7 @@
 ﻿using Schiism.Core.Configuration.Enums;
 using Schiism.Core.IPC.DTOs;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Schiism.Core.Configuration.StateControl
 {
@@ -31,6 +26,8 @@ namespace Schiism.Core.Configuration.StateControl
         private Endian selectedEndian;
         private bool autoStart;
         private bool autoRestart;
+
+        public event EventHandler? MSSendTrigger;
 
         /// <inheritdoc/>
         public ConfigState()
@@ -310,6 +307,21 @@ namespace Schiism.Core.Configuration.StateControl
                 SelectedEndian,
                 AutoStart,
                 AutoRestart);
+        }
+
+        public void setMS(string iPAddress, ushort tCPPort, int scanRate, int tCPTimeout, bool autoStart, bool autoRestart)
+        {
+            this.IPAddress = iPAddress;
+            this.TCPPort = tCPPort;
+            this.ScanRate = scanRate;
+            this.TCPTimeout = tCPTimeout;
+            this.AutoStart = autoStart;
+            this.AutoRestart = autoRestart;
+        }
+
+        public void TriggerApply()
+        {
+            MSSendTrigger?.Invoke(this, EventArgs.Empty);
         }
 
         // // Prevent user from prompting a data overflow simply due to configuring the length and data size poorly

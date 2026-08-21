@@ -178,7 +178,7 @@ namespace Schiism.Service
             }
             catch (Exception ex)
             {
-                logger.LogCritical(ex, $"Host startup failure {ex}");
+                logger.LogCritical(ex, $"[SERVICE] Windows Service host startup failure. Error details: {ex}");
                 throw;
             }
         }
