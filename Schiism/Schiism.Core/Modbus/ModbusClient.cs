@@ -286,7 +286,7 @@ namespace Schiism.Core.Modbus
 
         private ushort StringToWidth(string value)
         {
-            if (value == null)
+            if (value == null || value == string.Empty)
             {
                 return 0;
             }
