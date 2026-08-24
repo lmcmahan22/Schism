@@ -214,15 +214,22 @@ namespace Schiism.Core.Modbus
                 hermesRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.TopBarcode, 10));
                 hermesRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.BottomBarcode, 10));
 
+                var vendorRegisters = new List<ushort>();
+                vendorRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.PartName, 11));
+
+                // Send upstream board available SMEMA
+                logger.LogInformation("[CORE] Engine disengaging UPBA coil!");
+                await this.master.WriteSingleCoilAsync(
+                    config.DeviceId,
+                    2121,
+                    false);
+
                 logger.LogInformation("[CORE] BoardAvailable Hermes register write attempt for BoardID: {0}", baDTO.BoardId);
 
                 await this.master.WriteMultipleRegistersAsync(
                     config.DeviceId,
                     2101,
                     hermesRegisters.ToArray());
-
-                var vendorRegisters = new List<ushort>();
-                vendorRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.PartName, 11));
 
                 logger.LogInformation("[CORE] BoardAvailable Vendor register write attempt for BoardID: {0}", baDTO.BoardId);
 
@@ -278,20 +285,23 @@ namespace Schiism.Core.Modbus
                 // Low and High are byte swapped! If you don't want this, swap their positions here
                 registers[i] = (ushort)((low << 8) | high);
 
-                // logger.LogInformation("[CORE] Building Registers Array: {1}", string.Join(", ", registers));
+                logger.LogInformation("[CORE] Building Registers Array: {1}", string.Join(", ", registers));
             }
 
             return registers;
         }
 
+        // We need to do it this way, because converting a numeric value on a single short vs. translating ASCII characters to bytes on a single short are NOT the same process!
         private ushort StringToWidth(string value)
         {
-            if (value == null || value == string.Empty)
+            if (value is null or "--" || value == string.Empty)
             {
-                return 0;
+                return 0x2D2D;
             }
-
-            return Convert.ToUInt16(value);
+            else
+            {
+                return Convert.ToUInt16(value);
+            }
         }
 
         private ushort BoolToRegister(bool value)

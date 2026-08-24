@@ -15,12 +15,12 @@ namespace Schiism.WPF.ViewModels
         private string title;
 
         private string boardID;
-        private string width;
+        private string width = "--";
         private bool failedBoard;
         private bool flippedBoard;
-        private string topBarcode;
-        private string bottomBarcode;
-        private string partName;
+        private string topBarcode = "--";
+        private string bottomBarcode = "--";
+        private string partName = "--";
 
         private DelegateCommand? sendClick;
 

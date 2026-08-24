@@ -151,7 +151,7 @@ namespace Schiism.Core.Modbus
                         }
 
                         // 16-bit is not a valid floating point width; fall back (not even possible to hit this with current UI handling)
-                        return "N/A";
+                        return "--";
                     }
 
                 default: // Decimal (unsigned)
