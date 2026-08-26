@@ -172,7 +172,7 @@ namespace Schiism.Core.Modbus
 
         public async Task WriteValueAsync(ModbusWriteDTO write, ConfigState config)
         {
-            await client.WriteValueAsync(write, config);
+            await client.WriteValue(write, config);
         }
 
         public async Task WriteBoardAvailableAsync(BoardAvailableDTO baDTO, ConfigState config)

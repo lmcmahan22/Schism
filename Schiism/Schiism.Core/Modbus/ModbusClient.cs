@@ -178,7 +178,7 @@ namespace Schiism.Core.Modbus
             }
         }
 
-        public async Task WriteValueAsync(ModbusWriteDTO write, ConfigState config)
+        public async Task WriteValue(ModbusWriteDTO write, ConfigState config)
         {
             await modbusLock.WaitAsync();
 

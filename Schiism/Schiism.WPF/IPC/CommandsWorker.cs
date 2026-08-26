@@ -24,7 +24,6 @@
         private readonly CommandSender<BoardAvailableDTO> boardAvailableSender;
         private readonly ConfigState configState;
         private readonly ModbusWriteState writeState;
-
         private readonly BoardAvailableState bAState;
         private readonly InitStatus initStatus;
 
@@ -55,7 +54,7 @@
 
             // Sender subscriptions (complete this by binding to the WPF element with the data!)
             this.configState.MSSendTrigger += MSSendTrigger;
-            this.writeState.PropertyChanged += ValueChanged;
+            this.writeState.WriteSendTrigger += WriteSendTrigger;
             this.bAState.BASendTrigger += BASendTrigger;
         }
 
@@ -155,13 +154,8 @@
             }
         }
 
-        private async void ValueChanged(object? modbusSenderObject, PropertyChangedEventArgs e)
+        private async void WriteSendTrigger(object? modbusSenderObject, EventArgs e)
         {
-            if (e.PropertyName != nameof(ModbusWriteState.Value))
-            {
-                return;
-            }
-
             try
             {
                 // Value handling with different string value formats

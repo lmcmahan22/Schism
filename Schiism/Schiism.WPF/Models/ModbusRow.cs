@@ -15,7 +15,7 @@ namespace Schiism.WPF.Models
         private bool isUpdating;
         private string editData = string.Empty;
 
-        public event EventHandler? UserValueChanged;
+        //public event EventHandler? UserValueChanged;
 
         public ushort Address
         {
@@ -42,13 +42,13 @@ namespace Schiism.WPF.Models
             EditData = value;
         }
 
-        public void SetFromUser(string value)
-        {
-            Data = value;
-            EditData = value;
+        //public void SetFromUser(string value)
+        //{
+        //    Data = value;
+        //    EditData = value;
 
-            UserValueChanged?.Invoke(this, EventArgs.Empty);
-        }
+        //    UserValueChanged?.Invoke(this, EventArgs.Empty);
+        //}
 
         public bool IsUpdating
         {
@@ -67,7 +67,7 @@ namespace Schiism.WPF.Models
             set => SetProperty(ref editData, value);
         }
 
-        public DelegateCommand CommitEditCommand { get; }
+        // public DelegateCommand CommitEditCommand { get; }
 
         public ModbusRow(ushort address, string name, string data, bool isUpdating)
         {
@@ -76,17 +76,17 @@ namespace Schiism.WPF.Models
             this.SetFromModbus(data);
             this.isUpdating = isUpdating;
 
-            this.CommitEditCommand = new DelegateCommand(CommitEdit);
+            //this.CommitEditCommand = new DelegateCommand(CommitEdit);
         }
 
-        private void CommitEdit()
-        {
-            if (EditData == Data)
-            {
-                return;
-            }
+        //private void CommitEdit()
+        //{
+        //    if (EditData == Data)
+        //    {
+        //        return;
+        //    }
 
-            SetFromUser(EditData);
-        }
+        //    SetFromUser(EditData);
+        //}
     }
 }

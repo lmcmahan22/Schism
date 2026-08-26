@@ -5,6 +5,8 @@
         private ushort address;
         private string value;
 
+        public event EventHandler? WriteSendTrigger;
+
         public ushort Address
         {
             get => address;
@@ -21,6 +23,11 @@
         {
             this.Address = address;
             this.Value = value;
+        }
+
+        public void TriggerSend()
+        {
+            WriteSendTrigger?.Invoke(this, EventArgs.Empty);
         }
     }
 }

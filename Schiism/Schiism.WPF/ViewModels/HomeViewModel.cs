@@ -50,6 +50,8 @@ namespace Schiism.WPF.ViewModels
         private DelegateCommand? aboutClick;
         private DelegateCommand? boardAvailableClick;
 
+        private DelegateCommand? writeValueClick;
+
         public ConfigState ModbusSettState { get; }
 
         public ModbusWriteState ModbusWriteState { get; }
@@ -177,6 +179,9 @@ namespace Schiism.WPF.ViewModels
         public DelegateCommand BoardAvailableClick =>
             boardAvailableClick ??= new DelegateCommand(ExecuteBoardAvailableClick);
 
+        public DelegateCommand WriteValueClick =>
+            writeValueClick ??= new DelegateCommand(ExecuteWriteValueClick);
+
         public void ExecuteSaveClick()
         {
             // Create a SaveData object with the current state of the ViewModel
@@ -261,6 +266,19 @@ namespace Schiism.WPF.ViewModels
             boardAvailable.ShowDialog();
         }
 
+        public void ExecuteWriteValueClick()
+        {
+            // Create the Connection Settings window
+            Window writeVal = new Window
+            {
+                // Open the window
+                Content = new WriteValue(),
+                SizeToContent = SizeToContent.WidthAndHeight,
+                Topmost = true,
+            };
+            writeVal.ShowDialog();
+        }
+
         public void ExecuteThemesClick()
         {
             // Create the About window
@@ -338,15 +356,6 @@ namespace Schiism.WPF.ViewModels
                 // Update MODBUS Data in the UI
                 // I want to populate a "0" if we're watching but don't have a connection.
                 this.UpdateModbusData();
-            }
-        }
-
-        // Only do this if we see a difference in the value! If we read data then we don't need to write it! We only need to do this if the user modifies the value by hand.
-        private void ModbusValueWrite(object? sender, EventArgs e)
-        {
-            if (sender is ModbusRow row)
-            {
-                ModbusWriteState.SetWrite(row.Address, row.Data);
             }
         }
 
@@ -458,7 +467,7 @@ namespace Schiism.WPF.ViewModels
 
                         // Row change subscriptions
                         row.PropertyChanged += this.ModbusCheckChanged;
-                        row.UserValueChanged += this.ModbusValueWrite;
+                        // row.UserValueChanged += this.ModbusValueWrite;
                     }
                 }
 

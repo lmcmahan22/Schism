@@ -116,7 +116,6 @@ namespace Schiism.Service.HostedServices
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-
                 // Don't try running this logic if we know we aren't connected to the service device/PLC.
                 if (!engine.IsConnected)
                 {
@@ -207,19 +206,13 @@ namespace Schiism.Service.HostedServices
         private Task ModbusWriteReceiveHandler(ModbusWriteDTO write)
         {
             // Implement the logic to handle Modbus write to the Server device. Should just be a method with the DTO as the parameter.
-            engine.WriteValueAsync(write, config);
-
-            // logger.LogInformation("[SERVICE] Implemented Modbus Value: " + write.Value + " at " + write.Address + " successfully.");
-            return Task.CompletedTask;
+            return engine.WriteValueAsync(write, config);
         }
 
         private Task BoardAvailableReceiveHandler(BoardAvailableDTO baDTO)
         {
             // Implement the logic to handle Modbus write to the Server device. Should just be a method with the DTO as the parameter.
-            engine.WriteBoardAvailableAsync(baDTO, config);
-
-            // logger.LogInformation("[SERVICE] Implemented BoardAvailable with PartName: " + baDTO.PartName + " successfully.");
-            return Task.CompletedTask;
+            return engine.WriteBoardAvailableAsync(baDTO, config);
         }
     }
 }
