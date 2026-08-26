@@ -122,10 +122,13 @@ namespace Schiism.Core.Modbus
             }
         }
 
-        public async Task Heartbeat(ConfigState config)
+        public async Task Heartbeat(CancellationToken stoppingToken, ConfigState config)
         {
+            bool hbRaised;
+
             await modbusLock.WaitAsync();
 
+            // Read Heartbeat status, then release lock
             try
             {
                 if (master == null)
@@ -135,17 +138,39 @@ namespace Schiism.Core.Modbus
 
                 // Read the heartbeat value from a length 1 coil read
                 List<ushort> hbRawResult = ReadDigitals(this.master, config.DeviceId, 2100, 1, false);
-                bool hbPulled = hbRawResult[0] == 1;
+                hbRaised = hbRawResult[0] == 1;
+            }
+            finally
+            {
+                modbusLock.Release();
+            }
 
-                // If PLC set this value to 1, set it back to 0
-                if (hbPulled)
+            // If heartbeat was raised, stick around. Otherwise, leave.
+            if (!hbRaised)
+                return;
+
+            // Don't do this with the lock! Remove delay if not actually needed!
+            // NOTE: PMX uses 1000ms for its CheckAlive messages. We can go as low as 1000ms here to match that, but I'd prefer to stick with 3000ms on the PLC and PC.
+            logger.LogInformation("[CORE] Heartbeat wait begin!");
+            await Task.Delay(1000, stoppingToken);
+            logger.LogInformation("[CORE] Heartbeat wait end!");
+
+            await modbusLock.WaitAsync();
+
+            // If PLC set this value to 1, set it back to 0, once more with the lock acquired.
+            try
+            {
+                if (master == null)
                 {
-                    // logger.LogInformation("[CORE] Engine dropping heartbeat coil!");
-                    await master.WriteSingleCoilAsync(
-                            config.DeviceId,
-                            2100,
-                            false);
+                    throw new InvalidOperationException(
+                        "Modbus client not connected to server.");
                 }
+
+                logger.LogInformation("[CORE] Heartbeat delay has passed. Dropping heartbeat coil!");
+                await master.WriteSingleCoilAsync(
+                        config.DeviceId,
+                        2100,
+                        false);
             }
             finally
             {

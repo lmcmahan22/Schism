@@ -46,8 +46,7 @@ namespace Schiism.Service.HostedServices
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             // Don't run this worker until the application is fully started (i.e. all Worker's StartAsync() methods are complete).
-            await Task.Run(
-                () => lifetime.ApplicationStarted.WaitHandle.WaitOne(), stoppingToken);
+            await Task.Run(() => lifetime.ApplicationStarted.WaitHandle.WaitOne(), stoppingToken);
 
             logger.LogInformation($"[SERVICE] Service Commands Worker for {NamingConstants.SettingsCommandName}, {NamingConstants.InitSettingsCommandName}, {NamingConstants.ModbusWriteCommandName}, and {NamingConstants.BoardAvailableCommandName} has started");
 
@@ -117,6 +116,14 @@ namespace Schiism.Service.HostedServices
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+
+                // Don't try running this logic if we know we aren't connected to the service device/PLC.
+                if (!engine.IsConnected)
+                {
+                    await Task.Delay(config.ScanRate, stoppingToken);
+                    continue;
+                }
+
                 try
                 {
                     await modbusWriteReceiver.ReceiveAsync(this.ModbusWriteReceiveHandler, stoppingToken);
@@ -134,6 +141,14 @@ namespace Schiism.Service.HostedServices
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+
+                // Don't try running this logic if we know we aren't connected to the service device/PLC.
+                if (!engine.IsConnected)
+                {
+                    await Task.Delay(config.ScanRate, stoppingToken);
+                    continue;
+                }
+
                 try
                 {
                     await boardAvailableReceiver.ReceiveAsync(this.BoardAvailableReceiveHandler, stoppingToken);
@@ -151,9 +166,16 @@ namespace Schiism.Service.HostedServices
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                // Don't try running this logic if we know we aren't connected to the service device/PLC.
+                if (!engine.IsConnected)
+                {
+                    await Task.Delay(config.ScanRate, stoppingToken);
+                    continue;
+                }
+
                 try
                 {
-                    await engine.PLCHeartbeatAsync(config);
+                    await engine.PLCHeartbeatAsync(stoppingToken, config);
                 }
                 catch (Exception ex)
                 {
@@ -161,7 +183,8 @@ namespace Schiism.Service.HostedServices
                 }
                 finally
                 {
-                    await Task.Delay(3000, stoppingToken);
+
+                    await Task.Delay(100, stoppingToken); // IMPORTANT or you'll spin CPU.
                 }
             }
         }

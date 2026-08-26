@@ -52,7 +52,7 @@ namespace Schiism.Core.Modbus
                     logger.LogError(e, "[CORE] Service Client Failed to connect to Modbus Server at {IP}:{Port}", config.IPAddress, config.TCPPort);
                 }
 
-                await Task.Delay(1000, ct); // Wait one second before retrying connection if it failed. This prevents spamming connection attempts in case of persistent failure.
+                await Task.Delay(config.ScanRate, ct); // Wait scan rate before retrying connection if it failed. This prevents spamming connection attempts in case of persistent failure.
             }
         }
 
@@ -165,9 +165,9 @@ namespace Schiism.Core.Modbus
             }
         }
 
-        public async Task PLCHeartbeatAsync(ConfigState config)
+        public async Task PLCHeartbeatAsync(CancellationToken stoppingToken, ConfigState config)
         {
-            await client.Heartbeat(config);
+            await client.Heartbeat(stoppingToken, config);
         }
 
         public async Task WriteValueAsync(ModbusWriteDTO write, ConfigState config)
