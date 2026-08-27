@@ -194,7 +194,7 @@
                 }
 
                 ModbusWriteDTO modbusWriteDTO = new ModbusWriteDTO(
-                    configState.SelectedPollType,
+                    writeState.SelectedPollType,
                     configState.DeviceId,
                     writeState.Address,
                     cleanedVal);

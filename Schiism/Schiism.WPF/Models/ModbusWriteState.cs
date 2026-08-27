@@ -1,9 +1,13 @@
-﻿namespace Schiism.WPF.Models
+﻿using Schiism.Core.Configuration.Enums;
+
+namespace Schiism.WPF.Models
 {
     public class ModbusWriteState : BindableBase
     {
         private ushort address;
         private string value;
+
+        private PollType selPollType;
 
         public event EventHandler? WriteSendTrigger;
 
@@ -19,14 +23,18 @@
             set => SetProperty(ref this.value, value);
         }
 
-        public void SetWrite(ushort address, string value)
+        public PollType SelectedPollType
         {
-            this.Address = address;
-            this.Value = value;
+            get => selPollType;
+            set => SetProperty(ref this.selPollType, value);
         }
 
-        public void TriggerSend()
+        public void SendWrite(PollType selPol, ushort address, string value)
         {
+            this.selPollType = selPol;
+            this.Address = address;
+            this.Value = value;
+
             WriteSendTrigger?.Invoke(this, EventArgs.Empty);
         }
     }
