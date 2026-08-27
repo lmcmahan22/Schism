@@ -328,6 +328,18 @@ namespace Schiism.WPF.ViewModels
                 // Marshall this as well, if you haven't already!
                 UpdateModbusTable();
             }
+
+            // Trigger the event, as if we were hitting the send button in the configuration settings window.
+            // A bit scuffed at the moment... ideally this should be its own event I think...
+            if (e.PropertyName is nameof(ModbusSettState.AsciiEnable)
+                or nameof(ModbusSettState.DeviceId)
+                or nameof(ModbusSettState.SelectedDataSize)
+                or nameof(ModbusSettState.SelectedEndian)
+                or nameof(ModbusSettState.SelectedNumericBase)
+                or nameof(ModbusSettState.SelectedPollType))
+            {
+                ModbusSettState.TriggerApply();
+            }
         }
 
         private void AddrConvChanged(object? sender, PropertyChangedEventArgs e)

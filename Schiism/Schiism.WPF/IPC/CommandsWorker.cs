@@ -164,11 +164,11 @@
                 switch (configState.SelectedNumericBase)
                 {
                     case NumericBase.Integer:
-                        cleanedVal = Convert.ToInt16(this.writeState.Value, 16).ToString();
+                        cleanedVal = ((ushort)Convert.ToInt16(this.writeState.Value, 10)).ToString();
                         break;
 
                     case NumericBase.Binary:
-                        cleanedVal = Convert.ToInt16(this.writeState.Value, 2).ToString();
+                        cleanedVal = Convert.ToUInt16(this.writeState.Value, 2).ToString();
                         break;
 
                     case NumericBase.Hexadecimal:
@@ -180,7 +180,7 @@
                         }
 
                         // Remove first 2 characters ("0x")
-                        cleanedVal = Convert.ToInt16(tempVal.Substring(2), 16).ToString();
+                        cleanedVal = Convert.ToUInt16(tempVal.Substring(2), 16).ToString();
                         break;
 
                     // Not implemented for the time being...
@@ -207,7 +207,7 @@
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "[WPF] Failed to send value on {0}", nameof(this.modbusSender));
+                logger.LogError(ex, "[WPF] Failed to send value on {0}. Error details: {1}", nameof(this.modbusSender), ex.Message);
             }
         }
 
