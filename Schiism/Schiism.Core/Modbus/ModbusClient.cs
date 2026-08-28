@@ -5,7 +5,6 @@
 namespace Schiism.Core.Modbus
 {
     using Microsoft.Extensions.Logging;
-    using Microsoft.Win32;
     using NModbus;
     using Schiism.Core.Configuration.Enums;
     using Schiism.Core.Configuration.StateControl;
@@ -234,8 +233,8 @@ namespace Schiism.Core.Modbus
                 // Add register data to the list in the correct order, so we can write it all at once.
                 hermesRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.BoardId, 18));
                 hermesRegisters.Add(this.StringToWidth(baDTO.Width));
-                hermesRegisters.Add(this.BoolToRegister(baDTO.FailedBoard));
-                hermesRegisters.Add(this.BoolToRegister(baDTO.FlippedBoard));
+                hermesRegisters.Add((ushort)baDTO.FailedBoard);
+                hermesRegisters.Add((ushort)baDTO.FlippedBoard);
                 hermesRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.TopBarcode, 10));
                 hermesRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.BottomBarcode, 10));
 
@@ -327,11 +326,6 @@ namespace Schiism.Core.Modbus
             {
                 return Convert.ToUInt16(value);
             }
-        }
-
-        private ushort BoolToRegister(bool value)
-        {
-            return value ? (ushort)1 : (ushort)0;
         }
 
         private List<ushort> ReadDigitals(

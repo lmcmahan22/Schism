@@ -1,4 +1,5 @@
-﻿using Schiism.WPF.Views;
+﻿using Schiism.Core.Configuration.Enums;
+using Schiism.WPF.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,8 @@ namespace Schiism.WPF.Models
     {
         private string boardID;
         private string width;
-        private bool failedBoard;
-        private bool flippedBoard;
+        private FailType failedBoard;
+        private FlipType flippedBoard;
         private string topBarcode;
         private string bottomBarcode;
         private string partName;
@@ -37,13 +38,13 @@ namespace Schiism.WPF.Models
             set => SetProperty(ref width, value);
         }
 
-        public bool FailedBoard
+        public FailType FailedBoard
         {
             get => failedBoard;
             set => SetProperty(ref failedBoard, value);
         }
 
-        public bool FlippedBoard
+        public FlipType FlippedBoard
         {
             get => flippedBoard;
             set => SetProperty(ref flippedBoard, value);
@@ -67,7 +68,7 @@ namespace Schiism.WPF.Models
             set => SetProperty(ref partName, value);
         }
 
-        public void SetBA(string boardID, string width, bool failedBoard, bool flippedBoard, string topBarcode, string bottomBarcode, string partName)
+        public void SetBA(string boardID, string width, FailType failedBoard, FlipType flippedBoard, string topBarcode, string bottomBarcode, string partName)
         {
             BoardID = boardID;
             Width = width;

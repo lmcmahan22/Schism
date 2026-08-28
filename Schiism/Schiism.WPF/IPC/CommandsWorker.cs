@@ -135,11 +135,44 @@
         {
             try
             {
+                // send as a bit (0,1,2) instead, based on the enum value.
+                byte fail, flip;
+
+                switch (bAState.FailedBoard)
+                {
+                    case FailType.Good:
+                        fail = 1;
+                        break;
+
+                    case FailType.Failed:
+                        fail = 2;
+                        break;
+
+                    default:
+                        fail = 0;
+                        break;
+                }
+
+                switch (bAState.FlippedBoard)
+                {
+                    case FlipType.NotFlipped:
+                        flip = 1;
+                        break;
+
+                    case FlipType.Flipped:
+                        flip = 2;
+                        break;
+
+                    default:
+                        flip = 0;
+                        break;
+                }
+
                 BoardAvailableDTO boardAvailableDTO = new BoardAvailableDTO(
                     bAState.BoardID,
                     bAState.Width,
-                    bAState.FailedBoard,
-                    bAState.FlippedBoard,
+                    fail,
+                    flip,
                     bAState.TopBarcode,
                     bAState.BottomBarcode,
                     bAState.PartName);

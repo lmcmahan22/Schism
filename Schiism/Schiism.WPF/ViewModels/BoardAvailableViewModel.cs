@@ -5,8 +5,10 @@
 namespace Schiism.WPF.ViewModels
 {
     using Schiism.Core.Configuration;
+    using Schiism.Core.Configuration.Enums;
     using Schiism.Core.Configuration.StateControl;
     using Schiism.WPF.Models;
+    using System.Collections.ObjectModel;
     using System.Runtime.CompilerServices;
 
     public class BoardAvailableViewModel : BindableBase
@@ -16,8 +18,8 @@ namespace Schiism.WPF.ViewModels
 
         private string boardID;
         private string width = "--";
-        private bool failedBoard;
-        private bool flippedBoard;
+        private FailType failedBoard;
+        private FlipType flippedBoard;
         private string topBarcode = "--";
         private string bottomBarcode = "--";
         private string partName = "--";
@@ -45,13 +47,13 @@ namespace Schiism.WPF.ViewModels
             set => SetProperty(ref width, value);
         }
 
-        public bool FailedBoard
+        public FailType FailedBoard
         {
             get => failedBoard;
             set => SetProperty(ref failedBoard, value);
         }
 
-        public bool FlippedBoard
+        public FlipType FlippedBoard
         {
             get => flippedBoard;
             set => SetProperty(ref flippedBoard, value);
@@ -74,6 +76,20 @@ namespace Schiism.WPF.ViewModels
             get => partName;
             set => SetProperty(ref partName, value);
         }
+
+        public ObservableCollection<EnumOption<FailType>> FailedOptions { get; } =
+        [
+            new() { Value = FailType.Unknown, Display = "Unknown" },
+            new() { Value = FailType.Good, Display = "Good" },
+            new() { Value = FailType.Failed, Display = "Failed" },
+        ];
+
+        public ObservableCollection<EnumOption<FlipType>> FlippedOptions { get; } =
+        [
+            new() { Value = FlipType.Unknown, Display = "Unknown" },
+            new() { Value = FlipType.NotFlipped, Display = "Not Flipped" },
+            new() { Value = FlipType.Flipped, Display = "Flipped" },
+        ];
 
         public BoardAvailableState BAState { get; }
 

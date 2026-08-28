@@ -26,8 +26,8 @@
             <TextBlock Text= "BoardAvailable Message" Margin="0,10" FontSize="16" FontWeight="Bold" TextAlignment="Center"/>
         </Grid>
         <Grid Grid.Row="1">
-            <TextBlock Text="BoardID (Required):" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-            <TextBox x:Name="BoardIDText" Text="{Binding BoardID, UpdateSourceTrigger=PropertyChanged}" Margin="125,5,0,5" Width="150" Height="25" MaxLength="32" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+            <TextBlock Text="BoardID:" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+            <TextBox x:Name="BoardIDText" Text="{Binding BoardID, UpdateSourceTrigger=PropertyChanged}" Margin="125,5,0,5" Width="150" Height="25" MaxLength="36" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
         </Grid>
         <Grid Grid.Row="2">
             <TextBlock Text="Width:" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
@@ -35,39 +35,11 @@
         </Grid>
         <Grid Grid.Row="3">
             <TextBlock Text="FailedBoard:" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-            <ToggleButton IsChecked="{Binding FailedBoard, UpdateSourceTrigger=PropertyChanged}" Margin="100,5,0,5"  Width="50" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <ToggleButton.Style>
-                    <Style TargetType="ToggleButton">
-                        <Setter Property="Content" Value="FAIL"/>
-                        <Style.Triggers>
-                            <MultiDataTrigger>
-                                <MultiDataTrigger.Conditions>
-                                    <Condition Binding="{Binding FailedBoard}" Value="True" />
-                                </MultiDataTrigger.Conditions>
-                                <Setter Property="Content" Value="PASS"/>
-                            </MultiDataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ToggleButton.Style>
-            </ToggleButton>
+            <ComboBox Name="FailedBoardBox" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding FailedOptions}" SelectedValue="{Binding FailedBoard, Mode=TwoWay}" Margin="125,5,0,5" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="25" FontSize="14"/>
         </Grid>
         <Grid Grid.Row="4">
             <TextBlock Text="FlippedBoard:" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
-            <ToggleButton IsChecked="{Binding FlippedBoard, UpdateSourceTrigger=PropertyChanged}" Margin="100,5,0,5"  Width="100" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <ToggleButton.Style>
-                    <Style TargetType="ToggleButton">
-                        <Setter Property="Content" Value="NOT FLIPPED"/>
-                        <Style.Triggers>
-                            <MultiDataTrigger>
-                                <MultiDataTrigger.Conditions>
-                                    <Condition Binding="{Binding FlippedBoard}" Value="True" />
-                                </MultiDataTrigger.Conditions>
-                                <Setter Property="Content" Value="FLIPPED"/>
-                            </MultiDataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ToggleButton.Style>
-            </ToggleButton>
+            <ComboBox Name="FlippedBoardBox" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding FlippedOptions}" SelectedValue="{Binding FlippedBoard, Mode=TwoWay}" Margin="125,5,0,5" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="25" FontSize="14"/>
         </Grid>
         <Grid Grid.Row="5">
             <TextBlock Text="TopBarcode:" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
