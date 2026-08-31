@@ -23,6 +23,7 @@ namespace Schiism.WPF.ViewModels
         private string topBarcode = "--";
         private string bottomBarcode = "--";
         private string partName = "--";
+        private bool receiptDir = false;
 
         private DelegateCommand? sendClick;
 
@@ -77,6 +78,12 @@ namespace Schiism.WPF.ViewModels
             set => SetProperty(ref partName, value);
         }
 
+        public bool ReceiptDir
+        {
+            get => this.receiptDir;
+            set => SetProperty(ref this.receiptDir, value);
+        }
+
         public ObservableCollection<EnumOption<FailType>> FailedOptions { get; } =
         [
             new() { Value = FailType.Unknown, Display = "Unknown" },
@@ -115,7 +122,7 @@ namespace Schiism.WPF.ViewModels
 
         private void ExecuteSendClick()
         {
-            this.BAState.SetBA(this.BoardID, this.Width, this.FailedBoard, this.FlippedBoard, this.TopBarcode, this.BottomBarcode, this.PartName);
+            this.BAState.SetBA(this.BoardID, this.Width, this.FailedBoard, this.FlippedBoard, this.ReceiptDir, this.TopBarcode, this.BottomBarcode, this.PartName);
             this.BAState.TriggerSend();
         }
     }

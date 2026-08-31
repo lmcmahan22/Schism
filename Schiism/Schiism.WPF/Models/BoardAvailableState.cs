@@ -17,6 +17,7 @@ namespace Schiism.WPF.Models
         private string topBarcode;
         private string bottomBarcode;
         private string partName;
+        public bool receiptDir;
 
         public event EventHandler? BASendTrigger;
 
@@ -68,12 +69,19 @@ namespace Schiism.WPF.Models
             set => SetProperty(ref partName, value);
         }
 
-        public void SetBA(string boardID, string width, FailType failedBoard, FlipType flippedBoard, string topBarcode, string bottomBarcode, string partName)
+        public bool ReceiptDir
+        {
+            get => receiptDir;
+            set => SetProperty(ref receiptDir, value);
+        }
+
+        public void SetBA(string boardID, string width, FailType failedBoard, FlipType flippedBoard, bool receiptDir, string topBarcode, string bottomBarcode, string partName)
         {
             BoardID = boardID;
             Width = width;
             FailedBoard = failedBoard;
             FlippedBoard = flippedBoard;
+            ReceiptDir = receiptDir;
             TopBarcode = topBarcode;
             BottomBarcode = bottomBarcode;
             PartName = partName;

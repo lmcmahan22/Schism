@@ -173,6 +173,7 @@
                     bAState.Width,
                     fail,
                     flip,
+                    bAState.ReceiptDir,
                     bAState.TopBarcode,
                     bAState.BottomBarcode,
                     bAState.PartName);

@@ -6,12 +6,13 @@
     public record BoardAvailableDTO
     {
         [JsonConstructor]
-        public BoardAvailableDTO(string boardId, string width, byte failedBoard, byte flippedBoard, string topBarcode, string bottomBarcode, string partName)
+        public BoardAvailableDTO(string boardId, string width, byte failedBoard, byte flippedBoard, bool receiptDir, string topBarcode, string bottomBarcode, string partName)
         {
             BoardId = boardId;
             Width = width;
             FailedBoard = failedBoard;
             FlippedBoard = flippedBoard;
+            ReceiptDir = receiptDir;
             TopBarcode = topBarcode;
             BottomBarcode = bottomBarcode;
             PartName = partName;
@@ -24,6 +25,8 @@
         public byte FailedBoard { get; init; }
 
         public byte FlippedBoard { get; init; }
+
+        public bool ReceiptDir { get; init; }
 
         public string TopBarcode { get; init; }
 

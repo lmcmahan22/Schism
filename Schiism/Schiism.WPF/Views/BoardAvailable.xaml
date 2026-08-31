@@ -5,11 +5,12 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewmodels="clr-namespace:Schiism.WPF.ViewModels"
              prism:ViewModelLocator.AutoWireViewModel="True"
-             Width="300" Height="330"
+             Width="300" Height="360"
              Background="DarkGray">
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -42,18 +43,36 @@
             <ComboBox Name="FlippedBoardBox" DisplayMemberPath="Display" SelectedValuePath="Value" ItemsSource="{Binding FlippedOptions}" SelectedValue="{Binding FlippedBoard, Mode=TwoWay}" Margin="125,5,0,5" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="25" FontSize="14"/>
         </Grid>
         <Grid Grid.Row="5">
+            <TextBlock Text="Receive From:" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
+            <ToggleButton IsChecked="{Binding ReceiptDir, UpdateSourceTrigger=PropertyChanged}" Margin="125,5,0,5"  Width="150" Height="25" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <ToggleButton.Style>
+                    <Style TargetType="ToggleButton">
+                        <Setter Property="Content" Value="UPSTREAM"/>
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding ReceiptDir}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Content" Value="DOWNSTREAM"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Style>
+            </ToggleButton>
+        </Grid>
+        <Grid Grid.Row="6">
             <TextBlock Text="TopBarcode:" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
             <TextBox Text="{Binding TopBarcode, UpdateSourceTrigger=PropertyChanged}" Margin="125,5,0,5" Width="150" Height="25" MaxLength="20" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
         </Grid>
-        <Grid Grid.Row="6">
+        <Grid Grid.Row="7">
             <TextBlock Text="BottomBarcode:" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
             <TextBox Text="{Binding BottomBarcode, UpdateSourceTrigger=PropertyChanged}" Margin="125,5,0,5" Width="150" Height="25" MaxLength="20" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
         </Grid>
-        <Grid Grid.Row="7">
+        <Grid Grid.Row="8">
             <TextBlock Text="PartName:" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
             <TextBox Text="{Binding PartName, UpdateSourceTrigger=PropertyChanged}" Margin="125,5,0,5" Width="150" Height="25" MaxLength="22" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14"/>
         </Grid>
-        <Grid Grid.Row="8">
+        <Grid Grid.Row="9">
             <Button Content="SEND" Command="{Binding SendClick}" Margin="0,5" Width="100" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Button.Style>
                     <Style TargetType="Button">

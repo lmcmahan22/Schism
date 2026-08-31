@@ -241,11 +241,17 @@ namespace Schiism.Core.Modbus
                 var vendorRegisters = new List<ushort>();
                 vendorRegisters.AddRange(this.StringToRegistersByteSwap(baDTO.PartName, 11));
 
-                // Send upstream board available SMEMA
+                // Send board available SMEMA
                 logger.LogInformation("[CORE] Engine disengaging UPBA coil!");
                 await this.master.WriteSingleCoilAsync(
                     config.DeviceId,
                     2121,
+                    false);
+
+                logger.LogInformation("[CORE] Engine disengaging UPBA coil!");
+                await this.master.WriteSingleCoilAsync(
+                    config.DeviceId,
+                    2123,
                     false);
 
                 logger.LogInformation("[CORE] BoardAvailable Hermes register write attempt for BoardID: {0}", baDTO.BoardId);
@@ -262,12 +268,23 @@ namespace Schiism.Core.Modbus
                     2300,
                     vendorRegisters.ToArray());
 
-                // Send upstream board available SMEMA
-                logger.LogInformation("[CORE] Engine engaging UPBA coil!");
-                await this.master.WriteSingleCoilAsync(
-                    config.DeviceId,
-                    2121,
-                    true);
+                // Send board available SMEMA
+                if (baDTO.ReceiptDir)
+                {
+                    logger.LogInformation("[CORE] Engine engaging DNBA coil!");
+                    await this.master.WriteSingleCoilAsync(
+                        config.DeviceId,
+                        2123,
+                        true);
+                }
+                else
+                {
+                    logger.LogInformation("[CORE] Engine engaging UPBA coil!");
+                    await this.master.WriteSingleCoilAsync(
+                        config.DeviceId,
+                        2121,
+                        true);
+                }
             }
             catch (Exception ex)
             {
